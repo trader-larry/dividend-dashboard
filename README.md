@@ -7,6 +7,62 @@ has no third-party DLLs to block).
 
 New here? Start with [GETTING_STARTED.md](GETTING_STARTED.md), a short step-by-step guide.
 
+![Dividend Holdings Dashboard in dark theme, showing summary cards, projected income by month and upcoming ex-dividend dates](screenshots/overview.png)
+
+## Screenshots
+
+All screenshots use the built-in demo data (`python server.py --demo`), so the holdings and
+dollar amounts are synthetic. Click a tab name to see it.
+
+<details>
+<summary><strong>Price & fund</strong></summary>
+
+![Price & fund tab](screenshots/1-price-and-fund.png)
+
+</details>
+
+<details>
+<summary><strong>Dividends & income</strong></summary>
+
+![Dividends & income tab](screenshots/2-dividends-and-income.png)
+
+</details>
+
+<details>
+<summary><strong>Strategy & overlap</strong></summary>
+
+![Strategy & overlap tab](screenshots/3-strategy-and-overlap.png)
+
+</details>
+
+<details>
+<summary><strong>Holdings & performance</strong></summary>
+
+![Holdings & performance tab](screenshots/4-holdings-and-performance.png)
+
+</details>
+
+<details>
+<summary><strong>Monthly projections</strong></summary>
+
+![Monthly projections tab](screenshots/5-monthly-projections.png)
+
+</details>
+
+<details>
+<summary><strong>Symbol comparison</strong></summary>
+
+![Symbol comparison tab](screenshots/6-symbol-comparison.png)
+
+</details>
+
+<details>
+<summary><strong>Research</strong></summary>
+
+![Research tab](screenshots/7-research.png)
+
+</details>
+
 ## Start it
 
 You need Python 3.9 or newer (python.org).
