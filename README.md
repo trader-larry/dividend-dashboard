@@ -208,3 +208,7 @@ Extras:
   (needs `pip install yfinance`; on Windows with Smart App Control, its pandas
   DLLs may be blocked).
 - This is for information only, not investment advice.
+
+## License
+
+MIT. See [LICENSE](LICENSE). The license covers this code only; market data comes from Yahoo Finance under Yahoo's own terms.
