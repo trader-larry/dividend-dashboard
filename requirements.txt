@@ -1,0 +1,3 @@
+# Nothing is required: the dashboard uses only Python's standard library.
+# Optional, only if you run "python server.py --yfinance":
+# yfinance>=0.2.54

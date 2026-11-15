@@ -1,0 +1,19 @@
+# Your personal data: never commit these
+holdings.csv
+holdings_path.txt
+holdings-*.csv
+backups/
+.cache.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

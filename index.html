@@ -1,0 +1,1426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{const t=localStorage.getItem('divdash.theme'); if(t==='light'||t==='dark') document.documentElement.dataset.theme=t;}catch(e){}</script>
+<title>Dividend Holdings</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --ink:#1b1f24; --muted:#5f6b7a; --line:#e3e7ec; --soft:#eef1f5;
+  --accent:#2f6fde; --pos:#1a8a4a; --neg:#c8372d; --warn:#b26a00; --bar:#2f6fde; --bar2:#9db8ec;
+  --watch:#e0a100;
+}
+/* Dark theme: follows the computer's setting (Auto) unless you pick Light or Dark in the header. */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#0f1216; --panel:#171b21; --ink:#e7ebf0; --muted:#94a0ae; --line:#2a3039; --soft:#1f242c;
+    --accent:#6b9cf0; --pos:#4cc47f; --neg:#f06a5f; --warn:#e3a33b; --bar:#6b9cf0; --bar2:#3c5684;
+    --watch:#f2c14e; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#0f1216; --panel:#171b21; --ink:#e7ebf0; --muted:#94a0ae; --line:#2a3039; --soft:#1f242c;
+    --accent:#6b9cf0; --pos:#4cc47f; --neg:#f06a5f; --warn:#e3a33b; --bar:#6b9cf0; --bar2:#3c5684;
+    --watch:#f2c14e; color-scheme:dark; }
+:root[data-theme="light"]{ color-scheme:light; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+h1{font-size:18px;margin:0}
+.sub{color:var(--muted);font-size:12px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font:inherit;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.stop{color:var(--neg);border-color:var(--neg);background:transparent}
+.stopped{max-width:520px;margin:15vh auto;padding:28px;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+button:disabled{opacity:.6;cursor:wait}
+main{padding:16px 20px;max-width:1700px;margin:0 auto}
+.banner{background:#fff4d6;color:#6b4a00;border:1px solid #f0d58a;padding:8px 12px;border-radius:6px;margin-bottom:12px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .banner{background:#3a2e10;color:#f3d78e;border-color:#6b5520}}
+:root[data-theme="dark"] .banner{background:#3a2e10;color:#f3d78e;border-color:#6b5520}
+.err{color:var(--neg)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.tile .k{color:var(--muted);font-size:12px}
+.tile .v{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.row2{display:grid;grid-template-columns:1.35fr 1fr;gap:12px;margin-bottom:14px}
+@media (max-width:900px){.row2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.card h2{font-size:13px;margin:0 0 8px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.toolbar{display:flex;gap:10px;align-items:center;margin:0 0 8px;flex-wrap:wrap}
+.toolbar input{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit;min-width:220px}
+.tabs{display:flex;gap:2px;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:3px;margin-right:auto}
+.tab{border:0;background:transparent;border-radius:6px;padding:6px 14px;color:var(--muted)}
+.tab.on{background:var(--panel);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+th .arr{margin-left:4px;font-size:10px;opacity:.35}
+th.sorted{color:var(--ink)} th.sorted .arr{opacity:1}
+th:hover{color:var(--ink)}
+th.hsort{cursor:pointer;user-select:none;white-space:nowrap}
+.stick{position:sticky;left:0;z-index:1;background:var(--panel);box-shadow:1px 0 0 var(--line)}
+th.stick{z-index:2}
+tbody tr:hover td{background:var(--soft)}
+.wbar{height:4px;background:var(--soft);border-radius:2px;margin-top:4px;min-width:60px}.wbar div{height:4px;background:var(--bar);border-radius:2px;margin-left:auto}
+.warnc{color:var(--warn)}
+.strat.opt{background:color-mix(in srgb, var(--warn) 16%, var(--panel));border-color:color-mix(in srgb, var(--warn) 40%, var(--line))}
+.strat.bond{background:color-mix(in srgb, var(--accent) 14%, var(--panel))}
+.strat.reit{background:color-mix(in srgb, var(--pos) 14%, var(--panel))}
+.tags span{display:inline-block;margin:0 4px 3px 0;padding:1px 6px;border-radius:4px;background:var(--soft);font-size:12px;cursor:help}
+.row3{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media (max-width:900px){.row3{grid-template-columns:1fr}}
+.row1{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:14px}
+.grps{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));column-gap:28px}
+.grps .grp:last-child{border-bottom:1px solid var(--line)}
+.small{font-size:12px;margin:0 0 10px}
+.grp{padding:6px 0;border-bottom:1px solid var(--line)} .grp:last-child{border-bottom:0}
+.grp-h{display:flex;justify-content:space-between}
+.grp.multi .grp-h strong::after{content:' · overlap';color:var(--warn);font-weight:600;font-size:12px}
+.gbar{height:6px;background:var(--soft);border-radius:3px;margin:4px 0}
+.gbar div{height:6px;background:var(--bar);border-radius:3px}
+.grp.multi .gbar div{background:var(--warn)}
+.mwrap{overflow-x:auto}
+.matrix{border-collapse:collapse;width:auto}
+.matrix th,.matrix td{border:1px solid var(--line);padding:6px 8px;text-align:center;font-size:12px;min-width:52px}
+.matrix th{position:static;cursor:default}
+.matrix tbody th{position:sticky;left:0;z-index:1;background:var(--panel);text-align:left}
+.matrix td.self{color:var(--muted);background:var(--soft)}
+:root{--heat:#d9534f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--heat:#e0645b}}
+:root[data-theme="dark"]{--heat:#e0645b}
+.hbar .b.hot{background:var(--warn)}
+.via{font-size:11px;margin:-2px 0 4px}
+.gloss{margin:0;font-size:13px}
+.gloss dt{font-weight:600;margin-top:8px}
+.gloss dd{margin:2px 0 0;color:var(--muted)}
+.tablewrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600;cursor:pointer;user-select:none;background:var(--panel);white-space:normal;line-height:1.25;vertical-align:bottom;min-width:64px}
+th.num,td.num{text-align:right}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--soft)}
+.sym{font-weight:700}
+.nm{color:var(--muted);font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .muted{color:var(--muted)}
+.wrap{white-space:normal;min-width:150px;max-width:230px}
+.rng{width:120px}
+.rng .track{position:relative;height:6px;background:var(--soft);border-radius:3px;margin:6px 0 2px;border:1px solid var(--line)}
+.rng .dot{position:absolute;top:-4px;width:12px;height:12px;border-radius:50%;background:var(--accent);margin-left:-6px}
+.rng .lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.pill{display:inline-block;padding:1px 7px;border-radius:10px;background:var(--soft);border:1px solid var(--line);font-size:12px}
+.flag{color:var(--warn);font-weight:700}
+.est{color:var(--muted);font-size:11px}
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);padding:0;width:min(1150px,96vw);max-height:92vh}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dlg-h{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
+.dlg-b{padding:14px 18px;overflow:auto}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px}
+.kv div:nth-child(odd){color:var(--muted)}
+.hbar{display:grid;grid-template-columns:minmax(80px,1.4fr) 2fr 52px;gap:8px;align-items:center;font-size:12px;margin:3px 0}
+.hbar .b{height:10px;background:var(--bar);border-radius:2px}
+.hbar .nm2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+svg text{fill:var(--muted);font-size:11px}
+.ed input{width:100%;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:4px 6px;font:inherit}
+.ed td{padding:4px}
+.ed select{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:4px 6px;font:inherit}
+.calhead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.calhead h2{margin:4px 0 0}
+.seg{display:flex;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:2px}
+.seg button{border:0;background:transparent;padding:3px 10px;font-size:12px;color:var(--muted)}
+.btns .seg{align-self:center}
+.seg button.on{background:var(--panel);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.elist{max-height:270px;overflow-y:auto;font-size:13px}
+.eday{display:grid;grid-template-columns:88px 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}
+.eday:last-child{border-bottom:0}
+.eday{cursor:pointer} .eday:hover{background:color-mix(in srgb, var(--accent) 8%, transparent)}
+.eday .d{font-weight:600} .eday .d small{display:block;color:var(--muted);font-weight:400}
+.ev{display:flex;justify-content:space-between;gap:8px;cursor:pointer}
+.ev:hover .s{text-decoration:underline}
+.mnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px}
+.mnav button{padding:2px 10px}
+.mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-size:11px}
+.mgrid .dow{color:var(--muted);text-align:center;padding:2px 0;font-weight:600}
+.mcell{min-height:52px;border:1px solid var(--line);border-radius:4px;padding:2px 3px;background:var(--panel);overflow:hidden}
+.mcell.out{opacity:.35}
+.mcell.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.mcell .n{color:var(--muted)}
+.mcell.has{cursor:pointer} .mcell.has:hover{border-color:var(--accent)}
+.mcell .more{color:var(--muted);font-size:11px}
+#ddlg{width:min(560px,94vw)}
+.dd-sec{margin:4px 0 12px} .dd-sec h3{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 6px;display:flex;justify-content:space-between}
+.dd-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 14px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.dd-row:hover{background:color-mix(in srgb, var(--accent) 8%, transparent)}
+.dd-row .nm{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd-row .r{text-align:right;white-space:nowrap}
+.chip{display:block;margin-top:2px;padding:0 4px;border-radius:3px;background:color-mix(in srgb, var(--accent) 18%, var(--panel));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;font-weight:600}
+.chip.est{background:transparent;border:1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));font-weight:500;color:var(--ink)}
+.chip.pay{background:color-mix(in srgb, var(--pos) 18%, var(--panel))}
+.chip.pay.est{background:transparent;border:1px dashed color-mix(in srgb, var(--pos) 60%, var(--panel))}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:6px}
+.legend .chip{display:inline-block;margin:0 4px 0 0;cursor:default}
+.foot{color:var(--muted);font-size:12px;margin:14px 0}
+tfoot td{font-weight:600;border-top:2px solid var(--line);border-bottom:0;background:var(--soft)}
+#tabTop{margin-bottom:12px}
+#tabTop .tiles{margin-bottom:10px}
+/* Monthly projections: chart + annual distribution side by side */
+.projrow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px}
+@media (max-width:1000px){.projrow{grid-template-columns:minmax(0,1fr)}}
+.dist-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.dist-hd h2{margin:0}
+.dist-bar{display:flex;height:22px;border-radius:5px;overflow:hidden;background:var(--soft);margin:4px 0 6px}
+.dist-bar span{height:100%;min-width:2px;border-right:1px solid var(--panel);transition:opacity .12s}
+.dist-bar span:last-child{border-right:0}
+.dist-bar.hl span{opacity:.25}.dist-bar.hl span.on{opacity:1}
+.dist-leg{display:grid;grid-auto-flow:column;column-gap:22px;row-gap:1px;font-size:13px;margin-top:8px}
+@media (max-width:480px){.dist-leg{grid-auto-flow:row;grid-template-rows:none!important}}
+.dist-leg div{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;padding:2px 4px;border-radius:4px;cursor:pointer;min-width:0}
+.dist-leg div:hover,.dist-leg div.on{background:var(--soft)}
+.dist-leg div.oth{cursor:default}
+.dist-leg i{width:10px;height:10px;border-radius:2px;display:block}
+.dist-leg b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dist-leg em{font-style:normal;font-variant-numeric:tabular-nums;color:var(--ink)}
+.pm-low{color:var(--warn)}
+.menuwrap{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 4px);background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);padding:4px;min-width:280px;z-index:20}
+.menu button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:8px 10px;border-radius:5px}
+.menu button:hover{background:var(--soft)}
+.menu small{display:block;color:var(--muted);font-size:12px}
+#idlg{width:min(900px,96vw)}
+.imp-sum{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.imp-mode{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}
+@media (max-width:640px){.imp-mode{grid-template-columns:1fr}}
+.imp-mode label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px;cursor:pointer;font-size:13px}
+.imp-mode label:has(input:checked){border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.imp-mode small{display:block;color:var(--muted);margin-top:2px}
+.imp-msg{font-size:13px;margin:0 0 10px;padding:8px 10px;border-radius:6px;border:1px solid var(--line);background:var(--soft)}
+.imp-msg.bad{border-color:var(--neg);color:var(--neg);background:color-mix(in srgb, var(--neg) 8%, var(--panel))}
+.imp-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.imp-tbl th,.imp-tbl td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.imp-tbl td.num{text-align:right}
+.st{display:inline-block;padding:0 7px;border-radius:9px;font-size:11px;font-weight:600;border:1px solid var(--line)}
+.st.new{color:var(--pos);border-color:var(--pos)}
+.st.chg{color:var(--accent);border-color:var(--accent)}
+.st.del{color:var(--neg);border-color:var(--neg)}
+.st.same,.st.keep{color:var(--muted)}
+.imp-tbl s{color:var(--muted)}
+.hpath{font-size:12px;color:var(--muted);padding:8px 18px 0;word-break:break-all}
+/* Your own flag (not adding / cautiously watching): highlights the symbol wherever it appears. */
+.symhl.fw{border-radius:4px;padding:0 4px;margin:0 -1px;background:color-mix(in srgb, var(--watch) 34%, transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--watch) 75%, transparent)}
+td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
+.fb{display:inline-block;margin:2px 4px 0 0;padding:0 6px;border-radius:9px;font-size:11px;font-weight:600;line-height:17px;background:color-mix(in srgb, var(--watch) 28%, var(--panel));color:var(--ink)}
+.flagf{display:flex;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:2px}
+.flagf[hidden]{display:none}
+.flagf button{border:0;background:transparent;padding:3px 10px;font-size:12px;color:var(--muted);white-space:nowrap}
+.flagf button.on{background:var(--panel);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.flagf .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:var(--watch)}
+.chip.fw,.chip.est.fw{background:color-mix(in srgb, var(--watch) 34%, var(--panel));box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--watch) 75%, transparent)}
+.ed td.fc{text-align:center}
+.ed input[type=checkbox]{width:auto;accent-color:var(--watch)}
+.ed input.fw{background:color-mix(in srgb, var(--watch) 25%, var(--panel))}
+/* Symbol comparison tab. Series colors: fixed categorical order, stepped separately for dark mode. */
+:root{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;--s9:#3a3a37;--s10:#0e8fa3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#0ca30c;--s7:#9085e9;--s8:#e66767;--s9:#e6e6e1;--s10:#1aa6bd}}
+:root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#0ca30c;--s7:#9085e9;--s8:#e66767;--s9:#e6e6e1;--s10:#1aa6bd}
+@media (max-width:700px){.tabs{overflow-x:auto;max-width:100%} .tab{white-space:nowrap}}
+.cmp-row .seg{flex-wrap:wrap}
+.cmp-ctl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.cmp-syms{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 420px}
+.schip{display:inline-flex;align-items:center;gap:6px;padding:3px 4px 3px 9px;border:1px solid var(--line);border-radius:14px;background:var(--panel);font-weight:600;font-size:13px}
+.schip .sw{width:10px;height:10px;border-radius:50%;flex:none}
+.schip button{border:0;background:transparent;padding:0 6px;line-height:18px;color:var(--muted);font-size:15px;border-radius:9px}
+.schip button:hover{background:var(--soft);color:var(--ink)}
+.schip.bad{border-color:var(--neg);color:var(--neg)}
+.schip.busy{opacity:.6}
+.cmp-add{display:flex;gap:6px}
+.cmp-add input{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 10px;font:inherit;width:190px;text-transform:uppercase}
+.cmp-add input::placeholder{text-transform:none}
+.cmp-quick{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px}
+.cmp-quick button{padding:1px 8px;font-size:12px;border-radius:10px}
+.cmp-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.cmp-chart{position:relative;margin-top:4px}
+.cmp-chart svg{display:block;width:100%;overflow:visible}
+.cmp-chart svg .grid{stroke:var(--line);stroke-width:1}
+.cmp-chart svg .zero{stroke:var(--muted);stroke-width:1;opacity:.6}
+.cmp-chart svg .ser{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.cmp-chart svg .lab{font-weight:600;fill:var(--ink)}
+.cmp-tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.16);padding:6px 9px;font-size:12px;min-width:150px;z-index:3;font-variant-numeric:tabular-nums}
+.cmp-tip .d{color:var(--muted);margin-bottom:3px}
+.cmp-tip .r{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.cmp-tip .r span:first-child{display:flex;gap:5px;align-items:center;font-weight:600}
+.cmp-tip i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.cmp-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:6px}
+.cmp-legend span{display:inline-flex;gap:5px;align-items:center}
+.cmp-legend i{width:18px;height:3px;border-radius:2px;display:inline-block}
+.cmp-tbl td .sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.cmp-tbl tbody tr{cursor:default}
+.cmp-tbl tbody tr.own{cursor:pointer}
+.cmp-tbl th{white-space:normal}
+.cmp-empty{padding:30px;text-align:center;color:var(--muted)}
+.own-b{display:inline-block;margin-left:6px;padding:0 6px;border-radius:9px;font-size:11px;font-weight:600;line-height:16px;background:var(--soft);border:1px solid var(--line);color:var(--muted)}
+.res-head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-start;justify-content:space-between}
+.res-head > div:first-child{flex:1 1 300px}
+.res-btns{display:flex;gap:6px;align-self:center}
+#resPanel .calhead{flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Dividend Holdings</h1>
+    <div class="sub" id="updated">Loading…</div>
+  </div>
+  <div class="btns">
+    <button id="btnHold">Edit holdings</button>
+    <button id="btnImport" title="Load holdings from a CSV file, e.g. one exported on your other computer">Import CSV</button>
+    <input type="file" id="impFile" accept=".csv,text/csv" hidden>
+    <span class="menuwrap"><button id="btnCsv" aria-haspopup="true" aria-expanded="false">Export CSV ▾</button>
+      <div class="menu" id="csvMenu" hidden>
+        <button id="expHold">Holdings file<small>Shares, cost and your overrides. Use this to import on another computer.</small></button>
+        <button id="expTable">Dashboard table<small>Everything on screen, for Excel. Import only reads shares and cost from it.</small></button>
+        <button id="expFiltered">Filtered holdings<small id="expFilteredNote">Same columns as Dashboard table, only the rows the table shows now.</small></button>
+      </div></span>
+    <div class="seg" id="themeSw" role="group" aria-label="Color theme" title="Color theme"><button data-t="auto" title="Follow your computer's setting">Auto</button><button data-t="light">Light</button><button data-t="dark">Dark</button></div>
+    <button id="btnRefresh" class="primary">Refresh prices</button>
+    <button id="btnStop" class="stop" title="Shut down the dashboard and close its command window">Stop</button>
+  </div>
+</header>
+<main>
+  <div id="banner"></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="row2">
+    <div class="card"><h2>Projected income by month</h2><div id="incomeChart"></div></div>
+    <div class="card">
+      <div class="calhead"><h2>Upcoming ex-dividend &amp; pay dates</h2>
+        <div class="seg" id="calView"><button data-v="list">List</button><button data-v="month">Calendar</button></div></div>
+      <div id="calBody"></div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <input id="q" placeholder="Filter by symbol, name, focus…">
+    <div class="flagf" id="flagF" role="group" aria-label="Show flagged or not flagged holdings" hidden></div>
+    <span class="muted" id="count"></span>
+  </div>
+  <div id="tabTop" hidden></div>
+  <div class="tablewrap" id="mainTable">
+    <table>
+      <thead><tr id="thead"></tr></thead>
+      <tbody id="tbody"></tbody>
+      <tfoot id="tfoot"></tfoot>
+    </table>
+  </div>
+  <div id="tab3extra" hidden></div>
+  <div id="cmpPanel" hidden></div>
+  <div id="resPanel" hidden></div>
+  <p class="foot">Data from Yahoo Finance, cached for 15 minutes. Yield (TTM) = last 12 months of dividends ÷ price; Fwd = latest payment × frequency ÷ price; Total return assumes dividends reinvested. Distribution type marked "est." is a guess from the fund's category: confirm with the fund's 19a-1 notices or your 1099-DIV and set it in Edit holdings. Not investment advice.</p>
+</main>
+
+<dialog id="dlg"><div class="dlg-h"><div id="dlgTitle"></div><button onclick="dlg.close()">Close</button></div><div class="dlg-b" id="dlgBody"></div></dialog>
+
+<dialog id="ddlg"><div class="dlg-h"><strong id="ddTitle"></strong><button onclick="ddlg.close()">Close</button></div><div class="dlg-b" id="ddBody"></div></dialog>
+<dialog id="idlg"><div class="dlg-h"><strong id="impTitle">Import holdings</strong><div class="btns"><button class="primary" id="impGo">Import</button><button onclick="idlg.close()">Cancel</button></div></div><div class="dlg-b" id="impBody"></div></dialog>
+
+<dialog id="hdlg"><div class="dlg-h"><strong>Edit holdings</strong><div class="btns"><button onclick="addRow()">Add row</button><button class="primary" onclick="saveHold()">Save</button><button onclick="hdlg.close()">Cancel</button></div></div>
+<div class="hpath" id="hpath"></div>
+<div class="dlg-b"><p class="muted" style="margin-top:0">Leave shares blank to track a symbol as a watchlist item. If you hold a fund in several accounts, enter the combined Shares and Total cost (you can type sums like 100+50 or 2500+1840.50) and Cost/share is worked out for you. Payout frequency, Core focus, Distribution type, Strategy and Exposure override the automatic estimates (leave frequency on Auto to detect it from the payment history). Leave them blank to use the estimate. Examples: "Return of capital", "Put writing", "Nasdaq-100". Tick <strong>Flag</strong> for anything you are not currently adding to or are cautiously watching: its symbol is highlighted everywhere in the dashboard.</p>
+<table class="ed"><thead><tr><th class="hsort" data-hk="symbol" onclick="sortHold('symbol')" title="Click to sort">Symbol<span class="arr">↕</span></th><th class="hsort" data-hk="shares" onclick="sortHold('shares')" title="Click to sort">Shares<span class="arr">↕</span></th><th class="hsort" data-hk="total_cost" onclick="sortHold('total_cost')" title="Click to sort">Total cost<span class="arr">↕</span></th><th>Cost/share</th><th>Payout frequency</th><th title="Shown in the Core focus column. Leave blank to use the automatic one">Core focus</th><th>Distribution type</th><th>Strategy</th><th>Exposure</th><th title="Not currently adding to it, or cautiously watching it. Highlights the symbol everywhere.">Flag</th><th>Notes</th><th></th></tr></thead><tbody id="hbody"></tbody></table></div></dialog>
+
+<script>
+const $ = id => document.getElementById(id);
+let DATA = null, sortKey = 'market_value', sortDir = -1;
+
+const fmt = {
+  money:(v,d=2)=>v==null?'—':(v<0?'-':'')+'$'+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}),
+  big:v=>v==null?'—':v>=1e9?'$'+(v/1e9).toFixed(1)+'B':v>=1e6?'$'+(v/1e6).toFixed(1)+'M':fmt.money(v,0),
+  pct:(v,d=2)=>v==null||isNaN(v)?'—':v.toFixed(d)+'%',
+  spct:(v,d=1)=>v==null||isNaN(v)?'—':`<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v.toFixed(d)}%</span>`,
+  date:s=>s?new Date(s+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'—',
+};
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Your own flags per symbol (from Edit holdings): highlight the symbol wherever it is shown.
+let FLAGMAP = {};
+const FLAG_TIP = 'Flagged: not adding / watching';
+const flagCls = sym => FLAGMAP[String(sym).toUpperCase()] ? ' fw' : '';
+const symHtml = sym => flagCls(sym)?`<span class="symhl fw" title="${FLAG_TIP}">${esc(sym)}</span>`:esc(sym);
+const flagBadge = h => h.flagged?'<span class="fb">Flagged</span>':'';
+let flagMode = '';  // toolbar filter: '' all, 'yes' flagged only, 'no' not flagged only
+
+// ---- Strategy & overlap helpers ----
+const GLOSS = {
+  'Uses equity-linked notes (ELNs)':'Options exposure is held through bank-issued notes. Income is usually taxed as ordinary income, and there is some counterparty risk.',
+  'Index options (Sec. 1256 tax treatment)':'Options on an index (not single stocks). Gains get 60% long-term / 40% short-term tax treatment, and distributions are often classed as return of capital.',
+  'Options on individual stocks':'Options are written on single stocks rather than the index.',
+  'Partial overwrite (keeps some upside)':'Only part of the portfolio has calls sold against it, so it keeps more upside but pays less income.',
+  'Option spreads':'Buys options as well as selling them, which limits risk or keeps some upside in exchange for less premium.',
+  'Daily / 0DTE options':'Sells options that expire the same day. Income resets daily; upside is capped day by day.',
+  'Weekly options':'Sells options that expire weekly.',
+  'Synthetic exposure':'Gets market exposure through derivatives instead of owning the stocks.',
+  'Uses leverage':'Borrows or uses derivatives to get more than 100% exposure. Losses are magnified.',
+  'Actively managed':'A manager picks the stocks and/or option strikes instead of following a fixed rule.',
+};
+const STRAT_INFO = [
+  ['Sells calls (covered call)','Collects option premium in exchange for giving up most gains above the strike. Income is high, upside is capped, and the downside is not protected.'],
+  ['Put writing','Collects premium for agreeing to buy the index if it falls. Behaves a lot like owning stocks with the upside capped.'],
+  ['Sells calls and puts','Collects premium from both sides, so it earns the most when the market goes sideways.'],
+  ['Options income','Generates income from options, usually through ELNs or a mix of strategies. Read the fund page for the details.'],
+  ['Dividend stock selection','Holds stocks chosen for dividends. No options, so the upside is not capped.'],
+  ['Bond interest income','Interest from bonds. Sensitive to interest rates.'],
+  ['REIT income','Rent-based income from real estate. Mostly non-qualified dividends.'],
+  ['Leveraged weekly payout','Gets about 1.2x leveraged exposure to a stock or basket (through swaps) and pays out weekly. Payouts are large but often mostly return of capital, and the price can fall fast.'],
+];
+const TAG_SHORT = {'Index options (Sec. 1256 tax treatment)':'Sec. 1256 index options','Uses equity-linked notes (ELNs)':'ELNs','Partial overwrite (keeps some upside)':'Partial overwrite'};
+const yours = src => src==='you'?' <span class="est" title="Set by you in Edit holdings">yours</span>':'';
+const stratClass = s => /call|put|option|leveraged/i.test(s)?'opt':/bond/i.test(s)?'bond':/reit/i.test(s)?'reit':'eq';
+let OVL = {max:{}, list:{}, groupCount:{}, pairs:{}};
+function computeOverlap(){
+  const H = DATA.holdings;
+  // Cash, money-market funds, T-bills and structured notes are collateral, not stock exposure,
+  // so they are left out (otherwise two funds holding the same note look 77% alike).
+  const SKIP = /^(|CASH|USD|-|N\/A|OTHER|CBOX|[A-Z]{3,4}XX)$|^\d/;
+  const SKIP_NAME = /treasur|t-?bills?\b|\bbills?\b|money market|\bcash\b|\bnotes?\b|government|collateral|\bswaps?\b|autocall|futures?\b/i;
+  const wmap = h => Object.fromEntries((h.top_holdings||[]).filter(t=>!SKIP_NAME.test(t.name||'')).map(t=>[String(t.symbol||'').trim().toUpperCase(), t.weight]).filter(([k,w])=>!SKIP.test(k)&&w>0));
+  const maps = Object.fromEntries(H.map(h=>[h.symbol, wmap(h)]));
+  // a single stock counts as 100% of itself, so it overlaps with funds that hold it
+  H.forEach(h=>{ if(h.type==='EQUITY') maps[h.symbol] = {[h.symbol]:1}; });
+  const pairs = {}, list = {};
+  H.forEach(a=>{ list[a.symbol] = []; });
+  for(let i=0;i<H.length;i++) for(let j=i+1;j<H.length;j++){
+    const a=H[i].symbol, b=H[j].symbol, ma=maps[a], mb=maps[b];
+    let o=0; for(const k in ma) if(k in mb) o+=Math.min(ma[k], mb[k]);
+    o*=100; pairs[a+'|'+b]=pairs[b+'|'+a]=o;
+    if(o>=1){ list[a].push({with:b,pct:o}); list[b].push({with:a,pct:o}); }
+  }
+  const max = {};
+  for(const s in list){ list[s].sort((x,y)=>y.pct-x.pct); if(list[s].length) max[s]=list[s][0]; }
+  const groupCount = {};
+  H.forEach(h=>groupCount[h.exposure]=(groupCount[h.exposure]||0)+1);
+  OVL = {max, list, groupCount, pairs, maps};
+}
+
+function renderOverlapPanels(){
+  const el = $('tab3extra'); el.hidden = tab!==3; if(tab!==3) return;
+  const H = DATA.holdings, hasW = H.some(h=>h.weight);
+  const wt = h => hasW ? (h.weight||0) : 100/H.length;
+  // 1. exposure groups
+  const groups = {};
+  H.forEach(h=>{ const g=groups[h.exposure]||(groups[h.exposure]={w:0,syms:[],strats:new Set()}); g.w+=wt(h); g.syms.push(h.symbol); g.strats.add(h.strategy); });
+  const gs = Object.entries(groups).sort((a,b)=>b[1].w-a[1].w);
+  const gmax = Math.max(...gs.map(g=>g[1].w),1);
+  const groupHtml = gs.map(([k,g])=>`<div class="grp${g.syms.length>1?' multi':''}"><div class="grp-h"><strong>${esc(k)}</strong><span>${g.w.toFixed(1)}%</span></div>
+    <div class="gbar"><div style="width:${g.w/gmax*100}%"></div></div>
+    <div class="muted">${g.syms.map(symHtml).join(', ')} · ${[...g.strats].map(esc).join(', ')}</div></div>`).join('');
+  // 2. overlap matrix (funds with holdings data, plus single stocks)
+  const M = H.filter(h=>Object.keys(OVL.maps[h.symbol]||{}).length);
+  let matrix = '<p class="muted">No holdings data available to compare.</p>';
+  if(M.length>1){
+    matrix = `<div class="mwrap"><table class="matrix"><thead><tr><th></th>${M.map(h=>`<th>${symHtml(h.symbol)}</th>`).join('')}</tr></thead><tbody>${M.map(a=>`<tr><th>${symHtml(a.symbol)}</th>${M.map(b=>{
+      if(a===b) return '<td class="self">—</td>';
+      const o=OVL.pairs[a.symbol+'|'+b.symbol]||0;
+      return `<td style="background:color-mix(in srgb, var(--heat) ${Math.min(100,o*1.6).toFixed(0)}%, transparent)" title="${esc(a.symbol)} and ${esc(b.symbol)} share at least ${o.toFixed(1)}% in common top holdings">${o>=0.5?o.toFixed(0)+'%':''}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div>`;
+  }
+  // 3. look-through: biggest underlying stocks across the portfolio
+  const lt = {};
+  H.forEach(h=>{ const w=wt(h); for(const [k,v] of Object.entries(OVL.maps[h.symbol]||{})){
+    const name = h.type==='EQUITY'?h.name:((h.top_holdings.find(t=>String(t.symbol).toUpperCase()===k)||{}).name||k);
+    const e=lt[k]||(lt[k]={w:0,name,via:[]}); e.w+=w*v; e.via.push(h.symbol); } });
+  const lts = Object.entries(lt).sort((a,b)=>b[1].w-a[1].w).slice(0,15);
+  const lmax = Math.max(...lts.map(x=>x[1].w),1e-9);
+  const ltHtml = lts.length? lts.map(([k,e])=>`<div class="hbar"><span class="nm2" title="${esc(e.name)}"><strong>${esc(k)}</strong> <span class="muted">${esc(e.name)}</span></span><div class="b${e.via.length>1?' hot':''}" style="width:${e.w/lmax*100}%"></div><span class="num">${e.w.toFixed(1)}%</span></div><div class="via muted">via ${e.via.map(symHtml).join(', ')}</div>`).join('') : '<p class="muted">No holdings data available.</p>';
+  el.innerHTML = `
+    <div class="row1">
+      <div class="card"><h2>Exposure groups</h2><p class="muted small">Holdings that track the same market move together. ${hasW?'Share of your portfolio':'Equal-weighted (add share counts to weight by position)'}.</p><div class="grps">${groupHtml}</div></div>
+      <div class="card"><h2>Top-10 holdings overlap</h2><p class="muted small">How much two holdings own in common, counting only each fund's top 10 that Yahoo reports. The real overlap is at least this much and is often higher.</p>${matrix}</div>
+    </div>
+    <div class="row3">
+      <div class="card"><h2>Look-through: your biggest underlying stocks</h2><p class="muted small">Your combined exposure to each stock across every fund you hold (fund weight × stock weight). Highlighted bars come from more than one fund.</p>${ltHtml}</div>
+      <div class="card"><h2>What the strategies mean</h2><dl class="gloss">${STRAT_INFO.map(([k,v])=>`<dt><span class="pill strat ${stratClass(k)}">${esc(k)}</span></dt><dd>${esc(v)}</dd>`).join('')}${Object.entries(GLOSS).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+      <p class="muted small">Strategy and exposure are estimated from each fund's name and description. Ones marked "yours" were set by you in Edit holdings, where you can correct any of them.</p></div>
+    </div>`;
+}
+
+// Each column: k=id, t=header, tab=which tab (0 = always shown), n=numeric, v=sort value, r=cell html
+const TABS = ['Price & fund', 'Dividends & income', 'Strategy & overlap', 'Holdings & performance', 'Monthly projections', 'Symbol comparison', 'Research'];
+const CMP_TAB = 6, RES_TAB = 7;
+// Rolling 12 months for the projections tab, starting with the current month
+const PM = (()=>{ const n=new Date(); return Array.from({length:12},(_,i)=>{ const d=new Date(n.getFullYear(), n.getMonth()+i, 1);
+  return {m:d.getMonth(), label:d.toLocaleDateString(undefined,{month:'short'})+" '"+String(d.getFullYear()).slice(2)}; }); })();
+const pmv = (h,i) => (h.proj_monthly||[])[PM[i].m] || 0;
+const pmTotal = h => (h.proj_monthly||[]).reduce((a,v)=>a+v,0);
+const gainCell = (v,p) => v==null?'—':`<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${fmt.money(v,0)}</span>${p==null?'':`<div class="muted">${p>=0?'+':''}${p.toFixed(1)}%</div>`}`;
+const COLS = [
+  {k:'symbol', tab:0, t:'Symbol', v:h=>h.symbol, r:h=>`<div class="sym">${symHtml(h.symbol)} ${h.flags.length?`<span class="flag" title="${esc(h.flags.join('\n'))}">⚠</span>`:''}</div><div class="nm" title="${esc(h.name)}">${esc(h.name)}</div>${h.flagged?`<div>${flagBadge(h)}</div>`:''}`},
+  // Tab 1: price & fund
+  {k:'price', tab:1, t:'Price', n:1, v:h=>h.price, r:h=>fmt.money(h.price)},
+  {k:'change_pct', tab:1, t:'Day change', n:1, v:h=>h.change_pct, r:h=>fmt.spct(h.change_pct,2)},
+  {k:'range_pos', tab:1, t:'52-week range', v:h=>h.range_pos, tip:'Sorts by where the price sits in its 52-week range', r:h=>h.low52==null?'—':`<div class="rng"><div class="track"><div class="dot" style="left:${Math.max(0,Math.min(100,h.range_pos??0))}%"></div></div><div class="lbl"><span>${h.low52.toFixed(2)}</span><span>${h.high52.toFixed(2)}</span></div></div>`},
+  {k:'price_return_12m', tab:1, t:'12-mo price return', n:1, v:h=>h.price_return_12m, r:h=>fmt.spct(h.price_return_12m)},
+  {k:'total_return_12m', tab:1, t:'12-mo total return', n:1, v:h=>h.total_return_12m, tip:'Price change plus dividends reinvested', r:h=>fmt.spct(h.total_return_12m)},
+  {k:'focus', tab:1, t:'Core focus', v:h=>h.focus||null, r:h=>`<div class="wrap">${esc(h.focus||'—')}${yours(h.focus_source)}</div>`},
+  {k:'expense_ratio', tab:1, t:'Expense ratio', n:1, v:h=>h.expense_ratio, r:h=>fmt.pct(h.expense_ratio)},
+  {k:'freq_n', tab:1, t:'Payout', v:h=>h.freq_n, r:h=>`<span class="pill">${esc(h.frequency)}</span>${h.frequency_source==='you'?' <span class="est" title="Set by you in Edit holdings">set</span>':''}`},
+  // Tab 2: dividends & income
+  {k:'ttm_yield', tab:2, t:'Yield TTM', n:1, v:h=>h.ttm_yield, tip:'Last 12 months of dividends ÷ price', r:h=>`<strong>${fmt.pct(h.ttm_yield)}</strong>`},
+  {k:'fwd_yield', tab:2, t:'Yield fwd', n:1, v:h=>h.fwd_yield, tip:'Latest payment × payments per year ÷ price', r:h=>fmt.pct(h.fwd_yield)},
+  {k:'dist_type', tab:2, t:'Distribution type', v:h=>h.dist_type, r:h=>`<div class="wrap">${esc(h.dist_type)} ${h.dist_type_source==='estimated'?'<span class="est">est.</span>':''}</div>`},
+  {k:'last_div', tab:2, t:'Last payment', n:1, v:h=>h.last_div?h.last_div.amount:null, r:h=>h.last_div?`${fmt.money(h.last_div.amount,4)}<div class="muted">${fmt.date(h.last_div.date)}</div>`:'—'},
+  {k:'next_ex_est', tab:2, t:'Next ex-div', v:h=>h.next_ex_est, r:h=>`${fmt.date(h.next_ex_est)}${h.next_ex_est&&h.ex_date!==h.next_ex_est?' <span class="est">est.</span>':''}`},
+  {k:'market_value', tab:2, t:'Position', n:1, v:h=>h.market_value, r:h=>h.shares?`${fmt.money(h.market_value,0)}<div class="muted">${h.shares} sh</div>`:'<span class="muted">watch</span>'},
+  {k:'weight', tab:2, t:'% of portfolio', n:1, v:h=>h.weight, tip:'Market value as a share of your total portfolio', r:h=>h.weight==null?'—':`${fmt.pct(h.weight,1)}<div class="wbar"><div style="width:${Math.min(100,h.weight)}%"></div></div>`},
+  {k:'annual_income', tab:2, t:'Income / yr', n:1, v:h=>h.annual_income, r:h=>h.annual_income?`${fmt.money(h.annual_income,0)}<div class="muted">${fmt.money(h.annual_income/12,0)}/mo</div>`:'—'},
+  {k:'yield_on_cost', tab:2, t:'Yield on cost', n:1, v:h=>h.yield_on_cost, r:h=>fmt.pct(h.yield_on_cost)},
+  // Tab 3: strategy & overlap
+  {k:'exposure', tab:3, t:'Underlying exposure', v:h=>h.exposure, r:h=>`<div class="wrap"><strong>${esc(h.exposure)}</strong>${yours(h.exposure_source)}</div>`},
+  {k:'strategy', tab:3, t:'Strategy', v:h=>h.strategy, r:h=>`<div class="wrap"><span class="pill strat ${stratClass(h.strategy)}">${esc(h.strategy)}</span>${yours(h.strategy_source)}${h.strategy_tags.length?`<div class="tags" style="margin-top:4px">${h.strategy_tags.map(t=>`<span title="${esc(t+': '+(GLOSS[t]||''))}">${esc(TAG_SHORT[t]||t)}</span>`).join('')}</div>`:''}</div>`},
+  {k:'max_overlap', tab:3, t:'Overlaps with', d:1, v:h=>OVL.max[h.symbol]?.pct??null, tip:'Holdings with the most top-10 holdings in common (a minimum: Yahoo lists only the top 10). Cash, T-bills and notes are left out.', r:h=>{const l=(OVL.list[h.symbol]||[]).slice(0,3); if(!l.length) return '<span class="muted">—</span>'; const m=l[0];
+    return `<div class="wrap"><strong class="${m.pct>=40?'neg':m.pct>=20?'warnc':''}">${symHtml(m.with)} ${m.pct.toFixed(0)}%</strong>${l.length>1?`<div class="muted">${l.slice(1).map(o=>`${symHtml(o.with)} ${o.pct.toFixed(0)}%`).join(', ')}</div>`:''}</div>`;}},
+  {k:'weight3', tab:3, t:'% of portfolio', n:1, v:h=>h.weight, r:h=>h.weight==null?'—':fmt.pct(h.weight,1)},
+  // Tab 4: holdings & performance (positions with shares only)
+  {k:'shares', tab:4, t:'Quantity', n:1, v:h=>h.shares, r:h=>h.shares==null?'—':(+h.shares).toLocaleString(undefined,{maximumFractionDigits:4})},
+  {k:'cost_basis', tab:4, t:'Avg cost / share', n:1, v:h=>h.cost_basis, r:h=>fmt.money(h.cost_basis)},
+  {k:'price4', tab:4, t:'Current price', n:1, v:h=>h.price, r:h=>`${fmt.money(h.price)}<div class="muted">${h.cost_basis&&h.price?((h.price/h.cost_basis-1)>=0?'+':'')+((h.price/h.cost_basis-1)*100).toFixed(1)+'% vs cost':''}</div>`},
+  {k:'total_cost', tab:4, t:'Total cost', n:1, v:h=>h.total_cost, s:h=>h.total_cost, r:h=>fmt.money(h.total_cost,0)},
+  {k:'mv4', tab:4, t:'Market value', n:1, v:h=>h.market_value, s:h=>h.market_value, r:h=>fmt.money(h.market_value,0)},
+  {k:'gain', tab:4, t:'Unrealized gain / loss', n:1, v:h=>h.gain, s:h=>h.gain, tip:'(Current price − avg cost) × quantity. Excludes dividends received.', r:h=>gainCell(h.gain)},
+  {k:'gain_pct', tab:4, t:'Unrealized %', n:1, v:h=>h.gain_pct, r:h=>fmt.spct(h.gain_pct)},
+  {k:'weight4', tab:4, t:'% of portfolio', n:1, v:h=>h.weight, r:h=>h.weight==null?'—':`${fmt.pct(h.weight,1)}<div class="wbar"><div style="width:${Math.min(100,h.weight)}%"></div></div>`},
+  {k:'inc4', tab:4, t:'Income / yr', n:1, v:h=>h.annual_income, s:h=>h.annual_income, r:h=>fmt.money(h.annual_income,0)},
+  {k:'yoc4', tab:4, t:'Yield on cost', n:1, v:h=>h.yield_on_cost, r:h=>fmt.pct(h.yield_on_cost)},
+  // Tab 5: monthly projections (rolling next 12 months)
+  {k:'freq5', tab:5, t:'Payout', v:h=>h.freq_n, r:h=>`<span class="pill">${esc(h.frequency)}</span>${h.frequency_source==='you'?' <span class="est" title="Set by you in Edit holdings">set</span>':''}`},
+  ...PM.map((p,i)=>({k:'pm'+i, tab:5, t:p.label, n:1, v:h=>pmv(h,i), s:h=>pmv(h,i), r:h=>{const v=pmv(h,i); return v?fmt.money(v,0):'<span class="muted">—</span>';}})),
+  {k:'pmt', tab:5, t:'Next 12 months', n:1, v:h=>pmTotal(h), s:h=>pmTotal(h), r:h=>`<strong>${fmt.money(pmTotal(h),0)}</strong>`},
+];
+let tab = 1;
+try{ tab = +localStorage.getItem('divdash.tab') || 1; }catch(e){}
+const visCols = () => COLS.filter(c=>c.tab===0||c.tab===tab);
+
+function renderTabs(){
+  $('tabs').innerHTML = TABS.map((t,i)=>`<button role="tab" class="tab${tab===i+1?' on':''}" aria-selected="${tab===i+1}" data-t="${i+1}">${t}</button>`).join('');
+  document.querySelectorAll('#tabs .tab').forEach(b=>b.onclick=()=>{
+    tab=+b.dataset.t; try{localStorage.setItem('divdash.tab',tab);}catch(e){}
+    render();
+  });
+}
+
+function renderHead(){
+  $('thead').innerHTML = visCols().map(c=>`<th class="${c.n?'num':''}${c.k==='symbol'?' stick':''}${sortKey===c.k?' sorted':''}" data-k="${c.k}" ${c.tip?`title="${esc(c.tip)}"`:''}>${c.t}<span class="arr">${sortKey===c.k?(sortDir>0?'▲':'▼'):'↕'}</span></th>`).join('');
+  document.querySelectorAll('#thead th').forEach(th=>th.onclick=()=>{
+    const c = COLS.find(x=>x.k===th.dataset.k);
+    if(sortKey===c.k) sortDir*=-1; else {sortKey=c.k; sortDir=(c.n||c.d)?-1:1;}
+    render();
+  });
+}
+
+// Rows shown in the table: the tab, the text filter and the All / Flagged / Not flagged switch.
+function filteredRows(){
+  const q = $('q').value.trim().toLowerCase();
+  return DATA.holdings.filter(h=>(tab<4||tab>=CMP_TAB||h.shares)&&(!q||[h.symbol,h.name,h.focus,h.dist_type,h.notes,h.exposure,h.strategy,h.flagged?'flagged':''].join(' ').toLowerCase().includes(q)) && (!flagMode||(flagMode==='yes')===!!h.flagged));
+}
+function sortedRows(rows){
+  const sc = COLS.find(c=>c.k===sortKey) || COLS[0];
+  return rows.slice().sort((a,b)=>{
+    const x=sc.v(a), y=sc.v(b);
+    if(x==null&&y==null) return a.symbol.localeCompare(b.symbol);
+    if(x==null) return 1; if(y==null) return -1;
+    return (typeof x==='string'? x.localeCompare(y) : x-y)*sortDir;
+  });
+}
+function render(){
+  if(!DATA) return;
+  renderTabs();
+  // The Symbol comparison tab has its own panel instead of the holdings table.
+  const cmp = tab===CMP_TAB, res = tab===RES_TAB;
+  ['mainTable','q','count'].forEach(id=>$(id).hidden=cmp||res); $('cmpPanel').hidden=!cmp; $('resPanel').hidden=!res;
+  if(cmp||res){ $('flagF').hidden=true; $('tabTop').hidden=true; $('tab3extra').hidden=true; cmp?renderCompare():renderResearch(); return; }
+  renderHead();
+  const rows = sortedRows(filteredRows());
+  const cols = visCols();
+  $('tbody').innerHTML = rows.map(h=>`<tr data-s="${esc(h.symbol)}">${cols.map(c=>`<td class="${c.n?'num':''}${c.k==='symbol'?' stick'+flagCls(h.symbol):''}">${c.r(h)}</td>`).join('')}</tr>`).join('');
+  document.querySelectorAll('#tbody tr').forEach(tr=>tr.onclick=()=>showDetail(tr.dataset.s));
+  $('count').textContent = `${rows.length} of ${DATA.holdings.length} symbols`;
+  const nf = DATA.holdings.filter(h=>h.flagged).length;
+  if(!nf) flagMode='';
+  $('flagF').hidden = !nf;
+  const nn = DATA.holdings.length-nf;
+  $('flagF').innerHTML = nf?[['','All'],['yes',`<span class="dot"></span>Flagged (${nf})`],['no',`Not flagged (${nn})`]]
+    .map(([v,l])=>`<button data-f="${v}" class="${flagMode===v?'on':''}">${l}</button>`).join(''):'';
+  $('flagF').querySelectorAll('button').forEach(bt=>bt.onclick=()=>{ flagMode=bt.dataset.f; render(); });
+  const sums = cols.some(c=>c.s);
+  $('tfoot').innerHTML = sums && rows.length ? `<tr>${cols.map(c=>{
+    if(c.k==='symbol') return `<td class="stick">Total</td>`;
+    if(!c.s) return '<td></td>';
+    const t = rows.reduce((a,h)=>a+(c.s(h)||0),0);
+    return `<td class="num">${c.k==='gain'?gainCell(t):fmt.money(t,0)}</td>`;}).join('')}</tr>` : '';
+  renderOverlapPanels(); renderTabTop(rows);
+}
+
+// ---- Panels above the table for the holdings and projections tabs ----
+function renderTabTop(rows){
+  const el = $('tabTop'); el.hidden = tab<4; if(tab<4){ el.innerHTML=''; return; }
+  const tiles = t => `<div class="tiles">${t.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>`;
+  if(tab===4){
+    const cost = rows.reduce((a,h)=>a+(h.total_cost||0),0), mv = rows.reduce((a,h)=>a+(h.market_value||0),0);
+    const g = rows.reduce((a,h)=>a+(h.gain||0),0), gcost = rows.filter(h=>h.gain!=null).reduce((a,h)=>a+(h.total_cost||0),0);
+    const win = rows.filter(h=>h.gain>0).length, lose = rows.filter(h=>h.gain<0).length;
+    el.innerHTML = tiles([
+      ['Positions', rows.length],
+      ['Total cost', fmt.money(cost,0)],
+      ['Market value', fmt.money(mv,0)],
+      ['Unrealized gain / loss', gainCell(g)],
+      ['Unrealized %', gcost?fmt.spct(g/gcost*100):'—'],
+      ['Winners / losers', `<span class="pos">${win}</span> / <span class="neg">${lose}</span>`],
+    ]) + `<p class="muted small">Unrealized gain is (current price − your avg cost) × quantity. It does not include dividends you have already received. Positions without a cost per share are left out of the gain totals; add it in Edit holdings.</p>`;
+    return;
+  }
+  const tot = PM.map((_,i)=>rows.reduce((a,h)=>a+pmv(h,i),0)), sum = tot.reduce((a,v)=>a+v,0);
+  if(!sum){ el.innerHTML = '<div class="card"><p class="muted">Add share counts in Edit holdings to see projected income.</p></div>'; return; }
+  const lo = tot.indexOf(Math.min(...tot)), hi = tot.indexOf(Math.max(...tot));
+  el.innerHTML = tiles([
+    ['Next 12 months', fmt.money(sum,0)],
+    ['Average per month', fmt.money(sum/12,0)],
+    ['Lowest month', `${fmt.money(tot[lo],0)} <span class="muted" style="font-size:13px">${PM[lo].label}</span>`],
+    ['Highest month', `${fmt.money(tot[hi],0)} <span class="muted" style="font-size:13px">${PM[hi].label}</span>`],
+  ]) + `<div class="projrow"><div class="card"><h2>Projected income, next 12 months</h2>${barChart(PM.map((p,i)=>({l:p.label,v:tot[i]})),{money:true,h:170})}
+    <p class="muted small" style="margin-top:6px">Each payment = shares × latest dividend per share. Monthly and weekly payers are spread evenly over every month; quarterly, semi-annual and annual payers land in the months they paid most recently. Months are by ex-dividend date; the cash usually arrives a few days later, so a month-end ex-date can pay in the next month.</p></div>
+    <div class="card" id="distCard">${distPanel(rows, sum)}</div></div>`;
+  wireDist(rows, sum);
+}
+
+// ---- Annual projection by holding: stacked bar + two-column legend (top 19 + Others) ----
+let distMode = '$';
+try{ distMode = localStorage.getItem('divdash.distMode')==='%' ? '%' : '$'; }catch(e){}
+const DIST_TOP = 19;
+// 10 palette colors, then the same 10 lighter for ranks 11-19, so neighbours never share a color
+const distColor = i => i<10 ? `var(--s${i+1})` : `color-mix(in srgb, var(--s${i-9}) 55%, var(--panel))`;
+function distItems(rows){
+  const all = rows.map(h=>({sym:h.symbol, v:pmTotal(h)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  const top = all.length>DIST_TOP+1 ? all.slice(0,DIST_TOP) : all, rest = all.slice(top.length);
+  const items = top.map((x,i)=>({...x, c:distColor(i)}));
+  if(rest.length) items.push({sym:'Others', n:rest.length, v:rest.reduce((a,x)=>a+x.v,0), c:'var(--muted)', oth:1});
+  return {items, count:all.length, all};
+}
+function distPanel(rows, sum){
+  const {items, count, all} = distItems(rows);
+  const val = x => distMode==='%' ? (x.v/sum*100).toFixed(1)+'%' : fmt.money(x.v,0);
+  const top5 = all.slice(0,5).reduce((a,x)=>a+x.v,0)/sum*100;
+  const half = Math.ceil(items.length/2);
+  return `<div class="dist-hd"><div><h2>Annual projection by holding</h2>
+      <div class="muted small">${fmt.money(sum,0)} over the next 12 months from ${count} holding${count===1?'':'s'}${count>5?` · top 5 = ${top5.toFixed(0)}%`:''}</div></div>
+      <div class="seg" id="distMode" role="group" aria-label="Show as"><button data-m="%" class="${distMode==='%'?'on':''}" title="Share of projected income">%</button><button data-m="$" class="${distMode==='$'?'on':''}" title="Projected dollars per year">$</button></div></div>
+    <div class="dist-bar" id="distBar">${items.map((x,i)=>`<span data-i="${i}" style="width:${x.v/sum*100}%;background:${x.c}" title="${esc(x.sym)}${x.oth?` (${x.n} holdings)`:''}: ${fmt.money(x.v,0)} · ${(x.v/sum*100).toFixed(1)}%"></span>`).join('')}</div>
+    <div class="dist-leg" style="grid-template-rows:repeat(${half},auto)">${items.map((x,i)=>`<div data-i="${i}"${x.oth?' class="oth"':` data-s="${esc(x.sym)}"`} title="${x.oth?`${x.n} smaller holdings`:'Click for details'}"><i style="background:${x.c}"></i><b>${x.oth?`Others <span class="muted" style="font-weight:400">(${x.n})</span>`:symHtml(x.sym)}</b><em>${val(x)}</em></div>`).join('')}</div>`;
+}
+function wireDist(rows, sum){
+  const card = $('distCard'); if(!card) return;
+  card.querySelectorAll('#distMode button').forEach(b=>b.onclick=()=>{ distMode=b.dataset.m; try{localStorage.setItem('divdash.distMode',distMode);}catch(e){} card.innerHTML=distPanel(rows,sum); wireDist(rows,sum); });
+  const bar = $('distBar');
+  const hl = i => { bar.classList.toggle('hl', i!=null); bar.querySelectorAll('span').forEach(s=>s.classList.toggle('on', s.dataset.i===i));
+    card.querySelectorAll('.dist-leg div').forEach(d=>d.classList.toggle('on', d.dataset.i===i)); };
+  card.querySelectorAll('.dist-leg div, #distBar span').forEach(el=>{ el.onmouseenter=()=>hl(el.dataset.i); el.onmouseleave=()=>hl(null); });
+  card.querySelectorAll('.dist-leg div[data-s]').forEach(d=>d.onclick=()=>showDetail(d.dataset.s));
+}
+
+// ---- Ex-dividend calendar ----
+let EVENTS = [], calView = 'list', calMonth = null;
+try{ calView = localStorage.getItem('divdash.calView') || 'list'; }catch(e){}
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parseD = s => new Date(s+'T12:00:00');
+// ex-date + gap, moved off weekends to the next Monday (payments land on business days)
+function payEst(ex, lag){ const d = parseD(ex); d.setDate(d.getDate()+lag); while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()+1); return ymd(d); }
+function buildEvents(){
+  const today = ymd(new Date()), horizon = new Date(); horizon.setMonth(horizon.getMonth()+12);
+  EVENTS = [];
+  DATA.holdings.forEach(h=>{
+    if(!h.next_ex_est) return;
+    const amt = h.last_div?h.last_div.amount:null, step = h.freq_n?Math.round(365/h.freq_n):null;
+    let d = parseD(h.next_ex_est), first = true;
+    while(d <= horizon){
+      const ds = ymd(d);
+      if(ds >= today) EVENTS.push({date:ds, sym:h.symbol, kind:'ex', est:!(first && h.ex_date===h.next_ex_est), amt, cash: amt&&h.shares?amt*h.shares:null});
+      if(!step) break;
+      d = new Date(d.getTime()+step*86400000); first = false;
+    }
+    // Pay dates: Yahoo announces at most one (often none for ETFs), so every other cycle's pay date is
+    // estimated as ex-date + this holding's usual ex-to-pay gap. The latest past ex-date is included
+    // too, since its cash may still be on the way.
+    const lag = h.pay_lag!=null ? h.pay_lag : 4, cycles = [];
+    if(h.last_div && h.last_div.date < h.next_ex_est) cycles.push({ex:h.last_div.date, pay:payEst(h.last_div.date, lag), est:true});
+    EVENTS.filter(e=>e.sym===h.symbol && e.kind==='ex').forEach(e=>cycles.push({ex:e.date, pay:payEst(e.date, lag), est:true}));
+    if(h.pay_date){
+      // attach Yahoo's announced pay date to the cycle it belongs to (the latest ex-date on or before it)
+      const c = cycles.filter(c=>c.ex<=h.pay_date && (parseD(h.pay_date)-parseD(c.ex))/86400000<=75).pop();
+      if(c){ c.pay = h.pay_date; c.est = false; }
+      else if(h.pay_date >= today) cycles.unshift({ex:null, pay:h.pay_date, est:false});
+    }
+    const hz = ymd(horizon);
+    cycles.forEach(c=>{ if(c.pay >= today && c.pay <= hz) EVENTS.push({date:c.pay, sym:h.symbol, kind:'pay', est:c.est, amt, cash: amt&&h.shares?amt*h.shares:null}); });
+  });
+  EVENTS.sort((a,b)=>a.date.localeCompare(b.date)||a.sym.localeCompare(b.sym));
+}
+function renderCal(){
+  document.querySelectorAll('#calView button').forEach(b=>{ b.classList.toggle('on', b.dataset.v===calView);
+    b.onclick=()=>{ calView=b.dataset.v; try{localStorage.setItem('divdash.calView',calView);}catch(e){} renderCal(); }; });
+  const body = $('calBody');
+  if(calView==='list'){
+    // every holding's next ex-date, plus anything else in the next 45 days
+    const cutoff = ymd(new Date(Date.now()+45*86400000)), seen = new Set();
+    const evs = EVENTS.filter(e=>{ if(e.kind==='pay') return e.date<=cutoff; const firstForSym=!seen.has(e.sym); seen.add(e.sym); return firstForSym || e.date<=cutoff; });
+    const byDay = {}; evs.forEach(e=>(byDay[e.date]=byDay[e.date]||[]).push(e));
+    body.innerHTML = Object.keys(byDay).length ? `<div class="elist">${Object.entries(byDay).map(([d,es])=>{
+      const dt=parseD(d), days=Math.round((dt-parseD(ymd(new Date())))/86400000);
+      return `<div class="eday" data-day="${d}" title="Click for this day's details"><div class="d">${dt.toLocaleDateString(undefined,{month:'short',day:'numeric'})}<small>${days===0?'today':days===1?'tomorrow':'in '+days+' days'}</small></div><div>${es.map(e=>`<div class="ev"><span><span class="s"><strong>${symHtml(e.sym)}</strong></span> <span class="muted">${e.kind==='pay'?'pays':'ex-div'}${e.amt?' ~'+fmt.money(e.amt,4)+'/sh':''}</span>${e.est?' <span class="est">est.</span>':''}</span><span>${e.cash?'~'+fmt.money(e.cash):''}</span></div>`).join('')}</div></div>`;}).join('')}</div>`
+      : '<p class="muted">No upcoming dates found.</p>';
+  } else {
+    if(!calMonth){ const n=new Date(); calMonth=new Date(n.getFullYear(), n.getMonth(), 1); }
+    const y=calMonth.getFullYear(), m=calMonth.getMonth(), start=new Date(y,m,1-new Date(y,m,1).getDay());
+    const byDay = {}; EVENTS.forEach(e=>(byDay[e.date]=byDay[e.date]||[]).push(e));
+    const mk = ymd(calMonth).slice(0,7);
+    const monthCash = EVENTS.filter(e=>e.kind==='ex'&&e.date.startsWith(mk)).reduce((a,e)=>a+(e.cash||0),0);
+    let cells='';
+    for(let i=0;i<42;i++){
+      const d=new Date(start.getFullYear(), start.getMonth(), start.getDate()+i), ds=ymd(d), es=byDay[ds]||[];
+      if(i===35 && d.getMonth()!==m) break;
+      cells += `<div class="mcell${d.getMonth()!==m?' out':''}${ds===ymd(new Date())?' today':''}${es.length?' has':''}"${es.length?` data-day="${ds}" title="Click for this day's details"`:''}><div class="n">${d.getDate()}</div>${es.slice(0,3).map(e=>`<span class="chip${e.kind==='pay'?' pay'+(e.est?' est':''):e.est?' est':''}${flagCls(e.sym)}" title="${esc(e.sym)} ${e.kind==='pay'?'pay date':'ex-dividend'}${e.est?' (estimated)':''}${e.amt?' · ~'+fmt.money(e.amt,4)+'/sh':''}${e.cash?' · ~'+fmt.money(e.cash):''}${flagCls(e.sym)?' · '+FLAG_TIP:''}">${esc(e.sym)}</span>`).join('')}${es.length>3?`<span class="more">+${es.length-3} more</span>`:''}</div>`;
+    }
+    body.innerHTML = `<div class="mnav"><button id="mPrev" aria-label="Previous month">‹</button><strong>${calMonth.toLocaleDateString(undefined,{month:'long',year:'numeric'})}</strong>${monthCash?`<span class="muted">~${fmt.money(monthCash,0)} goes ex-div</span>`:''}<button id="mNext" aria-label="Next month">›</button></div>
+      <div class="mgrid">${['S','M','T','W','T','F','S'].map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div>
+      <div class="legend"><span><span class="chip">SYM</span>confirmed ex-div</span><span><span class="chip est">SYM</span>estimated from payment cadence</span><span><span class="chip pay">SYM</span>announced pay date</span><span><span class="chip pay est">SYM</span>estimated pay date (ex-date + usual gap)</span></div>`;
+    $('mPrev').onclick=()=>{ calMonth=new Date(y,m-1,1); renderCal(); };
+    $('mNext').onclick=()=>{ calMonth=new Date(y,m+1,1); renderCal(); };
+  }
+  // List and calendar views: a click anywhere in a day opens that day's summary.
+  body.querySelectorAll('[data-day]').forEach(el=>el.onclick=()=>showDay(el.dataset.day));
+}
+// Popup listing everything on one calendar day: ex-dividend dates and pay dates, with estimated cash.
+function showDay(ds){
+  const es = EVENTS.filter(e=>e.date===ds); if(!es.length) return;
+  const dt = parseD(ds), days = Math.round((dt-parseD(ymd(new Date())))/86400000);
+  $('ddTitle').innerHTML = `${dt.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})} <span class="muted" style="font-weight:400">· ${days===0?'today':days===1?'tomorrow':'in '+days+' days'}</span>`;
+  const sec = (kind, label) => {
+    const rows = es.filter(e=>e.kind===kind); if(!rows.length) return '';
+    const tot = rows.reduce((a,e)=>a+(e.cash||0),0);
+    return `<div class="dd-sec"><h3><span>${label} (${rows.length})</span><span>${tot?'~'+fmt.money(tot):''}</span></h3>${rows.map(e=>{
+      const h = DATA.holdings.find(x=>x.symbol===e.sym)||{};
+      return `<div class="dd-row" data-s="${esc(e.sym)}"><span><strong>${symHtml(e.sym)}</strong>${e.est?' <span class="est">est.</span>':''}<span class="nm">${esc(h.name||'')}</span></span>
+        <span class="r muted">${e.amt?'~'+fmt.money(e.amt,4)+'/sh':''}${h.shares?`<span class="nm">${(+h.shares).toLocaleString(undefined,{maximumFractionDigits:4})} sh</span>`:''}</span>
+        <span class="r">${e.cash?'~'+fmt.money(e.cash):'—'}</span></div>`;}).join('')}</div>`;
+  };
+  $('ddBody').innerHTML = sec('ex','Goes ex-dividend') + sec('pay','Pays') +
+    `<p class="muted small">Amounts use each holding's latest dividend per share. <span class="est">est.</span> dates are projected from the payment cadence or the usual ex-to-pay gap. Click a symbol for its details.</p>`;
+  $('ddBody').querySelectorAll('.dd-row').forEach(el=>el.onclick=()=>{ ddlg.close(); showDetail(el.dataset.s); });
+  ddlg.showModal();
+}
+
+function renderSummary(){
+  const p = DATA.portfolio;
+  const next = DATA.holdings.filter(h=>h.next_ex_est).sort((a,b)=>a.next_ex_est.localeCompare(b.next_ex_est));
+  const tiles = [
+    ['Market value', fmt.money(p.market_value,0)],
+    ['Annual income (est.)', fmt.money(p.annual_income,0)],
+    ['Avg monthly income', fmt.money(p.monthly_avg,0)],
+    ['Portfolio yield', fmt.pct(p.yield)],
+    ['Yield on cost', fmt.pct(p.yield_on_cost)],
+    ['Unrealized gain', p.gain==null?'—':`<span class="${p.gain>=0?'pos':'neg'}">${fmt.money(p.gain,0)}</span>`],
+    ['Weighted expense ratio', fmt.pct(p.weighted_er,3)],
+  ];
+  $('tiles').innerHTML = tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+  buildEvents(); renderCal();
+  const m = p.monthly_income||[];
+  $('incomeChart').innerHTML = m.some(v=>v>0) ? barChart(m.map((v,i)=>({l:'JFMAMJJASOND'[i]+'​'+['an','eb','ar','pr','ay','un','ul','ug','ep','ct','ov','ec'][i],v})), {money:true,h:170})
+    : '<p class="muted">Add share counts in Edit holdings to see projected income.</p>';
+}
+
+function barChart(items,{money=false,h=160,dec=2}={}){
+  const W=Math.max(320,items.length*48), pad=28, max=Math.max(...items.map(i=>i.v),1e-9);
+  const bw=(W-pad)/items.length;
+  const bars = items.map((it,i)=>{
+    const bh=(it.v/max)*(h-40), x=pad+i*bw+bw*0.15, y=h-20-bh;
+    const lab = money?'$'+(it.v>=1000?(it.v/1000).toFixed(1)+'k':it.v.toFixed(0)):it.v.toFixed(dec);
+    return `<rect x="${x}" y="${y}" width="${bw*0.7}" height="${bh}" rx="2" fill="var(--bar)"><title>${esc(it.l)}: ${lab}</title></rect>
+      ${it.v>0?`<text x="${x+bw*0.35}" y="${y-4}" text-anchor="middle">${lab}</text>`:''}
+      <text x="${x+bw*0.35}" y="${h-5}" text-anchor="middle">${esc(it.l)}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${h}" width="100%" style="max-height:${h+20}px"><line x1="${pad}" x2="${W}" y1="${h-20}" y2="${h-20}" stroke="var(--line)"/>${bars}</svg>`;
+}
+
+function spark(vals,h=90){
+  if(!vals||vals.length<2) return '';
+  const W=420, mn=Math.min(...vals), mx=Math.max(...vals), r=mx-mn||1;
+  const pts=vals.map((v,i)=>`${(i/(vals.length-1))*W},${h-6-((v-mn)/r)*(h-12)}`).join(' ');
+  const up=vals[vals.length-1]>=vals[0];
+  return `<svg viewBox="0 0 ${W} ${h}" width="100%" preserveAspectRatio="none" style="height:${h}px"><polyline points="${pts}" fill="none" stroke="var(${up?'--pos':'--neg'})" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
+    <div class="lbl muted" style="display:flex;justify-content:space-between;font-size:11px"><span>1 year ago ${vals[0].toFixed(2)}</span><span>low ${mn.toFixed(2)} · high ${mx.toFixed(2)}</span><span>now ${vals[vals.length-1].toFixed(2)}</span></div>`;
+}
+
+function hbars(obj,{label=k=>k}={}){
+  const e=Object.entries(obj).sort((a,b)=>b[1]-a[1]); if(!e.length) return '<p class="muted">Not available</p>';
+  const mx=e[0][1];
+  return e.map(([k,v])=>`<div class="hbar"><span class="nm2" title="${esc(label(k))}">${esc(label(k))}</span><div class="b" style="width:${v/mx*100}%"></div><span class="num">${(v*100).toFixed(1)}%</span></div>`).join('');
+}
+
+function showDetail(sym){
+  const h = DATA.holdings.find(x=>x.symbol===sym); if(!h) return;
+  $('dlgTitle').innerHTML = `<strong style="font-size:18px">${symHtml(h.symbol)}</strong> <span class="muted">${esc(h.name)}</span> ${flagBadge(h)}`;
+  $('dlgBody').innerHTML = detailHtml(h);
+  $('dlg').showModal();
+}
+// The detail view's contents, also used by the Research tab (which has its own multi-period chart instead of the 1-year spark).
+function detailHtml(h, {spark:withSpark=true}={}){
+  const yrs = Object.entries(h.div_by_year).map(([y,v])=>({l:"'"+y.slice(2)+(+y===new Date().getFullYear()?'*':''),v}));
+  const th = Object.fromEntries(h.top_holdings.map(t=>[`${t.symbol} · ${t.name}`,t.weight]));
+  const nice = k=>k.replace(/_/g,' ').replace(/Position$/,'').replace(/\b\w/g,c=>c.toUpperCase());
+  return `
+    ${h.flags.length?`<div class="banner">⚠ ${h.flags.map(esc).join('<br>⚠ ')}</div>`:''}
+    ${h.warning?`<div class="banner">${esc(h.warning)}</div>`:''}
+    <div class="grid2">
+      <div>
+        ${withSpark?`<h2 style="font-size:13px" class="muted">PRICE, LAST 12 MONTHS</h2>${spark(h.spark)}`:'<h2 style="font-size:13px" class="muted">PRICE &amp; FUND</h2>'}
+        <div class="kv" style="margin-top:${withSpark?12:0}px">
+          <div>Price</div><div>${fmt.money(h.price)} ${fmt.spct(h.change_pct,2)}</div>
+          <div>52-week range</div><div>${fmt.money(h.low52)} – ${fmt.money(h.high52)} (${fmt.pct(h.range_pos,0)} of range)</div>
+          <div>12-mo price return</div><div>${fmt.spct(h.price_return_12m)}</div>
+          <div>12-mo total return</div><div>${fmt.spct(h.total_return_12m)}</div>
+          <div title="Total return per year, dividends reinvested, over the last 3 and 5 years">3y / 5y annualized return</div><div>${fmt.spct(h.return_3y)} / ${fmt.spct(h.return_5y)}</div>
+          <div>Beta</div><div>${h.beta?.toFixed?.(2)??'—'}</div>
+          <div>${h.type==='EQUITY'?'Market cap':'Net assets'}</div><div>${fmt.big(h.aum)}</div>
+          <div>Expense ratio</div><div>${fmt.pct(h.expense_ratio)}</div>
+          <div>Fund family</div><div>${esc(h.family||'—')}</div>
+        </div>
+      </div>
+      <div>
+        <h2 style="font-size:13px" class="muted">DIVIDENDS</h2>
+        <div class="kv">
+          <div>Frequency</div><div>${esc(h.frequency)}</div>
+          <div>Yield TTM / Fwd</div><div>${fmt.pct(h.ttm_yield)} / ${fmt.pct(h.fwd_yield)}</div>
+          ${h.sec_yield!=null?`<div>Yahoo fund yield</div><div>${fmt.pct(h.sec_yield)}</div>`:''}
+          <div>TTM dividends</div><div>${fmt.money(h.ttm_dividends,4)} /sh</div>
+          <div>Last payment</div><div>${h.last_div?fmt.money(h.last_div.amount,4)+' ex '+fmt.date(h.last_div.date):'—'}</div>
+          <div>Next ex-div</div><div>${fmt.date(h.next_ex_est)} ${h.ex_date===h.next_ex_est?'':'<span class="est">est.</span>'}</div>
+          ${(()=>{ const p = EVENTS.find(e=>e.sym===h.symbol && e.kind==='pay'); if(!p) return h.pay_date?`<div>Pay date</div><div>${fmt.date(h.pay_date)}</div>`:'';
+            const how = h.pay_lag_source==='yahoo'?'from Yahoo\'s latest ex/pay dates':h.pay_lag_source==='learned'?'learned from an earlier Yahoo pay date':'typical for this kind of security';
+            return `<div>Next pay date</div><div>${fmt.date(p.date)} ${p.est?`<span class="est" title="Ex-date + ${h.pay_lag} days (${how})">est.</span>`:''}</div>`; })()}
+          <div>Distribution type</div><div>${esc(h.dist_type)} ${h.dist_type_source==='estimated'?'<span class="est">est.</span>':''}</div>
+          <div>Strategy</div><div>${esc(h.strategy)}${h.strategy_tags.length?' · '+h.strategy_tags.map(esc).join(', '):''} ${h.strategy_source==='estimated'?'<span class="est">est.</span>':''}</div>
+          <div>Underlying exposure</div><div>${esc(h.exposure)} ${h.exposure_source==='estimated'?'<span class="est">est.</span>':''}</div>
+          <div>Growth 1y / 5y CAGR</div><div>${fmt.spct(h.div_growth_1y)} / ${fmt.spct(h.div_growth_5y)}</div>
+          <div>Years of increases</div><div>${h.growth_streak} in a row · paying ${h.years_paying} yrs</div>
+          <div>Payout variability</div><div>${h.payout_cv==null?'—':h.payout_cv.toFixed(0)+'%'} <span class="est">(lower = steadier)</span></div>
+        </div>
+        ${h.shares?`<h2 style="font-size:13px;margin-top:12px" class="muted">YOUR POSITION</h2><div class="kv">
+          <div>Shares</div><div>${h.shares}</div><div>Market value</div><div>${fmt.money(h.market_value)}</div>
+          <div>Cost / share</div><div>${fmt.money(h.cost_basis)}</div><div>Gain</div><div>${h.gain==null?'—':fmt.money(h.gain)+' '+fmt.spct(h.gain_pct)}</div>
+          <div>Income / yr</div><div>${fmt.money(h.annual_income)} (${fmt.money((h.annual_income||0)/12)}/mo)</div><div>Yield on cost</div><div>${fmt.pct(h.yield_on_cost)}</div></div>`:''}
+      </div>
+    </div>
+    <h2 style="font-size:13px;margin-top:16px" class="muted">DIVIDENDS PER SHARE BY YEAR <span class="est">(* = year to date)</span></h2>${barChart(yrs,{h:150,dec:2})}
+    <div class="grid2" style="margin-top:12px">
+      <div><h2 style="font-size:13px" class="muted">TOP HOLDINGS</h2>${hbars(th)}</div>
+      <div><h2 style="font-size:13px" class="muted">SECTORS</h2>${hbars(h.sectors,{label:nice})}
+        ${Object.keys(h.asset_classes).length?`<h2 style="font-size:13px;margin-top:10px" class="muted">ASSET CLASSES</h2>${hbars(h.asset_classes,{label:nice})}`:''}</div>
+    </div>
+    <h2 style="font-size:13px;margin-top:12px" class="muted">CORE FOCUS</h2>
+    <p style="margin-top:0"><strong>${esc(h.focus||'—')}</strong>${yours(h.focus_source)}<br>${esc(h.description||'')}</p>
+    ${h.notes?`<p><strong>Your notes:</strong> ${esc(h.notes)}</p>`:''}
+    <h2 style="font-size:13px" class="muted">RECENT PAYMENTS</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">${h.div_recent.slice().reverse().map(d=>`<span class="pill">${fmt.date(d.date)} · ${fmt.money(d.amount,4)}</span>`).join('')}</div>`;
+}
+
+let FLASH='';  // one-off message (e.g. after an import) shown above the next load's banners
+async function load(refresh=false){
+  $('btnRefresh').disabled=true; $('updated').textContent = refresh?'Refreshing from Yahoo Finance…':'Loading…';
+  try{
+    const r = await fetch('/api/data'+(refresh?'?refresh=1':''));
+    DATA = await r.json();
+    const b=FLASH?[FLASH]:[]; FLASH='';
+    if(DATA.demo) b.push('<div class="banner"><strong>Demo mode:</strong> these are synthetic numbers for previewing the layout. Run <code>python server.py</code> without <code>--demo</code> for live data.</div>');
+    if(DATA.errors.length) b.push(`<div class="banner err">Could not load: ${DATA.errors.map(e=>`<strong>${esc(e.symbol)}</strong> (${esc(e.error)})`).join(', ')}</div>`);
+    $('banner').innerHTML=b.join('');
+    const ts = Math.min(...DATA.holdings.map(h=>h.fetched_at||Date.now()/1000));
+    $('updated').textContent = `${DATA.holdings.length} symbols · data as of ${new Date(ts*1000).toLocaleString()}`;
+    FLAGMAP = Object.fromEntries(DATA.holdings.filter(h=>h.flagged).map(h=>[h.symbol,h]));
+    computeOverlap(); renderSummary(); render();
+  }catch(e){ $('updated').textContent='Failed to load: '+e; }
+  $('btnRefresh').disabled=false;
+}
+
+// Holdings editor
+async function openHold(){
+  const rows = await (await fetch('/api/holdings')).json();
+  $('hbody').innerHTML=''; hSort={k:null,dir:1}; hSeq=0; (rows.length?rows:[{}]).forEach(addRow); markHoldSort(); $('hdlg').showModal();
+  try{ const i=await (await fetch('/api/holdings/info')).json(); $('hpath').textContent='Saved to '+i.path; }catch(e){}
+}
+// Sort the editor rows by clicking Symbol / Shares / Total cost headers.
+// Rows are moved in the DOM with their inputs, so edits stay attached to the right holding;
+// each row keeps its original position (data-seq) so saving preserves the file order.
+let hSort={k:null,dir:1}, hSeq=0;
+function sortHold(k){
+  hSort = hSort.k===k ? {k,dir:-hSort.dir} : {k,dir:1};
+  const body=$('hbody'), trs=[...body.querySelectorAll('tr')];
+  const val = tr => { const v=tr.querySelector(`input[data-k="${k}"]`).value.trim();
+    if(k==='symbol') return v.toUpperCase();
+    const n=sumExpr(v); return n==null||Number.isNaN(n) ? null : n; };
+  trs.map(tr=>({tr,v:val(tr)})).sort((a,b)=>{
+    if(a.v===b.v) return a.tr.dataset.seq-b.tr.dataset.seq;
+    if(a.v===null||a.v==='') return 1;   // blanks always at the bottom
+    if(b.v===null||b.v==='') return -1;
+    return (k==='symbol' ? a.v.localeCompare(b.v) : a.v-b.v) * hSort.dir;
+  }).forEach(o=>body.appendChild(o.tr));
+  markHoldSort();
+}
+function markHoldSort(){
+  document.querySelectorAll('#hdlg th.hsort').forEach(th=>{
+    const on=th.dataset.hk===hSort.k;
+    th.classList.toggle('sorted',on);
+    th.querySelector('.arr').textContent = on ? (hSort.dir>0?'▲':'▼') : '↕';
+  });
+}
+// "100+50" style sums let you combine lots from several accounts
+function sumExpr(v){
+  v=String(v??'').replace(/[$,\s]/g,'');
+  if(!v) return null;
+  if(!/^[0-9.+]+$/.test(v)) return NaN;
+  return v.split('+').filter(Boolean).reduce((a,x)=>a+parseFloat(x),0);
+}
+const round = (x,d) => +(+x).toFixed(d);
+const FREQ_OPTS = ['', 'Weekly', 'Monthly', 'Quarterly', 'Semi-annual', 'Annual'];
+function addRow(r={}){
+  const tr=document.createElement('tr'); tr.dataset.seq=hSeq++;
+  const sh=r.shares??'', cb=r.cost_basis??'';
+  const tot = sh!==''&&cb!==''&&sh!=null&&cb!=null ? round(sh*cb,2) : '';
+  const cell=(k,v,st,extra='')=>`<td><input data-k="${k}" value="${esc(v??'')}" ${st?`style="${st}"`:''} ${extra}></td>`;
+  tr.innerHTML = cell('symbol',r.symbol,'width:80px;text-transform:uppercase')
+    + cell('shares',sh,'width:100px','inputmode="decimal" title="Total shares across all accounts. You can type a sum, e.g. 100+25.5"')
+    + cell('total_cost',tot,'width:110px','inputmode="decimal" title="Total amount paid across all accounts. You can type a sum, e.g. 2500+1840.50"')
+    + cell('cost_basis',cb,'width:90px','inputmode="decimal" title="Average cost per share. Fills in automatically from Total cost ÷ Shares"')
+    + `<td><select data-k="frequency" title="Leave on Auto to detect it from the payment history">${FREQ_OPTS.map(o=>`<option value="${o}"${(r.frequency||'').toLowerCase()===o.toLowerCase()?' selected':''}>${o||'Auto'}</option>`).join('')}</select></td>`
+    + cell('core_focus',r.core_focus,'width:160px','placeholder="Auto" title="Leave blank to use the automatic Core focus"')
+    + ['distribution_type','strategy','exposure'].map(k=>cell(k,r[k])).join('')
+    + `<td class="fc"><input type="checkbox" data-k="flagged"${r.flagged?' checked':''} title="Not adding to it / cautiously watching it"></td>`
+    + cell('notes',r.notes)
+    + '<td><button title="Remove">✕</button></td>';
+  const inp = k => tr.querySelector(`input[data-k="${k}"]`);
+  const fromTotal = () => { const s=sumExpr(inp('shares').value), t=sumExpr(inp('total_cost').value);
+    if(s>0 && t>=0 && isFinite(t) && t!==null) inp('cost_basis').value = round(t/s,4); };
+  const fromCost = () => { const s=sumExpr(inp('shares').value), c=sumExpr(inp('cost_basis').value);
+    if(s>0 && c!==null && isFinite(c)) inp('total_cost').value = round(s*c,2); };
+  inp('total_cost').oninput = fromTotal;
+  inp('cost_basis').oninput = fromCost;
+  inp('shares').oninput = () => (sumExpr(inp('total_cost').value)!==null ? fromTotal() : fromCost());
+  tr.querySelector('button').onclick=()=>tr.remove();
+  const chk = k => tr.querySelector(`input[data-k="${k}"]`);
+  const tint = () => inp('symbol').classList.toggle('fw',chk('flagged').checked);
+  chk('flagged').onchange = tint; tint();
+  $('hbody').appendChild(tr);
+}
+async function saveHold(){
+  const bad=[];
+  const holdings=[...$('hbody').querySelectorAll('tr')].sort((a,b)=>a.dataset.seq-b.dataset.seq).map(tr=>{
+    const r=Object.fromEntries([...tr.querySelectorAll('input,select')].map(i=>[i.dataset.k,i.type==='checkbox'?(i.checked?'yes':''):i.value]));
+    const sh=sumExpr(r.shares), tot=sumExpr(r.total_cost), cb=sumExpr(r.cost_basis);
+    if([sh,tot,cb].some(Number.isNaN)) bad.push(r.symbol||'(blank)');
+    r.shares = sh==null?'':sh;
+    r.cost_basis = tot!=null && sh>0 ? round(tot/sh,6) : (cb==null?'':cb);
+    delete r.total_cost;
+    return r;
+  });
+  if(bad.length){ alert('Please use numbers only (sums like 100+50 are fine) for: '+bad.join(', ')); return; }
+  const r=await fetch('/api/holdings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({holdings})});
+  if(!r.ok){alert('Save failed: '+(await r.text()));return;}
+  $('hdlg').close(); load(false);
+}
+
+function exportCsv(rows=DATA.holdings, suffix=''){
+  const cols=['symbol','name','price','low52','high52','focus','frequency','expense_ratio','ttm_yield','fwd_yield','price_return_12m','total_return_12m','dist_type','div_growth_1y','div_growth_5y','next_ex_est','shares','cost_basis','total_cost','market_value','gain','gain_pct','weight','annual_income','yield_on_cost','exposure','strategy','flagged'];
+  const q=v=>v==null?'':/[",\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':v;
+  const lines=[cols.concat('top_holdings').join(',')].concat(rows.map(h=>cols.map(c=>q(typeof h[c]==='number'?+h[c].toFixed(4):typeof h[c]==='boolean'?(h[c]?'yes':''):h[c])).concat(q(h.top_holdings.map(t=>t.symbol).join(' '))).join(',')));
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));
+  a.download=`dividend-holdings${suffix}-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+}
+
+$('btnStop').onclick=async()=>{
+  if(!confirm('Stop the dashboard?\n\nThis shuts down the server and closes its command window. Run run_windows.bat again to start it.')) return;
+  $('btnStop').disabled=true;
+  try{
+    const r=await fetch('/api/shutdown',{method:'POST',headers:{'X-Dashboard-Stop':'1'}});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+  }catch(e){ $('btnStop').disabled=false; alert('Could not stop the dashboard ('+e.message+'). Close its command window or run stop_windows.bat.'); return; }
+  document.body.innerHTML='<div class="stopped"><h1>Dashboard stopped</h1><p class="sub">The server has shut down and its window has closed. You can close this tab.</p><p class="sub">To start it again, double-click run_windows.bat (or run ./run_mac_linux.sh).</p></div>';
+  document.title='Dashboard stopped';
+  setTimeout(()=>{ try{ window.open('','_self'); window.close(); }catch(e){} },800); // closes the tab where the browser allows it
+};
+$('btnRefresh').onclick=()=>{ load(true); if(tab===CMP_TAB) loadCompare(true); if(tab===RES_TAB&&RES.sym) loadResearch(RES.sym,true); };
+// Theme switcher: Auto follows the computer's light/dark setting; the choice is remembered in this browser.
+function setTheme(t){
+  if(t==='light'||t==='dark') document.documentElement.dataset.theme=t; else { delete document.documentElement.dataset.theme; t='auto'; }
+  try{ localStorage.setItem('divdash.theme',t); }catch(e){}
+  document.querySelectorAll('#themeSw button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+}
+setTheme(document.documentElement.dataset.theme||'auto');
+document.querySelectorAll('#themeSw button').forEach(b=>b.onclick=()=>setTheme(b.dataset.t));
+$('btnHold').onclick=openHold;
+
+// ---------------------------------------------------------------------------
+// Import CSV: load holdings from a file (e.g. exported on your other computer),
+// preview what changes, then Replace or Merge. The server backs up the old file.
+// ---------------------------------------------------------------------------
+const HOLD_FIELDS=['symbol','shares','cost_basis','frequency','core_focus','distribution_type','strategy','exposure','flagged','notes'];
+const FLAG_KEYS=['flagged'];
+const isYes = v => ['yes','y','x','true','1','✓','✔'].includes(String(v??'').trim().toLowerCase());
+const HDR_ALIAS={ticker:'symbol',symbol:'symbol',quantity:'shares',qty:'shares',shares:'shares',
+  cost_basis:'cost_basis',cost_per_share:'cost_basis',avg_cost:'cost_basis',average_cost:'cost_basis',cost_share:'cost_basis',
+  total_cost:'total_cost',frequency:'frequency',core_focus:'core_focus',distribution_type:'distribution_type',
+  strategy:'strategy',exposure:'exposure',notes:'notes',
+  flagged:'flagged',flag:'flagged'};
+function parseCsv(text){
+  text=text.replace(/^﻿/,'');
+  const rows=[]; let row=[], f='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(f); f=''; }
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(f); rows.push(row); row=[]; f=''; }
+    else f+=c;
+  }
+  if(f!==''||row.length){ row.push(f); rows.push(row); }
+  return rows.filter(r=>r.some(v=>v.trim()!==''));
+}
+const normHdr = h => h.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+let IMP=null;
+function readImport(text, fname){
+  const rows=parseCsv(text);
+  if(!rows.length) return {fatal:'The file is empty.'};
+  const raw=rows[0].map(normHdr);
+  // The "Dashboard table" export has detected values (frequency, strategy...) that are not
+  // your overrides, so from that file only shares and cost are taken.
+  const isTable = raw.includes('price') && raw.includes('market_value');
+  const map=raw.map(h=>{ const k=HDR_ALIAS[h]; if(!k) return null;
+    if(isTable && !['symbol','shares','cost_basis'].includes(k)) return null; return k; });
+  if(!map.includes('symbol')) return {fatal:`This doesn't look like a holdings file: no "symbol" column. Columns found: ${rows[0].join(', ')||'(none)'}.`};
+  if(!map.some(k=>['shares','cost_basis','total_cost'].includes(k)) && !isTable)
+    ; // a symbols-only list is a valid watchlist
+  const cols=[...new Set(map.filter(Boolean).map(k=>k==='total_cost'?'cost_basis':k))];
+  const ignored=rows[0].filter((h,i)=>!map[i]&&h.trim()&&!isTable);
+  const out=[], problems=[], seen={};
+  rows.slice(1).forEach((cells,ri)=>{
+    const r={}; map.forEach((k,i)=>{ if(k) r[k]=(cells[i]??'').trim(); });
+    const sym=(r.symbol||'').toUpperCase();
+    if(!sym||sym.startsWith('#')) return;
+    const line=ri+2, bad=[];
+    const num=k=>{ if(r[k]==null||r[k]==='') return ''; const n=sumExpr(r[k]); if(n==null) return ''; if(Number.isNaN(n)||!isFinite(n)||n<0){bad.push(`${k.replace('_',' ')} "${r[k]}"`); return '';} return n; };
+    const h={symbol:sym};
+    for(const k of HOLD_FIELDS.slice(1)) if(r[k]!==undefined) h[k]=r[k];
+    FLAG_KEYS.forEach(k=>{ if(k in h) h[k]=isYes(h[k])?'yes':''; });
+    if('shares' in r) h.shares=num('shares');
+    if('cost_basis' in r) h.cost_basis=num('cost_basis');
+    if('total_cost' in r){ const t=num('total_cost'); if(t!==''&&h.shares>0&&(h.cost_basis===''||h.cost_basis==null)) h.cost_basis=round(t/h.shares,6); }
+    if(h.frequency && !FREQ_OPTS.some(o=>o&&o.toLowerCase()===h.frequency.toLowerCase()) && !/^\d+$/.test(h.frequency)) bad.push(`frequency "${h.frequency}"`);
+    if(bad.length){ problems.push(`Row ${line} (${sym}): ${bad.join(', ')} is not valid, so this row is skipped.`); return; }
+    if(seen[sym]) problems.push(`${sym} appears more than once (rows ${seen[sym]} and ${line}). Both are kept; check this is intended.`);
+    seen[sym]=seen[sym]||line;
+    out.push(h);
+  });
+  if(!out.length) return {fatal:'No holdings found in the file'+(problems.length?': '+problems.join(' '):'.')};
+  return {rows:out, cols, isTable, ignored, problems, fname};
+}
+const fmtCell=(k,v)=> v===''||v==null ? '' : FLAG_KEYS.includes(k) ? (v?'Yes':'') : (k==='cost_basis'?fmt.money(+v,2):k==='shares'?(+v).toLocaleString(undefined,{maximumFractionDigits:6}):String(v));
+const sameVal=(a,b)=> (a??'')===''&&(b??'')==='' ? true : String(a??'').trim().toLowerCase()===String(b??'').trim().toLowerCase() || (a!==''&&b!==''&&a!=null&&b!=null&&!isNaN(a)&&!isNaN(b)&&Math.abs(a-b)<1e-6);
+// Build the resulting holdings list and a per-symbol diff for the chosen mode.
+function planImport(mode){
+  const cur=IMP.current, inc=IMP.rows, cols=IMP.cols;
+  const curBy={}; cur.forEach(r=>{ if(!curBy[r.symbol]) curBy[r.symbol]=r; });
+  const incSyms=new Set(inc.map(r=>r.symbol));
+  const diff=[]; let result;
+  const asRow=(base,over)=>{ const r={...base}; cols.forEach(k=>{ r[k]=over[k]??''; }); return r; };
+  if(mode==='replace'){
+    // Columns missing from the file come out blank, except that a table export keeps current overrides.
+    result=inc.map(r=>asRow(IMP.isTable&&curBy[r.symbol]?curBy[r.symbol]:{symbol:r.symbol}, r));
+  }else{
+    const done=new Set();
+    result=cur.map(r=>{ if(!incSyms.has(r.symbol)||done.has(r.symbol)) return r; done.add(r.symbol); return asRow(r, inc.find(x=>x.symbol===r.symbol)); });
+    inc.forEach(r=>{ if(!curBy[r.symbol]) result.push(asRow({symbol:r.symbol},r)); });
+  }
+  const resBy={}; result.forEach(r=>{ if(!resBy[r.symbol]) resBy[r.symbol]=r; });
+  for(const r of result){
+    if(diff.some(d=>d.symbol===r.symbol)) continue;
+    const c=curBy[r.symbol];
+    if(!c){ diff.push({symbol:r.symbol,st:'new',r}); continue; }
+    const changed=HOLD_FIELDS.slice(1).filter(k=>!sameVal(c[k],r[k]));
+    diff.push({symbol:r.symbol, st: changed.length?'chg':(incSyms.has(r.symbol)?'same':'keep'), r, c, changed});
+  }
+  cur.forEach(c=>{ if(!resBy[c.symbol]&&!diff.some(d=>d.symbol===c.symbol)) diff.push({symbol:c.symbol,st:'del',c}); });
+  return {result,diff};
+}
+function renderImport(){
+  const mode=document.querySelector('input[name=impMode]:checked')?.value||'replace';
+  const {result,diff}=planImport(mode);
+  const n=s=>diff.filter(d=>d.st===s).length;
+  const lbl={new:'New',chg:'Changed',same:'No change',keep:'Kept',del:'Removed'};
+  const order={chg:0,new:1,del:2,same:3,keep:4};
+  const showCols=['shares','cost_basis',...HOLD_FIELDS.slice(3).filter(k=>diff.some(d=>d.changed?.includes(k)))];
+  const cell=(d,k)=>{
+    const nv=d.r?.[k], ov=d.c?.[k];
+    if(d.st==='del') return `<s>${esc(fmtCell(k,ov))}</s>`;
+    if(d.st==='chg'&&d.changed.includes(k)) return `${ov!==''&&ov!=null?`<s>${esc(fmtCell(k,ov))}</s> → `:''}<strong>${esc(fmtCell(k,nv))||'<span class="muted">blank</span>'}</strong>`;
+    return esc(fmtCell(k,nv));
+  };
+  const msgs=[];
+  if(IMP.isTable) msgs.push(`<div class="imp-msg">This is a <strong>Dashboard table</strong> export, so only symbols, shares and cost are imported. Your frequency, core focus, distribution type, strategy, exposure, flags and notes are kept for symbols you already have. To copy everything, use <em>Export CSV → Holdings file</em> on the other computer.</div>`);
+  if(IMP.ignored.length) msgs.push(`<div class="imp-msg">Ignored column${IMP.ignored.length>1?'s':''} the dashboard doesn't use: ${IMP.ignored.map(esc).join(', ')}.</div>`);
+  if(IMP.problems.length) msgs.push(`<div class="imp-msg bad">${IMP.problems.map(esc).join('<br>')}</div>`);
+  $('impBody').innerHTML = `
+    <p style="margin-top:0">Read <strong>${IMP.rows.length}</strong> holding${IMP.rows.length===1?'':'s'} from <strong>${esc(IMP.fname)}</strong>. You currently have ${IMP.current.length}.</p>
+    <div class="imp-mode">
+      <label><input type="radio" name="impMode" value="replace"${mode==='replace'?' checked':''}><span><strong>Replace</strong> all holdings with the file<small>Use this to copy your holdings from another computer. Symbols not in the file are removed.</small></span></label>
+      <label><input type="radio" name="impMode" value="merge"${mode==='merge'?' checked':''}><span><strong>Merge</strong> into current holdings<small>Symbols in the file are added or updated. Everything else stays as it is.</small></span></label>
+    </div>
+    ${msgs.join('')}
+    <div class="imp-sum">${['chg','new','del','same','keep'].filter(s=>n(s)).map(s=>`<span class="st ${s}">${n(s)} ${lbl[s].toLowerCase()}</span>`).join('')}</div>
+    <div class="tablewrap"><table class="imp-tbl"><thead><tr><th></th><th>Symbol</th>${showCols.map(k=>`<th${['shares','cost_basis'].includes(k)?' style="text-align:right"':''}>${{shares:'Shares',cost_basis:'Cost/share',frequency:'Frequency',core_focus:'Core focus',distribution_type:'Distribution type',strategy:'Strategy',exposure:'Exposure',flagged:'Flag',notes:'Notes'}[k]}</th>`).join('')}</tr></thead>
+    <tbody>${diff.sort((a,b)=>order[a.st]-order[b.st]||a.symbol.localeCompare(b.symbol)).map(d=>`<tr><td><span class="st ${d.st}">${lbl[d.st]}</span></td><td class="sym">${esc(d.symbol)}</td>${showCols.map(k=>`<td${['shares','cost_basis'].includes(k)?' class="num"':''}>${cell(d,k)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <p class="muted" style="font-size:12px;margin-bottom:0">Your current holdings file is backed up first (in the <code>backups</code> folder next to it), so you can undo this.</p>`;
+  document.querySelectorAll('input[name=impMode]').forEach(i=>i.onchange=renderImport);
+  const changes=n('chg')+n('new')+n('del');
+  $('impGo').disabled=!changes;
+  $('impGo').textContent = changes ? `Import (${result.length} holding${result.length===1?'':'s'})` : 'Nothing to change';
+  IMP.result=result;
+}
+async function onImportFile(file){
+  if(!file) return;
+  if(file.size>2e6){ alert('That file is too large to be a holdings file.'); return; }
+  const text=await file.text();
+  const parsed=readImport(text, file.name);
+  if(parsed.fatal){ alert('Could not import '+file.name+'\n\n'+parsed.fatal); return; }
+  const current=await (await fetch('/api/holdings')).json();
+  IMP={...parsed, current};
+  $('impGo').disabled=false;
+  renderImport();
+  $('idlg').showModal();
+}
+async function doImport(){
+  const btn=$('impGo'); btn.disabled=true;
+  const holdings=IMP.result.map(r=>Object.fromEntries(HOLD_FIELDS.map(k=>[k,r[k]??''])));
+  const r=await fetch('/api/holdings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({holdings,backup:true})});
+  if(!r.ok){ alert('Import failed: '+(await r.text())); btn.disabled=false; return; }
+  const res=await r.json();
+  $('idlg').close();
+  FLASH=`<div class="banner">Imported ${res.count} holding${res.count===1?'':'s'} from ${esc(IMP.fname)}.${res.backup?` Previous file backed up to <code>${esc(res.backup)}</code>.`:''}</div>`;
+  load(false);
+}
+$('btnImport').onclick=()=>{ $('impFile').value=''; $('impFile').click(); };
+$('impFile').onchange=e=>onImportFile(e.target.files[0]);
+$('impGo').onclick=doImport;
+// Export menu
+const csvMenu=$('csvMenu');
+const setMenu=open=>{ csvMenu.hidden=!open; $('btnCsv').setAttribute('aria-expanded',open); };
+$('btnCsv').onclick=e=>{ e.stopPropagation(); setMenu(csvMenu.hidden); };
+document.addEventListener('click',e=>{ if(!csvMenu.hidden&&!csvMenu.contains(e.target)) setMenu(false); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') setMenu(false); });
+$('expTable').onclick=()=>{ setMenu(false); exportCsv(); };
+// Only the rows currently shown (search text, All / Flagged / Not flagged, and the tab), in the table's sort order.
+$('expFiltered').onclick=()=>{ setMenu(false); const rows=sortedRows(filteredRows());
+  if(!rows.length){ alert('No holdings match the current filter.'); return; }
+  exportCsv(rows, '-filtered'); };
+$('expHold').onclick=()=>{ setMenu(false); const a=document.createElement('a'); a.href='/api/holdings/file'; a.click(); };
+$('q').oninput=render;
+// ---- Symbol comparison tab (any tickers, not just your holdings) ----
+const CMP_PERIODS = [['1M','1 month'],['3M','3 months'],['6M','6 months'],['YTD','Year to date'],['1Y','1 year'],['3Y','3 years'],['5Y','5 years'],['10Y','10 years'],['MAX','Since the earliest price Yahoo has']];
+const CMP_MAX = 10;
+let CMP = {syms:[], slots:{}, period:'1Y', mode:'tr', sort:'total_return', dir:-1};
+let CMPDATA = null, cmpSeq = 0, cmpBusy = false, cmpLoaded = '';
+try{ Object.assign(CMP, JSON.parse(localStorage.getItem('divdash.cmp')||'{}')); }catch(e){}
+const cmpSave = () => { try{ localStorage.setItem('divdash.cmp', JSON.stringify(CMP)); }catch(e){} };
+// Each symbol keeps its color while it stays in the list (color follows the symbol, not its rank).
+// 10 colors, one per symbol. The 9th is white in dark mode and charcoal in light mode (white
+// would vanish on a light background); the 10th is teal.
+const cmpColor = s => `var(--s${((CMP.slots[s]??0)%10)+1})`;
+const cmpDash = s => false;
+const cmpDot = s => cmpDash(s)?`background:transparent;box-shadow:inset 0 0 0 2.5px ${cmpColor(s)}`:`background:${cmpColor(s)}`;
+const cmpSwatch = s => cmpDash(s)?`background:repeating-linear-gradient(90deg,${cmpColor(s)} 0 5px,transparent 5px 8px)`:`background:${cmpColor(s)}`;
+function cmpDefaults(){
+  // First visit only: your three largest holdings plus SPY as a benchmark.
+  if(CMP.inited || CMP.syms.length || !DATA) return;
+  CMP.inited = true;
+  const top = DATA.holdings.filter(h=>h.market_value).sort((a,b)=>b.market_value-a.market_value).slice(0,3).map(h=>h.symbol);
+  (top.length?top:DATA.holdings.slice(0,3).map(h=>h.symbol)).concat(['SPY']).forEach(s=>cmpAdd(s,false));
+}
+function cmpAdd(raw, reload=true){
+  const list = String(raw||'').toUpperCase().split(/[\s,;]+/).map(s=>s.trim()).filter(Boolean);
+  let msg = '';
+  for(const s of list){
+    if(CMP.syms.includes(s)) continue;
+    if(CMP.syms.length>=CMP_MAX){ msg = `Up to ${CMP_MAX} symbols at a time. Remove one to add ${s}.`; break; }
+    const used = new Set(CMP.syms.map(x=>CMP.slots[x]));
+    let slot = 0; while(used.has(slot)) slot++;
+    CMP.syms.push(s); CMP.slots[s] = slot;
+  }
+  cmpSave();
+  if(reload){ loadCompare(); }
+  return msg;
+}
+function cmpRemove(s){
+  CMP.syms = CMP.syms.filter(x=>x!==s); delete CMP.slots[s]; cmpSave();
+  if(CMPDATA) CMPDATA.series = CMPDATA.series.filter(x=>x.symbol!==s);
+  renderCompare();
+}
+async function loadCompare(refresh=false){
+  const key = CMP.period+'|'+CMP.syms.join(',');
+  if(!CMP.syms.length){ CMPDATA = {series:[]}; cmpLoaded=key; renderCompare(); return; }
+  const seq = ++cmpSeq; cmpBusy = true; renderCompare();
+  try{
+    const r = await fetch(`/api/compare?symbols=${encodeURIComponent(CMP.syms.join(','))}&period=${CMP.period}${refresh?'&refresh=1':''}`);
+    const j = await r.json();
+    if(seq!==cmpSeq) return;
+    if(!r.ok) throw new Error(j.error||r.status);
+    CMPDATA = j; cmpLoaded = key;
+  }catch(e){ if(seq!==cmpSeq) return; CMPDATA = {series:[], error:String(e.message||e)}; cmpLoaded = key; }
+  cmpBusy = false; renderCompare();
+}
+function renderCompare(){
+  const el = $('cmpPanel');
+  if(!el.dataset.built){
+    el.dataset.built = 1;
+    el.innerHTML = `<div class="card">
+      <div class="cmp-ctl">
+        <div class="cmp-syms" id="cmpSyms"></div>
+        <form class="cmp-add" id="cmpForm" autocomplete="off"><input id="cmpIn" list="cmpList" placeholder="Add symbol, e.g. VYM or SPY" aria-label="Add symbol"><datalist id="cmpList"></datalist><button type="submit">Add</button></form>
+      </div>
+      <div class="cmp-quick" id="cmpQuick"></div>
+      <div class="cmp-row">
+        <div class="seg" id="cmpPer" role="group" aria-label="Time period">${CMP_PERIODS.map(([k,t])=>`<button data-p="${k}" title="${t}">${k==='MAX'?'Max':k}</button>`).join('')}</div>
+        <div class="seg" id="cmpMode" role="group" aria-label="Return type"><button data-m="tr" title="Price change plus dividends reinvested">Total return</button><button data-m="price" title="Price change only, no dividends">Price only</button></div>
+        <span class="muted" id="cmpStatus" style="margin-left:auto;font-size:12px"></span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px"><h2 id="cmpTitle">Performance</h2><div id="cmpMsg"></div><div class="cmp-chart" id="cmpChart"></div><div class="cmp-legend" id="cmpLegend"></div></div>
+    <div class="card" style="margin-top:12px"><div class="calhead"><h2 style="margin:4px 0 0">Key stats</h2><button id="cmpCsv" style="font-size:12px;padding:3px 10px">Export CSV</button></div><div class="tablewrap" style="border:0"><table class="cmp-tbl"><thead id="cmpHead"></thead><tbody id="cmpBody"></tbody></table></div>
+    <p class="foot" style="margin:10px 0 0" id="cmpFoot"></p></div>`;
+    $('cmpForm').onsubmit = e => { e.preventDefault(); const m = cmpAdd($('cmpIn').value); $('cmpIn').value=''; if(m){ $('cmpStatus').textContent=m; } };
+    $('cmpPer').querySelectorAll('button').forEach(b=>b.onclick=()=>{ CMP.period=b.dataset.p; cmpSave(); loadCompare(); });
+    $('cmpMode').querySelectorAll('button').forEach(b=>b.onclick=()=>{ CMP.mode=b.dataset.m; cmpSave(); renderCompare(); });
+    $('cmpCsv').onclick = cmpExport;
+    let rt; window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(tab===CMP_TAB) cmpChart(); if(tab===RES_TAB) resChart(); },120); });
+  }
+  cmpDefaults();
+  const key = CMP.period+'|'+CMP.syms.join(',');
+  if(!cmpBusy && cmpLoaded!==key){ loadCompare(); return; }
+  const S = (CMPDATA?.series)||[];
+  const bySym = Object.fromEntries(S.map(s=>[s.symbol,s]));
+  $('cmpSyms').innerHTML = CMP.syms.length ? CMP.syms.map(s=>{ const d=bySym[s], bad=d&&d.error;
+    return `<span class="schip${bad?' bad':''}${!d&&cmpBusy?' busy':''}" title="${esc(bad?s+': '+d.error:(d?.name||s))}"><span class="sw" style="${bad?'background:var(--line)':cmpDot(s)}"></span>${symHtml(s)}<button data-x="${esc(s)}" aria-label="Remove ${esc(s)}" title="Remove">×</button></span>`;}).join('')
+    : '<span class="muted">Add up to 10 symbols to compare. Any ticker works, not just your holdings.</span>';
+  $('cmpSyms').querySelectorAll('button[data-x]').forEach(b=>b.onclick=()=>cmpRemove(b.dataset.x));
+  const held = (DATA?.holdings||[]).map(h=>h.symbol);
+  $('cmpList').innerHTML = held.concat(['SPY','QQQ','VTI','SCHD','VYM','DGRO','JEPI','JEPQ']).filter((s,i,a)=>a.indexOf(s)===i&&!CMP.syms.includes(s)).map(s=>`<option value="${esc(s)}">`).join('');
+  const quick = held.filter(s=>!CMP.syms.includes(s));
+  const bench = ['SPY','QQQ','VTI','SCHD'].filter(s=>!CMP.syms.includes(s));
+  $('cmpQuick').innerHTML = (quick.length?`Your holdings: ${quick.slice(0,14).map(s=>`<button data-a="${esc(s)}">+ ${symHtml(s)}</button>`).join('')}`:'')
+    + (bench.length?`<span style="margin-left:${quick.length?10:0}px">Benchmarks:</span> ${bench.map(s=>`<button data-a="${s}">+ ${s}</button>`).join('')}`:'')
+    + (CMP.syms.length?` <button data-clear="1" style="margin-left:10px">Clear all</button>`:'');
+  $('cmpQuick').querySelectorAll('button[data-a]').forEach(b=>b.onclick=()=>{ const m=cmpAdd(b.dataset.a); if(m) $('cmpStatus').textContent=m; });
+  $('cmpQuick').querySelectorAll('button[data-clear]').forEach(b=>b.onclick=()=>{ CMP.syms=[]; CMP.slots={}; cmpSave(); CMPDATA={series:[]}; cmpLoaded=CMP.period+'|'; renderCompare(); });
+  $('cmpPer').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===CMP.period));
+  $('cmpMode').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===CMP.mode));
+  const per = CMP_PERIODS.find(p=>p[0]===CMP.period)[1];
+  $('cmpTitle').textContent = `${CMP.mode==='tr'?'Total return':'Price return'} · ${CMP.period==='MAX'?'max':per.toLowerCase()}`;
+  $('cmpStatus').textContent = cmpBusy ? 'Loading prices…' : CMPDATA?.demo ? 'Demo data' : '';
+  const errs = S.filter(s=>s.error);
+  $('cmpMsg').innerHTML = (CMPDATA?.error?`<div class="banner err">Could not load the comparison: ${esc(CMPDATA.error)}</div>`:'')
+    + (errs.length?`<div class="banner err">No data for ${errs.map(e=>`<strong>${esc(e.symbol)}</strong> (${esc(e.error)})`).join(', ')}. Check the ticker; Yahoo uses e.g. BRK-B, ^GSPC for the S&amp;P 500 index.</div>`:'');
+  cmpChart(); cmpTable();
+}
+const cmpOk = () => ((CMPDATA?.series)||[]).filter(s=>!s.error&&s.dates&&CMP.syms.includes(s.symbol));
+// Shared by the Symbol comparison and Research tabs: o = {box, legend, S, mode, empty}
+function cmpChart(o){
+  o = o || {box:$('cmpChart'), legend:$('cmpLegend'), S:cmpOk(), mode:CMP.mode,
+            empty:cmpBusy?'Loading…':CMP.syms.length?'No price history to show.':'Pick some symbols above.'};
+  const box = o.box, S = o.S, key = o.mode==='tr'?'tr_pct':'price_pct', legend = o.legend || {set innerHTML(v){}};
+  if(!box) return;
+  if(!S.length){ box.innerHTML = `<div class="cmp-empty">${o.empty}</div>`; legend.innerHTML=''; return; }
+  const W = Math.max(320, box.clientWidth||900), H = Math.round(Math.min(380, Math.max(240, W*0.36)));
+  const padL = 46, padR = S.length<=4 ? 74 : 14, padT = 12, padB = 26;
+  const T = s => s.ts || (s.ts = s.dates.map(d=>Date.parse(d+'T12:00:00Z')));
+  let t0 = Infinity, t1 = -Infinity, lo = 0, hi = 0;
+  S.forEach(s=>{ const t=T(s); t0=Math.min(t0,t[0]); t1=Math.max(t1,t[t.length-1]); s[key].forEach(v=>{ if(v<lo) lo=v; if(v>hi) hi=v; }); });
+  if(t1===t0) t1=t0+864e5;
+  // nice y ticks
+  const span = (hi-lo)||1, raw = span/5, mag = 10**Math.floor(Math.log10(raw)), step = [1,2,2.5,5,10].map(m=>m*mag).find(m=>m>=raw);
+  lo = Math.floor(lo/step)*step; hi = Math.ceil(hi/step)*step; if(hi===lo) hi=lo+step;
+  const x = t => padL + (t-t0)/(t1-t0)*(W-padL-padR), y = v => padT + (hi-v)/(hi-lo)*(H-padT-padB);
+  let g = '';
+  for(let v=lo; v<=hi+1e-9; v+=step){ const yy=y(v).toFixed(1);
+    g += `<line class="${Math.abs(v)<1e-9?'zero':'grid'}" x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}"/><text x="${padL-6}" y="${(+yy+4)}" text-anchor="end">${v>0?'+':''}${+v.toFixed(step<1?1:0)}%</text>`; }
+  // x ticks: ~6 date labels
+  const days = (t1-t0)/864e5, nX = Math.max(2, Math.min(7, Math.floor((W-padL-padR)/110)));
+  const fmtX = t => new Date(t).toLocaleDateString(undefined, days>800?{year:'numeric'}:days>120?{month:'short',year:'2-digit'}:{month:'short',day:'numeric'});
+  if(days>800){
+    // multi-year: one label per January 1st (every 2nd, 5th... year when there are many)
+    const y0=new Date(t0).getUTCFullYear()+1, y1=new Date(t1).getUTCFullYear(), every=Math.max(1,Math.ceil((y1-y0+1)/nX));
+    for(let yr=y0; yr<=y1; yr+=every){ const t=Date.UTC(yr,0,1); g += `<line class="grid" x1="${x(t).toFixed(1)}" x2="${x(t).toFixed(1)}" y1="${H-padB}" y2="${H-padB+4}"/><text x="${x(t).toFixed(1)}" y="${H-6}" text-anchor="middle">${yr}</text>`; }
+  } else for(let i=0;i<=nX;i++){ const t=t0+(t1-t0)*i/nX; g += `<text x="${x(t).toFixed(1)}" y="${H-6}" text-anchor="${i===0?'start':i===nX?'end':'middle'}">${fmtX(t)}</text>`; }
+  // lines (thin to at most ~1 point per pixel)
+  const lines = S.map(s=>{ const t=T(s), v=s[key], n=v.length, every=Math.max(1,Math.floor(n/(W-padL-padR)));
+    const pts=[]; for(let i=0;i<n;i+=every) pts.push(`${x(t[i]).toFixed(1)},${y(v[i]).toFixed(1)}`); if((n-1)%every) pts.push(`${x(t[n-1]).toFixed(1)},${y(v[n-1]).toFixed(1)}`);
+    return `<polyline class="ser" points="${pts.join(' ')}" stroke="${cmpColor(s.symbol)}"${cmpDash(s.symbol)?' stroke-dasharray="7 4"':''}><title>${esc(s.symbol)}</title></polyline>`; }).join('');
+  // direct labels at the line ends when there are 4 or fewer series, nudged apart so they don't collide
+  let labs = '';
+  if(S.length<=4){
+    const ends = S.map(s=>({s, v:s[key][s[key].length-1], yy:y(s[key][s[key].length-1])})).sort((a,b)=>a.yy-b.yy);
+    for(let i=1;i<ends.length;i++) if(ends[i].yy-ends[i-1].yy<13) ends[i].yy=ends[i-1].yy+13;
+    labs = ends.map(e=>`<text class="lab" x="${W-padR+6}" y="${(e.yy+4).toFixed(1)}">${esc(e.s.symbol)} <tspan style="font-weight:400;fill:var(--muted)">${e.v>=0?'+':''}${e.v.toFixed(1)}%</tspan></text>`).join('');
+  }
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Performance chart">${g}${lines}${labs}
+    <line class="cx" x1="0" x2="0" y1="${padT}" y2="${H-padB}" stroke="var(--muted)" stroke-dasharray="3 3" visibility="hidden"/><g class="cdots"></g>
+    <rect x="${padL}" y="0" width="${W-padL-padR}" height="${H}" fill="transparent" class="chit"/></svg><div class="cmp-tip" hidden></div>`;
+  legend.innerHTML = S.map(s=>`<span title="${esc(s.name)}"><i style="${cmpSwatch(s.symbol)}"></i><strong style="color:var(--ink)">${symHtml(s.symbol)}</strong> ${esc(s.name||'')}${s.partial?` <span class="est">from ${fmt.date(s.first_date)}</span>`:''}</span>`).join('');
+  // hover: crosshair + tooltip with every series at the nearest date
+  const q = c => box.querySelector(c), hit = q('.chit'), tip = q('.cmp-tip'), xl = q('.cx'), dots = q('.cdots'), svg = q('svg');
+  const near = (arr,t) => { let a=0,b=arr.length-1; if(t<=arr[0]) return 0; if(t>=arr[b]) return b; while(b-a>1){ const m=(a+b)>>1; if(arr[m]<=t) a=m; else b=m; } return t-arr[a]<arr[b]-t?a:b; };
+  hit.onmousemove = e => {
+    const r = svg.getBoundingClientRect(), sx = (e.clientX-r.left)*W/r.width, t = t0+(sx-padL)/(W-padL-padR)*(t1-t0);
+    const rows = S.map(s=>{ const tt=T(s); if(t<tt[0]-3*864e5) return null; const i=near(tt,t); return {s,i,v:s[key][i],t:tt[i]}; }).filter(Boolean).sort((a,b)=>b.v-a.v);
+    if(!rows.length){ tip.hidden=true; return; }
+    const tx = x(rows[0].t); xl.setAttribute('x1',tx); xl.setAttribute('x2',tx); xl.setAttribute('visibility','visible');
+    dots.innerHTML = rows.map(o=>`<circle cx="${x(o.t)}" cy="${y(o.v)}" r="4" fill="${cmpColor(o.s.symbol)}" stroke="var(--panel)" stroke-width="2"/>`).join('');
+    tip.innerHTML = `<div class="d">${fmt.date(rows[0].s.dates[rows[0].i])}</div>`+rows.map(o=>`<div class="r"><span><i style="${cmpDot(o.s.symbol)}"></i>${esc(o.s.symbol)}</span><span>${o.v>=0?'+':''}${o.v.toFixed(2)}%</span></div>`).join('');
+    tip.hidden = false;
+    const px = tx*r.width/W, w = tip.offsetWidth;
+    tip.style.left = (px+14+w>r.width ? px-14-w : px+14)+'px'; tip.style.top = '8px';
+  };
+  hit.onmouseleave = () => { tip.hidden=true; xl.setAttribute('visibility','hidden'); dots.innerHTML=''; };
+}
+let RESDATA = null;  // Research tab: {holding, cmp}
+const CMP_COLS = [
+  {k:'symbol', t:'Symbol', v:s=>s.symbol, r:s=>{ const h=(DATA?.holdings||[]).find(x=>x.symbol===s.symbol);
+    return `<div class="sym"><span class="sw" style="${cmpDot(s.symbol)}"></span>${symHtml(s.symbol)}${h?`<span class="own-b" title="In your holdings. Click the row for details.">${h.shares?'You own':'Watchlist'}</span>`:''}</div><div class="nm" title="${esc(s.name)}">${esc(s.name||'')}</div>`; }},
+  {k:'price', t:'Price', n:1, v:s=>s.price, r:s=>fmt.money(s.price)},
+  {k:'total_return', t:'Total return', n:1, tip:'Price change plus dividends reinvested', v:s=>s.total_return, r:s=>`<strong>${fmt.spct(s.total_return,2)}</strong>`},
+  {k:'price_return', t:'Price return', n:1, tip:'Price change only', v:s=>s.price_return, r:s=>fmt.spct(s.price_return,2)},
+  {k:'income_return', t:'From dividends', n:1, tip:'Total return minus price return: how much of the result came from the payouts', v:s=>s.income_return, r:s=>fmt.spct(s.income_return,2)},
+  {k:'annualized', t:'Annualized', n:1, tip:'Total return per year (CAGR). Shown for periods of a year or more.', v:s=>s.annualized, r:s=>fmt.spct(s.annualized,2)},
+  {k:'ttm_yield', t:'Yield TTM', n:1, tip:'Last 12 months of dividends ÷ price', v:s=>s.ttm_yield, r:s=>fmt.pct(s.ttm_yield)},
+  {k:'divs_in_period', t:'Dividends in period', n:1, tip:'Dividends per share paid during the period (by ex-dividend date)', v:s=>s.divs_in_period, r:s=>s.divs_in_period?`${fmt.money(s.divs_in_period,s.divs_in_period<10?3:2)}<div class="muted">${s.div_count} payment${s.div_count===1?'':'s'}</div>`:'<span class="muted">none</span>'},
+  {k:'expense_ratio', t:'Expense ratio', n:1, tip:'From your holdings data (only for symbols you hold or watch)', v:s=>cmpHeld(s)?.expense_ratio??null, r:s=>fmt.pct(cmpHeld(s)?.expense_ratio)},
+  {k:'volatility', t:'Volatility', n:1, tip:'Annualized standard deviation of returns over the period. Higher = bumpier ride.', v:s=>s.volatility, r:s=>fmt.pct(s.volatility,1)},
+  {k:'max_drawdown', t:'Max drawdown', n:1, tip:'Largest fall from a high to a later low during the period (total return)', v:s=>s.max_drawdown, r:s=>s.max_drawdown==null?'—':`<span class="${s.max_drawdown<-0.05?'neg':''}">${s.max_drawdown.toFixed(1)}%</span>`},
+  {k:'range', t:'Period low – high', v:s=>s.high&&s.price?s.price/s.high:null, tip:'Lowest and highest close in the period. Sorts by how close the price is to the high.', r:s=>s.low==null?'—':`${s.low.toFixed(2)} – ${s.high.toFixed(2)}`},
+];
+const cmpHeld = s => (DATA?.holdings||[]).find(h=>h.symbol===s.symbol) || (RESDATA?.holding?.symbol===s.symbol?RESDATA.holding:null);
+// Key stats table, shared with the Research tab: o = {S, head, body, foot, period, busy, click}
+function cmpTable(o){
+  o = o || {S:cmpOk(), head:$('cmpHead'), body:$('cmpBody'), foot:$('cmpFoot'), period:CMP.period, busy:cmpBusy, click:true, sortable:true};
+  const S = o.S, c = CMP_COLS.find(c=>c.k===CMP.sort)||CMP_COLS[2];
+  const rows = S.slice().sort((a,b)=>{ const x=c.v(a), y=c.v(b); if(x==null&&y==null) return 0; if(x==null) return 1; if(y==null) return -1; return (typeof x==='string'?x.localeCompare(y):x-y)*CMP.dir; });
+  const so = o.sortable;
+  o.head.innerHTML = `<tr>${CMP_COLS.map(k=>`<th class="${so?'hsort':''}${k.n?' num':''}${k.k==='symbol'?' stick':''}${so&&k.k===CMP.sort?' sorted':''}" data-k="${k.k}"${k.tip?` title="${esc(k.tip)}"`:''}${so?'':' style="cursor:default"'}>${k.t}${so?`<span class="arr">${k.k===CMP.sort?(CMP.dir>0?'▲':'▼'):'↕'}</span>`:''}</th>`).join('')}</tr>`;
+  if(so) o.head.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(CMP.sort===k) CMP.dir*=-1; else { CMP.sort=k; CMP.dir=k==='symbol'?1:-1; } cmpSave(); cmpTable(); });
+  o.body.innerHTML = rows.length ? rows.map(s=>`<tr data-s="${esc(s.symbol)}"${o.click&&(DATA?.holdings||[]).some(h=>h.symbol===s.symbol)?' class="own"':''}>${CMP_COLS.map(k=>`<td class="${k.n?'num':''}${k.k==='symbol'?' stick'+flagCls(s.symbol):''}">${k.r(s)}</td>`).join('')}</tr>`).join('')
+    : `<tr><td colspan="${CMP_COLS.length}" class="muted">${o.busy?'Loading…':'Nothing to show yet.'}</td></tr>`;
+  o.body.querySelectorAll('tr.own').forEach(tr=>tr.onclick=()=>showDetail(tr.dataset.s));
+  const part = S.filter(s=>s.partial);
+  const iv = {MAX:'monthly', '5Y':'weekly', '10Y':'weekly'}[o.period]||'daily';
+  o.foot.innerHTML = (part.length?`<strong>Shorter history:</strong> ${part.map(s=>`${esc(s.symbol)} starts ${fmt.date(s.first_date)}`).join(', ')}, so its returns run from then and are not directly comparable. `:'')
+    + `Returns run from the last close on or before the start of the period to the latest close, using ${iv} prices. Total return assumes dividends are reinvested (Yahoo's dividend-adjusted close). Volatility uses ${iv} returns. Not investment advice.`;
+}
+function cmpExport(){
+  const S = cmpOk(); if(!S.length) return;
+  const cols = ['symbol','name','price','total_return','price_return','income_return','annualized','ttm_yield','divs_in_period','div_count','volatility','max_drawdown','low','high','first_date','last_date'];
+  const q=v=>v==null?'':/[",\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':v;
+  const lines=['period,'+cols.join(',')].concat(S.map(s=>CMP.period+','+cols.map(c=>q(typeof s[c]==='number'?+s[c].toFixed(4):s[c])).join(',')));
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));
+  a.download=`symbol-comparison-${CMP.period}-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+}
+
+// ---- Research tab: look up one symbol at a time (held or not) ----
+let RES = {sym:'', period:'1Y', mode:'tr', recent:[]};
+let resBusy = false, resPerBusy = false, resErr = '', resSeq = 0;
+try{ Object.assign(RES, JSON.parse(localStorage.getItem('divdash.res')||'{}')); }catch(e){}
+const resSave = () => { try{ localStorage.setItem('divdash.res', JSON.stringify(RES)); }catch(e){} };
+async function loadResearch(sym, refresh=false){
+  sym = String(sym||'').trim().toUpperCase().split(/[\s,;]+/)[0];
+  if(!sym) return;
+  RES.sym = sym; RES.recent = [sym].concat(RES.recent.filter(s=>s!==sym)).slice(0,10); resSave();
+  const seq = ++resSeq; resBusy = true; resErr = '';
+  if(RESDATA?.holding?.symbol!==sym) RESDATA = null;
+  renderResearch();
+  try{
+    const [d, c] = await Promise.all([
+      fetch(`/api/research?symbol=${encodeURIComponent(sym)}${refresh?'&refresh=1':''}`).then(async r=>{ const j=await r.json(); if(!r.ok) throw new Error(j.error||r.status); return j; }),
+      fetch(`/api/compare?symbols=${encodeURIComponent(sym)}&period=${RES.period}${refresh?'&refresh=1':''}`).then(r=>r.json()).catch(e=>({series:[{symbol:sym,error:String(e)}]})),
+    ]);
+    if(seq!==resSeq) return;
+    RESDATA = {holding:d.holding, demo:d.demo, cmp:c.series?.[0]||null, period:RES.period};
+  }catch(e){ if(seq!==resSeq) return; RESDATA = null; resErr = String(e.message||e); RES.recent = RES.recent.filter(s=>s!==sym); resSave(); }
+  resBusy = false; renderResearch();
+}
+async function loadResPeriod(){
+  if(!RES.sym) return;
+  const seq = ++resSeq; resPerBusy = true; renderResearch();
+  try{
+    const c = await (await fetch(`/api/compare?symbols=${encodeURIComponent(RES.sym)}&period=${RES.period}`)).json();
+    if(seq!==resSeq) return;
+    if(RESDATA){ RESDATA.cmp = c.series?.[0]||null; RESDATA.period = RES.period; }
+  }catch(e){}
+  resPerBusy = false; renderResearch();
+}
+function renderResearch(){
+  const el = $('resPanel');
+  if(!el.dataset.built){
+    el.dataset.built = 1;
+    el.innerHTML = `<div class="card">
+      <div class="cmp-ctl">
+        <form class="cmp-add" id="resForm" autocomplete="off"><input id="resIn" list="resList" style="width:240px" placeholder="Research a symbol, e.g. VIG" aria-label="Symbol to research"><datalist id="resList"></datalist><button type="submit" class="primary">Look up</button></form>
+        <div class="cmp-syms" id="resRecent" style="justify-content:flex-end"></div>
+      </div>
+    </div>
+    <div id="resBody"></div>`;
+    $('resForm').onsubmit = e => { e.preventDefault(); const v=$('resIn').value; $('resIn').value=''; loadResearch(v); };
+  }
+  const held = (DATA?.holdings||[]).map(h=>h.symbol);
+  $('resList').innerHTML = held.concat(['SPY','QQQ','VTI','SCHD','VYM','DGRO','VIG','JEPI','JEPQ','O']).filter((s,i,a)=>a.indexOf(s)===i).map(s=>`<option value="${esc(s)}">`).join('');
+  $('resRecent').innerHTML = RES.recent.length ? '<span class="muted" style="font-size:12px">Recent:</span>'+RES.recent.map(s=>`<span class="schip" style="${s===RES.sym?'border-color:var(--accent)':''}"><a href="#" data-r="${esc(s)}" style="color:inherit;text-decoration:none">${symHtml(s)}</a><button data-x="${esc(s)}" title="Remove from recent" aria-label="Remove ${esc(s)}">×</button></span>`).join('') : '';
+  $('resRecent').querySelectorAll('a[data-r]').forEach(a=>a.onclick=e=>{ e.preventDefault(); loadResearch(a.dataset.r); });
+  $('resRecent').querySelectorAll('button[data-x]').forEach(b=>b.onclick=()=>{ RES.recent=RES.recent.filter(s=>s!==b.dataset.x); resSave(); renderResearch(); });
+  const body = $('resBody');
+  if(!RES.sym){ body.innerHTML = `<div class="card" style="margin-top:12px"><div class="cmp-empty">Type any ticker above to see its price history over 1 month to max, key stats, dividends, holdings and fund details, the same as the detail view for your holdings.<br><br>${['SPY','SCHD','VIG','JEPI','O'].map(s=>`<button data-q="${s}" style="margin:2px">${s}</button>`).join('')}</div></div>`;
+    body.querySelectorAll('button[data-q]').forEach(b=>b.onclick=()=>loadResearch(b.dataset.q)); return; }
+  if(!RESDATA){
+    if(!resBusy && !resErr){ loadResearch(RES.sym); return; }
+    body.innerHTML = `<div class="card" style="margin-top:12px">${resErr?`<div class="banner err" style="margin:0">Could not look up <strong>${esc(RES.sym)}</strong>: ${esc(resErr)}. Check the ticker; Yahoo uses e.g. BRK-B, or ^GSPC for the S&amp;P 500 index.</div>`:`<div class="cmp-empty">Looking up ${esc(RES.sym)}…</div>`}</div>`;
+    return;
+  }
+  const h = RESDATA.holding, c = RESDATA.cmp, mine = (DATA?.holdings||[]).find(x=>x.symbol===h.symbol);
+  const per = CMP_PERIODS.find(p=>p[0]===RES.period)[1];
+  body.innerHTML = `
+    <div class="card" style="margin-top:12px"><div class="res-head">
+      <div><div style="font-size:22px;font-weight:700">${symHtml(h.symbol)} <span style="font-size:15px;font-weight:400" class="muted">${esc(h.name)}</span></div>
+        <div class="tags" style="margin-top:4px">${[h.type==='EQUITY'?'Stock':h.type==='ETF'?'ETF':h.type, h.focus, h.frequency&&h.frequency!=='None'?h.frequency+' payer':''].filter(Boolean).map(t=>`<span style="cursor:default">${esc(t)}</span>`).join('')}
+          ${mine?`<span class="own-b">${mine.shares?'You own':'In your watchlist'}</span>`:''} ${flagBadge(mine||{})}</div></div>
+      <div style="text-align:right"><div style="font-size:24px;font-weight:600">${fmt.money(h.price)}</div><div>${fmt.spct(h.change_pct,2)} <span class="muted">today</span></div></div>
+      <div class="res-btns">${CMP.syms.includes(h.symbol)?'<button disabled style="cursor:default">In comparison</button>':`<button id="resToCmp" title="Add to the Symbol comparison tab">+ Compare</button>`}</div>
+    </div>
+    <div class="tiles" style="margin:12px 0 0">${[['Yield TTM',fmt.pct(h.ttm_yield)],['Yield fwd',fmt.pct(h.fwd_yield)],['12-mo total return',fmt.spct(h.total_return_12m)],['Expense ratio',fmt.pct(h.expense_ratio)],['Next ex-div',fmt.date(h.next_ex_est)],[h.type==='EQUITY'?'Market cap':'Net assets',fmt.big(h.aum)]].map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div></div>
+    <div class="card" style="margin-top:12px">
+      <div class="calhead"><h2 style="margin:4px 0 0">${RES.mode==='tr'?'Total return':'Price return'} · ${RES.period==='MAX'?'max':per.toLowerCase()}</h2>
+        <div class="cmp-row" style="margin:0"><div class="seg" id="resPer" role="group" aria-label="Time period">${CMP_PERIODS.map(([k,t])=>`<button data-p="${k}" title="${t}" class="${k===RES.period?'on':''}">${k==='MAX'?'Max':k}</button>`).join('')}</div>
+        <div class="seg" id="resMode" role="group" aria-label="Return type"><button data-m="tr" class="${RES.mode==='tr'?'on':''}" title="Price change plus dividends reinvested">Total return</button><button data-m="price" class="${RES.mode==='price'?'on':''}" title="Price change only, no dividends">Price only</button></div></div></div>
+      ${c?.error?`<div class="banner err">No price history for this period: ${esc(c.error)}</div>`:''}
+      <div class="cmp-chart" id="resChart"></div>
+      <div class="tablewrap" style="border:0;margin-top:10px"><table class="cmp-tbl"><thead id="resHead"></thead><tbody id="resStats"></tbody></table></div>
+      <p class="foot" style="margin:10px 0 0" id="resFoot"></p></div>
+    <div class="card" style="margin-top:12px">${detailHtml(h,{spark:false})}</div>
+    <p class="foot">${RESDATA.demo?'Demo data. ':''}Data as of ${h.fetched_at?new Date(h.fetched_at*1000).toLocaleString():'—'}.</p>`;
+  $('resPer').querySelectorAll('button').forEach(b=>b.onclick=()=>{ RES.period=b.dataset.p; resSave(); loadResPeriod(); });
+  $('resMode').querySelectorAll('button').forEach(b=>b.onclick=()=>{ RES.mode=b.dataset.m; resSave(); renderResearch(); });
+  const tc = $('resToCmp'); if(tc) tc.onclick=()=>{ if(CMP.syms.length>=CMP_MAX){ tc.textContent='Comparison is full (10)'; tc.title='Remove a symbol in Symbol comparison first'; return; } cmpAdd(h.symbol,false); tab=CMP_TAB; try{localStorage.setItem('divdash.tab',tab);}catch(e){} render(); };
+  resChart();
+  const S = c&&!c.error&&RESDATA.period===RES.period ? [c] : [];
+  cmpTable({S, head:$('resHead'), body:$('resStats'), foot:$('resFoot'), period:RES.period, busy:resPerBusy, click:false, sortable:false});
+}
+function resChart(){
+  const c = RESDATA?.cmp, ok = c && !c.error && RESDATA.period===RES.period;
+  cmpChart({box:$('resChart'), S: ok?[c]:[], mode:RES.mode, empty: resPerBusy?'Loading…':'No price history to show.'});
+}
+load(false);
+</script>
+</body>
+</html>

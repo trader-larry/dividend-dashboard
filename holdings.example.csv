@@ -1,0 +1,6 @@
+symbol,shares,cost_basis,frequency,distribution_type,notes
+SCHD,100,25.00,,,Core dividend growth
+JEPI,50,55.00,,,Covered-call income
+VYM,20,110.00,,,
+O,40,58.00,,,Monthly REIT
+BND,,,,,Watchlist only (no shares)
