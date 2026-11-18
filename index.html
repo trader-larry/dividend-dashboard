@@ -488,7 +488,7 @@ const COLS = [
   // Tab 4: holdings & performance (positions with shares only)
   {k:'shares', tab:4, t:'Quantity', n:1, v:h=>h.shares, r:h=>h.shares==null?'—':(+h.shares).toLocaleString(undefined,{maximumFractionDigits:4})},
   {k:'cost_basis', tab:4, t:'Avg cost / share', n:1, v:h=>h.cost_basis, r:h=>fmt.money(h.cost_basis)},
-  {k:'price4', tab:4, t:'Current price', n:1, v:h=>h.price, r:h=>`${fmt.money(h.price)}<div class="muted">${h.cost_basis&&h.price?((h.price/h.cost_basis-1)>=0?'+':'')+((h.price/h.cost_basis-1)*100).toFixed(1)+'% vs cost':''}</div>`},
+  {k:'price4', tab:4, t:'Current price', n:1, v:h=>h.price, r:h=>fmt.money(h.price)},
   {k:'total_cost', tab:4, t:'Total cost', n:1, v:h=>h.total_cost, s:h=>h.total_cost, r:h=>fmt.money(h.total_cost,0)},
   {k:'mv4', tab:4, t:'Market value', n:1, v:h=>h.market_value, s:h=>h.market_value, r:h=>fmt.money(h.market_value,0)},
   {k:'gain', tab:4, t:'Unrealized gain / loss', n:1, v:h=>h.gain, s:h=>h.gain, tip:'(Current price − avg cost) × quantity. Excludes dividends received.', r:h=>gainCell(h.gain)},
