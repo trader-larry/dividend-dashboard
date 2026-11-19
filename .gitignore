@@ -17,3 +17,7 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# Saved Planning scenarios (next to your holdings file)
+*-plans.json
+*-plans.json.tmp

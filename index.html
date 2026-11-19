@@ -267,6 +267,35 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 .cmp-tbl tbody tr.own{cursor:pointer}
 .cmp-tbl th{white-space:normal}
 .cmp-empty{padding:30px;text-align:center;color:var(--muted)}
+/* Planning tab */
+.plan-ctl{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+.plan-f{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:12px}
+.plan-ctl select,.plan-ctl input,.plan-ah input{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 8px;font:inherit}
+#plName{width:220px}
+.plan-sep{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
+.plan-msg{margin-top:8px;font-size:12px;color:var(--muted);min-height:16px}
+.plan-key{display:flex;gap:12px;font-size:12px;color:var(--muted)}
+.plan-key span{display:inline-flex;gap:5px;align-items:center}.plan-key i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.plan-hb{grid-template-columns:minmax(90px,1.6fr) 2fr 70px 34px}
+.plan-acct{margin-bottom:12px}
+.plan-ah{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:6px}
+.plan-ah .plan-an{font-weight:600;font-size:15px;width:220px}
+.plan-ah .plan-bal{width:150px;text-align:right}
+.plan-ah button{font-size:12px;padding:3px 10px}
+.plan-chk{font-size:12px}.plan-chk.ok{color:var(--pos)}.plan-chk.bad{color:var(--warn);font-weight:600}
+.plan-tbl td{vertical-align:middle}
+.plan-tbl tbody tr:hover td{background:transparent}
+.plan-tbl tfoot td{font-weight:600;border-top:1px solid var(--line)}
+.plan-in{width:84px;text-align:right;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:4px 6px;font:inherit;font-variant-numeric:tabular-nums}
+.plan-in.plan-amt{width:104px}
+.plan-in.mine{color:var(--accent);font-weight:600;border-color:var(--accent)}
+.plan-x{border:0;background:transparent;color:var(--muted);font-size:16px;padding:0 6px}
+.plan-x:hover{color:var(--neg)}
+.plan-add{margin-top:8px}
+.plan-add input{width:240px}
+.plan-sv tbody tr[data-id]{cursor:pointer}
+.plan-sv tbody tr.on td{background:var(--soft)}
+.plan-sv tbody tr.base td{border-bottom:2px solid var(--line)}
 .own-b{display:inline-block;margin-left:6px;padding:0 6px;border-radius:9px;font-size:11px;font-weight:600;line-height:16px;background:var(--soft);border:1px solid var(--line);color:var(--muted)}
 .res-head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-start;justify-content:space-between}
 .res-head > div:first-child{flex:1 1 300px}
@@ -323,6 +352,7 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
   <div id="tab3extra" hidden></div>
   <div id="cmpPanel" hidden></div>
   <div id="resPanel" hidden></div>
+  <div id="planPanel" hidden></div>
   <p class="foot">Data from Yahoo Finance, cached for 15 minutes. Yield (TTM) = last 12 months of dividends ÷ price; Fwd = latest payment × frequency ÷ price; Total return assumes dividends reinvested. Distribution type marked "est." is a guess from the fund's category: confirm with the fund's 19a-1 notices or your 1099-DIV and set it in Edit holdings. Not investment advice.</p>
 </main>
 
@@ -450,7 +480,7 @@ function renderOverlapPanels(){
 }
 
 // Each column: k=id, t=header, tab=which tab (0 = always shown), n=numeric, v=sort value, r=cell html
-const TABS = ['Price & fund', 'Dividends & income', 'Strategy & overlap', 'Holdings & performance', 'Monthly projections', 'Symbol comparison', 'Research'];
+const TABS = ['Price & fund', 'Dividends & income', 'Strategy & overlap', 'Holdings & performance', 'Monthly projections', 'Symbol comparison', 'Research', 'Planning'];
 const CMP_TAB = 6, RES_TAB = 7;
 // Rolling 12 months for the projections tab, starting with the current month
 const PM = (()=>{ const n=new Date(); return Array.from({length:12},(_,i)=>{ const d=new Date(n.getFullYear(), n.getMonth()+i, 1);
@@ -540,9 +570,9 @@ function render(){
   if(!DATA) return;
   renderTabs();
   // The Symbol comparison tab has its own panel instead of the holdings table.
-  const cmp = tab===CMP_TAB, res = tab===RES_TAB;
-  ['mainTable','q','count'].forEach(id=>$(id).hidden=cmp||res); $('cmpPanel').hidden=!cmp; $('resPanel').hidden=!res;
-  if(cmp||res){ $('flagF').hidden=true; $('tabTop').hidden=true; $('tab3extra').hidden=true; cmp?renderCompare():renderResearch(); return; }
+  const cmp = tab===CMP_TAB, res = tab===RES_TAB, pln = tab===PLAN_TAB, own = cmp||res||pln;
+  ['mainTable','q','count'].forEach(id=>$(id).hidden=own); $('cmpPanel').hidden=!cmp; $('resPanel').hidden=!res; $('planPanel').hidden=!pln;
+  if(own){ $('flagF').hidden=true; $('tabTop').hidden=true; $('tab3extra').hidden=true; cmp?renderCompare():res?renderResearch():planRender(true); return; }
   renderHead();
   const rows = sortedRows(filteredRows());
   const cols = visCols();
@@ -983,7 +1013,7 @@ $('btnStop').onclick=async()=>{
   document.title='Dashboard stopped';
   setTimeout(()=>{ try{ window.open('','_self'); window.close(); }catch(e){} },800); // closes the tab where the browser allows it
 };
-$('btnRefresh').onclick=()=>{ load(true); if(tab===CMP_TAB) loadCompare(true); if(tab===RES_TAB&&RES.sym) loadResearch(RES.sym,true); };
+$('btnRefresh').onclick=()=>{ load(true); if(tab===CMP_TAB) loadCompare(true); if(tab===RES_TAB&&RES.sym) loadResearch(RES.sym,true); if(tab===PLAN_TAB) planLoadQuotes(planAllSyms(PLAN),true); };
 // Theme switcher: Auto follows the computer's light/dark setting; the choice is remembered in this browser.
 function setTheme(t){
   if(t==='light'||t==='dark') document.documentElement.dataset.theme=t; else { delete document.documentElement.dataset.theme; t='auto'; }
@@ -1456,6 +1486,322 @@ function resChart(){
   const c = RESDATA?.cmp, ok = c && !c.error && RESDATA.period===RES.period;
   cmpChart({box:$('resChart'), S: ok?[c]:[], mode:RES.mode, empty: resPerBusy?'Loading…':'No price history to show.'});
 }
+// ---- Planning tab: what-if allocations across accounts, saved as named scenarios ----
+const PLAN_TAB = 8;
+const PLAN_ACCTS = ['Taxable brokerage', 'Traditional IRA', 'Roth IRA'];
+const planBlank = () => ({id:null, name:'New plan', basis:'fwd', accounts:PLAN_ACCTS.map(n=>({name:n, balance:0, rows:[]}))});
+let PLAN = planBlank(), PLANS = [], plansState = '', plansPath = '', planMsg = '';
+const PQ = {};            // quotes for symbols you don't hold: symbol -> quote or {error}
+const pqBusy = new Set(); // symbols being fetched now
+try{ const d = JSON.parse(localStorage.getItem('divdash.plan')||'null'); if(d && Array.isArray(d.accounts)) PLAN = d; }catch(e){}
+const planStore = () => { try{ localStorage.setItem('divdash.plan', JSON.stringify(PLAN)); }catch(e){} };
+const planKey = p => JSON.stringify({name:p.name, basis:p.basis, accounts:p.accounts});
+const planSaved = () => PLAN.id ? PLANS.find(p=>p.id===PLAN.id) : null;
+const planDirty = () => { const s = planSaved(); return !s || planKey(s)!==planKey(PLAN); };
+const planHeld = () => Object.fromEntries((DATA?.holdings||[]).map(h=>[h.symbol,h]));
+const planQuote = (sym, held=planHeld()) => held[sym] || PQ[sym];
+// Yield used for a row: your own number if you typed one, else forward (or TTM) yield.
+function planYield(r, q, basis=PLAN.basis){
+  if(r.y!=null && r.y!=='') return +r.y;
+  if(!q || q.error) return null;
+  return basis==='ttm' ? (q.ttm_yield ?? q.fwd_yield) : (q.fwd_yield ?? q.ttm_yield);
+}
+const planShape = q => { const s = q?.pay_shape; return s && s.some(v=>v>0) ? s : Array(12).fill(1/12); };
+const planMoney = v => { const n = sumExpr(v); return n==null||isNaN(n) ? 0 : n; };
+
+// Totals for a plan (the working one or a saved one). Missing quotes count as no income.
+function planCalc(p, held=planHeld()){
+  const out = {invested:0, income:0, er:0, erBase:0, months:Array(12).fill(0), byType:{}, accts:[], missing:0};
+  p.accounts.forEach(a=>{
+    const bal = +a.balance||0, A = {invested:0, income:0, wsum:0, rows:[]};
+    a.rows.forEach(r=>{
+      const q = planQuote(r.s, held), y = planYield(r, q, p.basis), amt = bal*(+r.w||0)/100, inc = y!=null ? amt*y/100 : 0;
+      if(!q) out.missing++;
+      A.wsum += +r.w||0; A.invested += amt; A.income += inc;
+      if(q?.expense_ratio!=null && amt){ out.er += q.expense_ratio*amt; out.erBase += amt; }
+      const sh = planShape(q); sh.forEach((f,m)=>out.months[m] += inc*f);
+      const t = q?.dist_type || (q?.error ? 'Unknown' : 'Loading…');
+      out.byType[t] = (out.byType[t]||0) + inc;
+      A.rows.push({q, y, amt, inc});
+    });
+    out.invested += A.invested; out.income += A.income; out.accts.push(A);
+  });
+  out.yield = out.invested ? out.income/out.invested*100 : null;
+  out.wer = out.erBase ? out.er/out.erBase : null;
+  return out;
+}
+
+async function planLoadQuotes(syms, refresh=false){
+  const held = planHeld();
+  const need = [...new Set(syms)].filter(s=>s && !held[s] && !pqBusy.has(s) && (refresh || !PQ[s]));
+  if(!need.length) return;
+  need.forEach(s=>pqBusy.add(s)); planRender();
+  for(let i=0;i<need.length;i+=20){
+    const chunk = need.slice(i,i+20);
+    try{
+      const r = await fetch(`/api/plan/quotes?symbols=${encodeURIComponent(chunk.join(','))}${refresh?'&refresh=1':''}`);
+      const j = await r.json(); if(!r.ok) throw new Error(j.error||r.status);
+      (j.quotes||[]).forEach(q=>PQ[q.symbol]=q);
+    }catch(e){ chunk.forEach(s=>{ if(!PQ[s]) PQ[s] = {symbol:s, error:String(e.message||e)}; }); }
+    chunk.forEach(s=>pqBusy.delete(s));
+  }
+  planRender();
+}
+const planAllSyms = p => p.accounts.flatMap(a=>a.rows.map(r=>r.s));
+
+async function planFetchSaved(){
+  plansState = 'loading';
+  try{ const j = await (await fetch('/api/plans')).json(); PLANS = j.plans||[]; plansPath = j.path||''; plansState = 'ok'; }
+  catch(e){ plansState = 'error'; }
+  planLoadQuotes(PLANS.flatMap(planAllSyms));
+  planRender();
+}
+async function planPutSaved(list, msg){
+  try{
+    const r = await fetch('/api/plans', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({plans:list})});
+    const j = await r.json(); if(!r.ok) throw new Error(j.error||r.status);
+    PLANS = list; planMsg = msg;
+  }catch(e){ planMsg = 'Could not save: '+(e.message||e); }
+  planRender(true);
+}
+function planSave(asNew=false){
+  const nm = (PLAN.name||'').trim() || 'Untitled plan';
+  PLAN.name = nm;
+  if(asNew || !PLAN.id){
+    PLAN.id = Date.now().toString(36);
+    // Keep names unique so the list stays readable: "Plan", "Plan (2)", ...
+    let k = 2; while(PLANS.some(p=>p.name===PLAN.name)) PLAN.name = `${nm} (${k++})`;
+  }
+  const rec = JSON.parse(JSON.stringify({id:PLAN.id, name:PLAN.name, basis:PLAN.basis, accounts:PLAN.accounts, saved_at:new Date().toISOString()}));
+  const list = PLANS.filter(p=>p.id!==PLAN.id).concat([rec]);
+  planStore();
+  planPutSaved(list, `Saved "${PLAN.name}".`);
+}
+function planOpen(id){
+  const p = PLANS.find(x=>x.id===id); if(!p) return;
+  if(planDirty() && planAllSyms(PLAN).length && !confirmLeave()) return;
+  PLAN = JSON.parse(JSON.stringify({id:p.id, name:p.name, basis:p.basis||'fwd', accounts:p.accounts}));
+  planMsg = ''; planStore(); planRender(true); planLoadQuotes(planAllSyms(PLAN));
+}
+// No browser dialogs: the first click on New / Start from holdings / Open asks again in the status line.
+let planConfirmUntil = 0;
+function confirmLeave(){
+  if(Date.now() < planConfirmUntil){ planConfirmUntil = 0; return true; }
+  planConfirmUntil = Date.now()+6000;
+  planMsg = 'This plan has unsaved changes. Click again within a few seconds to discard them, or Save first.';
+  planRender(); return false;
+}
+function planNew(){
+  if(planDirty() && planAllSyms(PLAN).length && !confirmLeave()) return;
+  PLAN = planBlank(); planMsg = ''; planStore(); planRender(true);
+}
+// Rebalancing starts here: one account holding what you own now, at today's weights.
+function planFromHoldings(){
+  if(planDirty() && planAllSyms(PLAN).length && !confirmLeave()) return;
+  const hs = (DATA?.holdings||[]).filter(h=>h.market_value>0).sort((a,b)=>b.market_value-a.market_value);
+  const tot = hs.reduce((a,h)=>a+h.market_value,0);
+  const rows = hs.map(h=>({s:h.symbol, w:round(h.market_value/tot*100,2)}));
+  if(rows.length){ const diff = round(100-rows.reduce((a,r)=>a+r.w,0),2); rows[0].w = round(rows[0].w+diff,2); }
+  PLAN = {id:null, name:'Rebalance from my holdings', basis:PLAN.basis||'fwd', accounts:[{name:'My holdings', balance:Math.round(tot), rows}]};
+  planMsg = rows.length ? 'Started from your holdings at today\'s weights. Change the weights to try a rebalance.' : 'No positions with shares yet.';
+  planStore(); planRender(true);
+}
+function planDelete(){
+  const s = planSaved(); if(!s) return;
+  if(Date.now() >= planConfirmUntil){ planConfirmUntil = Date.now()+6000; planMsg = `Click Delete again to remove "${s.name}" from your saved scenarios.`; planRender(); return; }
+  planConfirmUntil = 0;
+  PLAN.id = null; planStore();
+  planPutSaved(PLANS.filter(p=>p.id!==s.id), `Deleted "${s.name}". It is still open here as an unsaved plan.`);
+}
+function planAddSyms(ai, raw){
+  const a = PLAN.accounts[ai]; if(!a) return;
+  const list = String(raw||'').toUpperCase().split(/[\s,;]+/).map(s=>s.trim()).filter(s=>/^[A-Z0-9.\-^=]{1,15}$/.test(s));
+  list.forEach(s=>{ if(!a.rows.some(r=>r.s===s)) a.rows.push({s, w:0}); });
+  planStore(); planRender(true); planLoadQuotes(list);
+}
+function planSpread(ai){
+  const a = PLAN.accounts[ai]; if(!a?.rows.length) return;
+  const n = a.rows.length, w = Math.floor(10000/n)/100;
+  a.rows.forEach(r=>r.w=w); a.rows[0].w = round(100-w*(n-1),2);
+  planStore(); planRender(true);
+}
+
+const planPanelHtml = () => `<div class="card">
+    <div class="plan-ctl">
+      <label class="plan-f">Scenario <select id="plSel"></select></label>
+      <label class="plan-f">Name <input id="plName" maxlength="80"></label>
+      <button class="primary" id="plSave">Save</button><button id="plSaveNew">Save as new</button><button id="plDel">Delete</button>
+      <span class="plan-sep"></span>
+      <button id="plNew" title="Empty plan with Taxable, Traditional IRA and Roth IRA accounts">New plan</button>
+      <button id="plHold" title="One account with what you own now, at today's weights">Start from my holdings</button>
+      <div class="seg" id="plBasis" role="group" aria-label="Yield used" style="margin-left:auto"><button data-b="fwd" title="Latest payment × payments per year ÷ price">Forward yield</button><button data-b="ttm" title="Last 12 months of dividends ÷ price">TTM yield</button></div>
+    </div>
+    <div class="plan-msg" id="plMsg"></div>
+  </div>
+  <div class="tiles" id="plTiles" style="margin-top:12px"></div>
+  <div class="projrow" style="margin-bottom:12px">
+    <div class="card"><div class="calhead"><h2>Projected income by month</h2><div class="plan-key"><span><i style="background:var(--bar)"></i>This plan</span><span><i style="background:var(--bar2)"></i>Your portfolio now</span></div></div><div id="plChart"></div>
+      <p class="muted small" style="margin:6px 0 0">Monthly and weekly payers are spread over every month; quarterly, semi-annual and annual payers land in the months they paid most recently. Months are by ex-dividend date.</p></div>
+    <div class="card"><h2>Income by distribution type</h2><div id="plTypes"></div><h2 style="margin-top:14px">Income by account</h2><div id="plAccts"></div></div>
+  </div>
+  <div id="plAcctCards"></div>
+  <button id="plAddAcct" style="margin:2px 0 14px">+ Add account</button>
+  <div class="card"><h2>Saved scenarios</h2><div class="tablewrap" style="border:0"><table class="plan-sv"><thead><tr><th>Scenario</th><th class="num">Invested</th><th class="num">Income / yr</th><th class="num">Per month</th><th class="num">Yield</th><th class="num">vs. now / yr</th><th>Saved</th></tr></thead><tbody id="plSaved"></tbody></table></div>
+    <p class="foot" style="margin:8px 0 0" id="plPath"></p></div>
+  <p class="foot">Income = amount × yield. Yields come from the same data as the rest of the dashboard and are what each fund actually paid out, which is already after its expense ratio, so fees are shown for reference and not subtracted again. Type your own yield in a row to override it (shown in blue). Distribution type marked "est." is a guess from the fund's category; set your own in Edit holdings.</p>`;
+
+function planAcctHtml(a, ai, held){
+  const quick = (DATA?.holdings||[]).map(h=>h.symbol).filter(s=>!a.rows.some(r=>r.s===s));
+  return `<div class="card plan-acct" data-a="${ai}">
+    <div class="plan-ah">
+      <input class="plan-an" data-f="name" value="${esc(a.name)}" aria-label="Account name">
+      <label class="plan-f">Balance $<input class="plan-bal" data-f="balance" inputmode="decimal" value="${a.balance?(+a.balance).toLocaleString('en-US',{maximumFractionDigits:2}):''}" placeholder="0"></label>
+      <span class="plan-chk" data-c="chk"></span>
+      <span style="margin-left:auto;display:flex;gap:6px"><button data-act="spread" title="Give every symbol in this account the same weight">Spread evenly</button><button data-act="rmacct" title="Remove this account from the plan">Remove account</button></span>
+    </div>
+    <div class="tablewrap" style="border:0"><table class="plan-tbl"><thead><tr>
+      <th>Symbol</th><th>Distribution type</th><th>Payout</th><th class="num" title="Forward or TTM yield (switch at the top). Type a number to use your own.">Yield</th><th class="num">Expense ratio</th>
+      <th class="num">Weight %</th><th class="num">Amount</th><th class="num">Income / yr</th><th class="num">Per month</th><th class="num" title="Market value you hold now in this symbol (all accounts)">You hold now</th><th></th></tr></thead>
+      <tbody>${a.rows.map((r,ri)=>planRowHtml(r,ri,held)).join('') || `<tr><td colspan="11" class="muted" style="padding:14px 8px">No symbols yet. Add one below or pick from your holdings.</td></tr>`}</tbody>
+      ${a.rows.length?`<tfoot><tr><td>Total</td><td></td><td></td><td class="num" data-c="ay"></td><td></td><td class="num" data-c="aw"></td><td class="num" data-c="aamt"></td><td class="num" data-c="ainc"></td><td class="num" data-c="amo"></td><td></td><td></td></tr></tfoot>`:''}
+    </table></div>
+    <form class="cmp-add plan-add" autocomplete="off"><input list="plList" placeholder="Add symbols, e.g. VYM, DIVO" aria-label="Add symbol"><button type="submit">Add</button></form>
+    ${quick.length?`<div class="cmp-quick">Your holdings: ${quick.map(s=>`<button type="button" data-add="${esc(s)}">+ ${symHtml(s)}</button>`).join('')} <button type="button" data-add="${esc(quick.join(','))}" style="margin-left:6px">+ All</button></div>`:''}
+  </div>`;
+}
+function planRowHtml(r, ri, held){
+  const q = planQuote(r.s, held), busy = !q && pqBusy.has(r.s);
+  const nm = q?.error ? `<span class="neg">${esc(q.error)}</span>` : q ? esc(q.name||'') : busy ? 'Loading…' : '';
+  const flags = q?.flags?.length ? ` <span class="flag" title="${esc(q.flags.join('\n'))}">⚠</span>` : '';
+  const own = held[r.s] ? (held[r.s].shares ? '' : ' <span class="est">watch</span>') : ' <span class="est" title="Not in your holdings">new</span>';
+  const auto = planYield({}, q);
+  return `<tr data-r="${ri}">
+    <td><div class="sym">${symHtml(r.s)}${flags}${own}</div><div class="nm" title="${esc(q?.name||'')}">${nm}</div></td>
+    <td><div class="wrap">${q&&!q.error?`${esc(q.dist_type||'—')}${q.dist_type_source==='estimated'?' <span class="est">est.</span>':yours(q.dist_type_source)}`:'—'}</div></td>
+    <td>${q?.frequency&&!q.error?`<span class="pill">${esc(q.frequency)}</span>`:'—'}</td>
+    <td class="num"><input class="plan-in${r.y!=null&&r.y!==''?' mine':''}" data-f="y" inputmode="decimal" value="${r.y!=null&&r.y!==''?r.y:''}" placeholder="${auto!=null?auto.toFixed(2):'—'}" title="${auto!=null?`Data: ${auto.toFixed(2)}%. Type to use your own; clear to go back.`:'Type a yield %'}"></td>
+    <td class="num">${q&&!q.error?fmt.pct(q.expense_ratio):'—'}</td>
+    <td class="num"><input class="plan-in" data-f="w" inputmode="decimal" value="${r.w?round(r.w,2):''}" placeholder="0"></td>
+    <td class="num"><input class="plan-in plan-amt" data-f="amt" inputmode="decimal" placeholder="$0"></td>
+    <td class="num" data-c="inc"></td><td class="num" data-c="mo"></td>
+    <td class="num">${held[r.s]?.market_value?fmt.money(held[r.s].market_value,0):'<span class="muted">—</span>'}</td>
+    <td><button class="plan-x" data-act="rm" title="Remove ${esc(r.s)}" aria-label="Remove ${esc(r.s)}">×</button></td></tr>`;
+}
+
+// Full redraw (structure changed) or just the numbers (typing in a box keeps its focus).
+function planRender(full=false){
+  if(tab!==PLAN_TAB || !DATA) return;
+  const el = $('planPanel');
+  if(!el.dataset.built){
+    el.dataset.built = 1; el.innerHTML = planPanelHtml() + '<datalist id="plList"></datalist>'; full = true;
+    $('plSave').onclick = ()=>planSave(false);
+    $('plSaveNew').onclick = ()=>planSave(true);
+    $('plDel').onclick = planDelete;
+    $('plNew').onclick = planNew;
+    $('plHold').onclick = planFromHoldings;
+    $('plSel').onchange = e => { const v = e.target.value; if(v) planOpen(v); else planRender(); };
+    $('plName').oninput = e => { PLAN.name = e.target.value; planMsg = ''; planStore(); planRender(); };
+    $('plBasis').querySelectorAll('button').forEach(b=>b.onclick=()=>{ PLAN.basis=b.dataset.b; planStore(); planRender(true); });
+    $('plAddAcct').onclick = ()=>{ PLAN.accounts.push({name:'Account '+(PLAN.accounts.length+1), balance:0, rows:[]}); planStore(); planRender(true); };
+    const box = $('plAcctCards');
+    box.addEventListener('input', e=>{
+      const t = e.target, f = t.dataset.f, card = t.closest('.plan-acct'); if(!f||!card) return;
+      const a = PLAN.accounts[+card.dataset.a], tr = t.closest('tr[data-r]'), r = tr ? a.rows[+tr.dataset.r] : null;
+      if(f==='name') a.name = t.value;
+      else if(f==='balance') a.balance = planMoney(t.value);
+      else if(r && f==='w'){ const v = sumExpr(t.value); r.w = v==null||isNaN(v) ? 0 : v; }
+      else if(r && f==='amt'){ const v = planMoney(t.value); r.w = a.balance ? v/a.balance*100 : 0; const w = tr.querySelector('[data-f="w"]'); if(w) w.value = r.w?round(r.w,2):''; }
+      else if(r && f==='y'){ const v = t.value.trim(); r.y = v==='' ? null : (isNaN(+v) ? r.y : +v); t.classList.toggle('mine', r.y!=null); }
+      planMsg = ''; planStore(); planRender();
+    });
+    box.addEventListener('focusout', e=>{ if(e.target.dataset.f==='balance'||e.target.dataset.f==='amt') planRender(); });
+    box.addEventListener('click', e=>{
+      const b = e.target.closest('button'), card = e.target.closest('.plan-acct'); if(!b||!card) return;
+      const ai = +card.dataset.a, a = PLAN.accounts[ai];
+      if(b.dataset.add){ planAddSyms(ai, b.dataset.add); return; }
+      if(b.dataset.act==='rm'){ a.rows.splice(+b.closest('tr').dataset.r,1); }
+      else if(b.dataset.act==='spread'){ planSpread(ai); return; }
+      else if(b.dataset.act==='rmacct'){
+        if(a.rows.length && b.dataset.sure!=='1'){ b.dataset.sure='1'; b.textContent='Click again to remove'; setTimeout(()=>{ b.dataset.sure=''; b.textContent='Remove account'; },4000); return; }
+        PLAN.accounts.splice(ai,1);
+      } else return;
+      planStore(); planRender(true);
+    });
+    box.addEventListener('submit', e=>{ e.preventDefault(); const card = e.target.closest('.plan-acct'), i = e.target.querySelector('input'); planAddSyms(+card.dataset.a, i.value); });
+    if(!plansState) planFetchSaved();
+    planLoadQuotes(planAllSyms(PLAN));
+  }
+  const held = planHeld(), c = planCalc(PLAN, held), P = DATA.portfolio||{};
+  if(full){
+    $('plAcctCards').innerHTML = PLAN.accounts.map((a,ai)=>planAcctHtml(a,ai,held)).join('') || '<div class="card muted" style="margin-bottom:12px">No accounts. Click + Add account.</div>';
+    $('plList').innerHTML = (DATA.holdings||[]).map(h=>h.symbol).concat(['SCHD','VYM','DGRO','VIG','JEPI','JEPQ','SPYI','QQQI','DIVO','O','SGOV']).filter((s,i,a)=>a.indexOf(s)===i).map(s=>`<option value="${esc(s)}">`).join('');
+    $('plBasis').querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.b===PLAN.basis));
+    if(document.activeElement!==$('plName')) $('plName').value = PLAN.name||'';
+  }
+  // Scenario picker and status
+  const dirty = planDirty(), saved = planSaved();
+  $('plSel').innerHTML = `<option value="">${saved?'— switch to —':(PLAN.name||'Unsaved plan')+' (not saved)'}</option>` + PLANS.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}"${p.id===PLAN.id?' selected':''}>${esc(p.name)}</option>`).join('');
+  $('plDel').disabled = !saved; $('plDel').style.cursor = saved?'':'default';
+  $('plSave').textContent = saved ? (dirty?'Save changes':'Saved') : 'Save';
+  $('plMsg').innerHTML = planMsg ? esc(planMsg) : saved ? (dirty?'<span class="warnc">Unsaved changes.</span>':`Saved ${new Date(saved.saved_at).toLocaleString()}.`) : 'Not saved yet. Your work is kept in this browser until you save it.';
+  // Tiles
+  const now = P.annual_income||0, d = c.income-now;
+  const tile = (k,v,sub='') => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div>${sub?`<div class="muted" style="font-size:12px">${sub}</div>`:''}</div>`;
+  $('plTiles').innerHTML = [
+    tile('Total invested', fmt.money(c.invested,0), PLAN.accounts.length>1?`${PLAN.accounts.length} accounts`:''),
+    tile('Annual income', fmt.money(c.income,0)),
+    tile('Monthly average', fmt.money(c.income/12,0)),
+    tile('Blended yield', fmt.pct(c.yield)),
+    tile('Weighted expense ratio', fmt.pct(c.wer), 'for reference, already in the yield'),
+    tile('vs. your portfolio now', now&&c.invested?`<span class="${d>=0?'pos':'neg'}">${d>=0?'+':'-'}${fmt.money(Math.abs(d),0)}</span>`:'—', now&&c.invested?`now ${fmt.money(now,0)}/yr · ${d>=0?'+':'-'}${fmt.money(Math.abs(d)/12,0)} a month`:''),
+  ].join('');
+  // Chart: rolling 12 months, plan vs now
+  const nowM = P.monthly_income||Array(12).fill(0);
+  $('plChart').innerHTML = c.income||now ? planBars(PM.map(p=>({l:p.label, v:c.months[p.m], v2:nowM[p.m]||0}))) : '<p class="muted">Add symbols and weights to see the plan\'s income by month.</p>';
+  const tot = Object.values(c.byType).reduce((a,v)=>a+v,0);
+  $('plTypes').innerHTML = tot ? planHbars(c.byType, tot) : '<p class="muted">—</p>';
+  const ac = Object.fromEntries(PLAN.accounts.map((a,i)=>[a.name||('Account '+(i+1)), c.accts[i].income]).filter(x=>x[1]>0));
+  $('plAccts').innerHTML = c.income ? planHbars(ac, c.income) : '<p class="muted">—</p>';
+  // Per-account numbers
+  document.querySelectorAll('#plAcctCards .plan-acct').forEach(card=>{
+    const ai = +card.dataset.a, a = PLAN.accounts[ai], A = c.accts[ai]; if(!a||!A) return;
+    const w = round(A.wsum,2), ok = Math.abs(w-100)<0.005;
+    const chk = card.querySelector('[data-c="chk"]');
+    chk.className = 'plan-chk '+(!a.rows.length?'':ok?'ok':'bad');
+    chk.textContent = !a.rows.length ? '' : ok ? '✓ Weights add up to 100%' : w<100 ? `${w.toFixed(2)}% assigned · ${(100-w).toFixed(2)}% (${fmt.money(a.balance*(100-w)/100,0)}) not invested` : `${w.toFixed(2)}% assigned · over by ${(w-100).toFixed(2)}%`;
+    card.querySelectorAll('tbody tr[data-r]').forEach(tr=>{
+      const R = A.rows[+tr.dataset.r]; if(!R) return;
+      tr.querySelector('[data-c="inc"]').innerHTML = R.y!=null ? fmt.money(R.inc,0) : '<span class="muted">—</span>';
+      tr.querySelector('[data-c="mo"]').innerHTML = R.y!=null ? fmt.money(R.inc/12,0) : '<span class="muted">—</span>';
+      const amt = tr.querySelector('[data-f="amt"]');
+      if(document.activeElement!==amt) amt.value = R.amt ? Math.round(R.amt).toLocaleString('en-US') : '';
+    });
+    const f = k => card.querySelector(`[data-c="${k}"]`);
+    if(f('ainc')){ f('ay').textContent = fmt.pct(A.invested?A.income/A.invested*100:null); f('aw').innerHTML = `<span class="${ok?'':'warnc'}">${w.toFixed(2)}%</span>`;
+      f('aamt').textContent = fmt.money(A.invested,0); f('ainc').innerHTML = `<strong>${fmt.money(A.income,0)}</strong>`; f('amo').textContent = fmt.money(A.income/12,0); }
+  });
+  // Saved scenarios table (current portfolio as the baseline row)
+  const rowsS = PLANS.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(p=>{ const s = planCalc(p, held), dd = s.income-now;
+    return `<tr class="${p.id===PLAN.id?'on':''}" data-id="${esc(p.id)}"><td><strong>${esc(p.name)}</strong><div class="muted" style="font-size:12px">${p.accounts.length} account${p.accounts.length===1?'':'s'} · ${planAllSyms(p).length} symbols</div></td>
+      <td class="num">${fmt.money(s.invested,0)}</td><td class="num"><strong>${fmt.money(s.income,0)}</strong></td><td class="num">${fmt.money(s.income/12,0)}</td><td class="num">${fmt.pct(s.yield)}</td>
+      <td class="num">${now?`<span class="${dd>=0?'pos':'neg'}">${dd>=0?'+':'-'}${fmt.money(Math.abs(dd),0)}</span>`:'—'}</td><td class="muted">${p.saved_at?fmt.date(p.saved_at.slice(0,10)):'—'}</td></tr>`; });
+  $('plSaved').innerHTML = `<tr class="base"><td><strong>Your portfolio now</strong><div class="muted" style="font-size:12px">from your holdings</div></td><td class="num">${fmt.money(P.market_value||0,0)}</td><td class="num"><strong>${fmt.money(now,0)}</strong></td><td class="num">${fmt.money(now/12,0)}</td><td class="num">${fmt.pct(P.yield)}</td><td class="num">—</td><td></td></tr>`
+    + (rowsS.join('') || `<tr><td colspan="7" class="muted" style="padding:12px 8px">${plansState==='loading'?'Loading…':plansState==='error'?'Could not read saved scenarios.':'No saved scenarios yet. Name this plan and click Save.'}</td></tr>`);
+  $('plSaved').querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>{ if(tr.dataset.id!==PLAN.id) planOpen(tr.dataset.id); });
+  $('plPath').textContent = plansPath ? `Saved scenarios are kept in ${plansPath}, next to your holdings file. Click a row to open it.` : '';
+}
+function planBars(items, h=180){
+  const W = Math.max(360, items.length*52), pad = 30, max = Math.max(...items.map(i=>Math.max(i.v,i.v2)), 1e-9), bw = (W-pad)/items.length;
+  const lab = v => '$'+(v>=1000?(v/1000).toFixed(1)+'k':v.toFixed(0));
+  return `<svg viewBox="0 0 ${W} ${h}" width="100%" style="max-height:${h+20}px"><line x1="${pad}" x2="${W}" y1="${h-20}" y2="${h-20}" stroke="var(--line)"/>${items.map((it,i)=>{
+    const x = pad+i*bw+bw*0.12, w = bw*0.36, h1 = it.v/max*(h-40), h2 = it.v2/max*(h-40);
+    return `<rect x="${x}" y="${h-20-h1}" width="${w}" height="${h1}" rx="2" fill="var(--bar)"><title>${esc(it.l)} plan: ${fmt.money(it.v,0)}</title></rect>
+      <rect x="${x+w+1}" y="${h-20-h2}" width="${w}" height="${h2}" rx="2" fill="var(--bar2)"><title>${esc(it.l)} now: ${fmt.money(it.v2,0)}</title></rect>
+      ${it.v>0?`<text x="${x+w/2}" y="${h-24-h1}" text-anchor="middle">${lab(it.v)}</text>`:''}
+      <text x="${x+w}" y="${h-5}" text-anchor="middle">${esc(it.l)}</text>`; }).join('')}</svg>`;
+}
+const planHbars = (obj, tot) => { const e = Object.entries(obj).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]), mx = e[0]?.[1]||1;
+  return e.map(([k,v])=>`<div class="hbar plan-hb"><span class="nm2" title="${esc(k)}">${esc(k)}</span><div class="b" style="width:${v/mx*100}%"></div><span class="num">${fmt.money(v,0)}</span><span class="num muted">${(v/tot*100).toFixed(0)}%</span></div>`).join(''); };
 load(false);
 </script>
 </body>
