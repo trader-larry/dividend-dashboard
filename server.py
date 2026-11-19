@@ -922,6 +922,8 @@ def build_record(raw: dict, position: dict, today: datetime | None = None) -> di
         "gain": gain,
         "gain_pct": gain_pct,
         "proj_monthly": proj_monthly,
+        # Share of a year's income that lands in each calendar month (sums to 1), for the Planning tab
+        "pay_shape": project_monthly(divs, freq_n, 1.0),
         "notes": position.get("notes") or "",
         "flagged": bool(position.get("flagged")),
     }
@@ -939,6 +941,9 @@ DEMO_SPECS = {
     "JEPQ": ("Demo Nasdaq Equity Premium Income ETF", "Derivative Income", 56.0, 0.35, 12, 0.48, 0.0, "ETF", None),
     "QQQI": ("Demo Nasdaq 100 Income ETF", "Derivative Income", 52.0, 0.68, 12, 0.62, 0.0, "ETF", None),
     "GPIQ": ("Demo Nasdaq-100 Premium Income ETF", "Derivative Income", 50.0, 0.29, 12, 0.42, 0.0, "ETF", None),
+    "SPYI": ("Demo S&P 500 High Income ETF", "Derivative Income", 51.0, 0.68, 12, 0.50, 0.0, "ETF", None),
+    "DIVO": ("Demo Enhanced Dividend Income ETF", "Large Value", 42.0, 0.56, 12, 0.18, 0.03, "ETF", None),
+    "SGOV": ("Demo 0-3 Month Treasury Bond ETF", "Ultrashort Bond", 100.5, 0.09, 12, 0.36, 0.0, "ETF", None),
 }
 DEMO_DESC = {
     "JEPI": "Seeks income by holding a defensive portfolio of S&P 500 stocks and selling out-of-the-money S&P 500 index call options through equity-linked notes (ELNs). Actively managed.",
@@ -1379,6 +1384,83 @@ def build_research(symbol: str, force: bool = False) -> dict:
 
 
 # --------------------------------------------------------------------------
+# Planning tab: quotes for any symbols, and saved what-if scenarios
+# --------------------------------------------------------------------------
+PLAN_MAX_SYMBOLS = 60
+PLAN_FIELDS = ("symbol", "name", "type", "price", "ttm_yield", "fwd_yield", "frequency", "freq_n",
+               "expense_ratio", "dist_type", "dist_type_source", "strategy", "exposure", "focus",
+               "flags", "pay_shape", "total_return_12m")
+
+
+def build_plan_quotes(symbols: list[str], force: bool = False) -> dict:
+    """Yield, payout, distribution type etc. for symbols you may not hold (no position needed)."""
+    syms = []
+    for s in symbols:
+        s = (s or "").strip().upper()
+        if s and s not in syms and re.fullmatch(r"[A-Z0-9.\-^=]{1,15}", s):
+            syms.append(s)
+    syms = syms[:PLAN_MAX_SYMBOLS]
+    with _lock:
+        held = {r["symbol"]: r for r in read_holdings()}
+        cache = _load_cache()
+
+    def work(sym):
+        raw, err, ts = get_raw(sym, cache, force)
+        if raw is None:
+            return {"symbol": sym, "error": err or "no data returned - check the symbol"}
+        try:
+            # Use your own overrides (distribution type, frequency...) but not your share count.
+            pos = dict(held.get(sym) or {"symbol": sym})
+            pos.update({"symbol": sym, "shares": None, "cost_basis": None})
+            rec = build_record(raw, pos)
+            out = {k: rec.get(k) for k in PLAN_FIELDS}
+            if err:
+                out["warning"] = err
+            return out
+        except Exception as e:
+            return {"symbol": sym, "error": f"processing failed: {e}"}
+
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        quotes = list(ex.map(work, syms))
+    if not DEMO:
+        with _lock:
+            c = _load_cache()
+            for sym in syms:
+                if sym in cache:
+                    c[sym] = cache[sym]
+            _save_cache(c)
+    return {"demo": DEMO, "quotes": quotes}
+
+
+def plans_path() -> Path:
+    """Saved scenarios live next to the holdings file, so they sync with it (OneDrive, Dropbox...)."""
+    return HOLDINGS_CSV.with_name(HOLDINGS_CSV.stem + "-plans.json")
+
+
+def read_plans() -> list:
+    p = plans_path()
+    if not p.exists():
+        return []
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+        return data.get("plans", []) if isinstance(data, dict) else []
+    except Exception:
+        return []
+
+
+def write_plans(plans: list) -> None:
+    if not isinstance(plans, list) or not all(isinstance(x, dict) for x in plans):
+        raise ValueError("plans must be a list of objects")
+    if len(plans) > 200:
+        raise ValueError("too many saved scenarios (200 max)")
+    p = plans_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_name(p.name + ".tmp")
+    tmp.write_text(json.dumps({"version": 1, "plans": plans}, indent=1), encoding="utf-8")
+    os.replace(tmp, p)
+
+
+# --------------------------------------------------------------------------
 # HTTP server
 # --------------------------------------------------------------------------
 class Handler(BaseHTTPRequestHandler):
@@ -1416,6 +1498,17 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, json.dumps(res, default=str))
             except Exception as e:
                 return self._send(400, json.dumps({"error": str(e)}))
+        if path == "/api/plan/quotes":
+            q = urllib.parse.parse_qs(self.path.partition("?")[2])
+            try:
+                res = build_plan_quotes((q.get("symbols") or [""])[0].split(","),
+                                        force=(q.get("refresh") or [""])[0] == "1")
+                return self._send(200, json.dumps(res, default=str))
+            except Exception as e:
+                return self._send(400, json.dumps({"error": str(e)}))
+        if path == "/api/plans":
+            with _lock:
+                return self._send(200, json.dumps({"plans": read_plans(), "path": str(plans_path())}))
         if path == "/api/holdings":
             return self._send(200, json.dumps(read_holdings()))
         if path == "/api/holdings/info":
@@ -1450,6 +1543,17 @@ class Handler(BaseHTTPRequestHandler):
             print("\nStop requested from the dashboard. Shutting down...")
             threading.Thread(target=self.server.shutdown, daemon=True).start()
             return
+        if self.path.split("?")[0] == "/api/plans":
+            try:
+                n = int(self.headers.get("Content-Length") or 0)
+                if n > 5_000_000:
+                    raise ValueError("too large")
+                body = json.loads(self.rfile.read(n) or b"{}")
+                with _lock:
+                    write_plans(body.get("plans"))
+                return self._send(200, json.dumps({"ok": True, "path": str(plans_path())}))
+            except Exception as e:
+                return self._send(400, json.dumps({"error": str(e)}))
         if self.path.split("?")[0] != "/api/holdings":
             return self._send(404, '{"error":"not found"}')
         try:

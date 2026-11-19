@@ -239,7 +239,23 @@ Extras:
   and recent payments. Your position is included if you hold it. **+ Compare** adds
   the symbol to the Symbol comparison tab. The last 10 symbols you looked up are
   listed under Recent, and the period you picked is remembered in that browser.
-- Export CSV (the dashboard table for Excel; Filtered holdings, which is the same
+- Planning tab: try what-if allocations without touching your holdings. A plan has one or
+  more accounts (a new plan starts with Taxable brokerage, Traditional IRA and Roth IRA; rename,
+  add or remove them), each with a balance and a list of symbols. Add symbols by typing them
+  (any ticker, held or not, several at once separated by commas) or with one click from **Your
+  holdings** (**+ All** adds every one). For each symbol you set a weight % or a dollar amount,
+  and the row shows distribution type, payout frequency, yield, expense ratio, income per year
+  and per month, and what you hold in it now. Each account checks that its weights add up to
+  100%; **Spread evenly** splits it equally. Yield is forward or TTM (switch at the top), or type
+  your own in the row. Expense ratio is shown for reference only: fund yields are already paid
+  after fees, so it is not subtracted again. At the top: total invested, annual and monthly
+  income, blended yield, weighted expense ratio and the difference from your portfolio now,
+  plus income by month (plan vs. now), by distribution type and by account.
+  **Start from my holdings** loads what you own at today's weights, so you can try a rebalance.
+  **Save** keeps the plan as a named scenario in `<holdings file name>-plans.json` next to your
+  holdings file (so it syncs with it); **Save as new** makes a copy, and the **Saved scenarios**
+  table lists them all against your portfolio now. Click one to open it.
+ for Excel; Filtered holdings, which is the same
   table but only the rows currently shown after your filter text, All / Flagged /
   Not flagged and tab, in the table's sort order; or your holdings file) and Import CSV
   (see "Using it on more than one computer").
