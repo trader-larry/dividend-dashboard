@@ -501,8 +501,8 @@ const COLS = [
   {k:'expense_ratio', tab:1, t:'Expense ratio', n:1, v:h=>h.expense_ratio, r:h=>fmt.pct(h.expense_ratio)},
   {k:'freq_n', tab:1, t:'Payout', v:h=>h.freq_n, r:h=>`<span class="pill">${esc(h.frequency)}</span>${h.frequency_source==='you'?' <span class="est" title="Set by you in Edit holdings">set</span>':''}`},
   // Tab 2: dividends & income
-  {k:'ttm_yield', tab:2, t:'Yield TTM', n:1, v:h=>h.ttm_yield, tip:'Last 12 months of dividends ÷ price', r:h=>`<strong>${fmt.pct(h.ttm_yield)}</strong>`},
-  {k:'fwd_yield', tab:2, t:'Yield fwd', n:1, v:h=>h.fwd_yield, tip:'Latest payment × payments per year ÷ price', r:h=>fmt.pct(h.fwd_yield)},
+  {k:'ttm_yield', tab:2, t:'Yield TTM', n:1, v:h=>h.ttm_yield, tip:'Last 12 months of dividends ÷ price', r:h=>`<strong>${fmt.pct(h.ttm_yield)}</strong>${h.yield_source==='yahoo'?' <span class="est" title="Money market fund: Yahoo has no payout history, so this is Yahoo\'s current 7-day yield">7-day</span>':''}`},
+  {k:'fwd_yield', tab:2, t:'Yield fwd', n:1, v:h=>h.fwd_yield, tip:'Latest payment × payments per year ÷ price', r:h=>`${fmt.pct(h.fwd_yield)}${h.yield_source==='yahoo'?' <span class="est" title="Money market fund: Yahoo has no payout history, so this is Yahoo\'s current 7-day yield">7-day</span>':''}`},
   {k:'dist_type', tab:2, t:'Distribution type', v:h=>h.dist_type, r:h=>`<div class="wrap">${esc(h.dist_type)} ${h.dist_type_source==='estimated'?'<span class="est">est.</span>':''}</div>`},
   {k:'last_div', tab:2, t:'Last payment', n:1, v:h=>h.last_div?h.last_div.amount:null, r:h=>h.last_div?`${fmt.money(h.last_div.amount,4)}<div class="muted">${fmt.date(h.last_div.date)}</div>`:'—'},
   {k:'next_ex_est', tab:2, t:'Next ex-div', v:h=>h.next_ex_est, r:h=>`${fmt.date(h.next_ex_est)}${h.next_ex_est&&h.ex_date!==h.next_ex_est?' <span class="est">est.</span>':''}`},

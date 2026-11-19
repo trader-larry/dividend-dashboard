@@ -858,6 +858,17 @@ def build_record(raw: dict, position: dict, today: datetime | None = None) -> di
         desc = fund.get("description") or info.get("longBusinessSummary") or ""
 
     money_market = is_money_market(info, fund, category, name, sym)
+    yield_src = "dividends"
+    if money_market and not ttm_yield and not fwd_yield and sec_yield:
+        # Yahoo keeps no distribution history for money market funds (they accrue interest daily and pay
+        # monthly), so there is nothing to compute TTM / forward yield from. Use Yahoo's fund yield (its
+        # current 7-day yield) for both instead, at the usual monthly cadence.
+        ttm_yield = fwd_yield = sec_yield
+        yield_src = "yahoo"
+        if not freq_n:
+            freq_name, freq_n = "Monthly", 12
+        if price:
+            fwd_amt = price * sec_yield / 100
     dist_type = position.get("distribution_type") or guess_distribution_type(info, fund, category, name, sym)
     dist_src = "you" if position.get("distribution_type") else "estimated"
     strat_primary, strat_tags = classify_strategy(info, name, desc, category, dist_type, money_market)
@@ -912,6 +923,7 @@ def build_record(raw: dict, position: dict, today: datetime | None = None) -> di
         "ttm_yield": ttm_yield,
         "fwd_yield": fwd_yield,
         "sec_yield": sec_yield,
+        "yield_source": yield_src,
         "ttm_dividends": ttm_amt or None,
         "last_div": last_div,
         "ex_date": ex_date,
