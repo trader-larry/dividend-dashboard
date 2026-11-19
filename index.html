@@ -289,6 +289,10 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 .plan-in{width:84px;text-align:right;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:4px 6px;font:inherit;font-variant-numeric:tabular-nums}
 .plan-in.plan-amt{width:104px}
 .plan-in.mine{color:var(--accent);font-weight:600;border-color:var(--accent)}
+.plan-lk{border:1px solid transparent;background:transparent;color:var(--muted);font-size:13px;padding:2px 5px;border-radius:4px;opacity:.55;line-height:1}
+.plan-lk:hover{opacity:1;border-color:var(--line)}
+.plan-lk.on{opacity:1;color:var(--accent);border-color:var(--accent)}
+.plan-in.plan-amt.locked{border-color:var(--accent);font-weight:600}
 .plan-x{border:0;background:transparent;color:var(--muted);font-size:16px;padding:0 6px}
 .plan-x:hover{color:var(--neg)}
 .plan-add{margin-top:8px}
@@ -1620,10 +1624,26 @@ function planAddSyms(ai, raw){
   list.forEach(s=>{ if(!a.rows.some(r=>r.s===s)) a.rows.push({s, w:0}); });
   planStore(); planRender(true); planLoadQuotes(list);
 }
+// Locked rows keep an exact dollar amount (r.amt); their weight follows the balance.
+const planLockSync = a => a.rows.forEach(r=>{ if(r.lock) r.w = +a.balance ? (+r.amt||0)/a.balance*100 : 0; });
+function planLock(a, r){
+  if(r.lock){ delete r.lock; delete r.amt; }
+  else { r.lock = true; r.amt = round((+a.balance||0)*(+r.w||0)/100, 2); }
+}
+// Spread evenly: unlocked rows share whatever the locked amounts leave of the balance.
 function planSpread(ai){
   const a = PLAN.accounts[ai]; if(!a?.rows.length) return;
-  const n = a.rows.length, w = Math.floor(10000/n)/100;
-  a.rows.forEach(r=>r.w=w); a.rows[0].w = round(100-w*(n-1),2);
+  planLockSync(a);
+  const free = a.rows.filter(r=>!r.lock), bal = +a.balance||0;
+  const lockedAmt = a.rows.reduce((t,r)=>t+(r.lock?(+r.amt||0):0),0);
+  const lockedW = a.rows.reduce((t,r)=>t+(r.lock?(+r.w||0):0),0);
+  const nm = a.name||'this account';
+  if(!free.length){ planMsg = `Every symbol in ${nm} is locked. Unlock one to spread the rest to it.`; planRender(); return; }
+  if(lockedAmt && !bal){ planMsg = `Enter a balance for ${nm} first, so the locked amounts can be taken out of it.`; planRender(); return; }
+  if(lockedAmt > bal+0.005){ planMsg = `The locked amounts in ${nm} add up to ${fmt.money(lockedAmt,2)}, which is ${fmt.money(lockedAmt-bal,2)} more than the balance. Lower one or raise the balance.`; planRender(); return; }
+  const left = Math.max(0, 100-lockedW), w = left/free.length;
+  free.forEach(r=>r.w=w);
+  planMsg = lockedAmt ? `Spread ${fmt.money(Math.max(0,bal-lockedAmt),2)} evenly over ${free.length} unlocked symbol${free.length===1?'':'s'} in ${nm} (${fmt.money(Math.max(0,bal-lockedAmt)/free.length,2)} each).` : '';
   planStore(); planRender(true);
 }
 
@@ -1658,13 +1678,13 @@ function planAcctHtml(a, ai, held){
       <input class="plan-an" data-f="name" value="${esc(a.name)}" aria-label="Account name">
       <label class="plan-f">Balance $<input class="plan-bal" data-f="balance" inputmode="decimal" value="${a.balance?(+a.balance).toLocaleString('en-US',{maximumFractionDigits:2}):''}" placeholder="0"></label>
       <span class="plan-chk" data-c="chk"></span>
-      <span style="margin-left:auto;display:flex;gap:6px"><button data-act="spread" title="Give every symbol in this account the same weight">Spread evenly</button><button data-act="rmacct" title="Remove this account from the plan">Remove account</button></span>
+      <span style="margin-left:auto;display:flex;gap:6px"><button data-act="spread" title="${a.rows.some(r=>r.lock)?'Split what the locked amounts leave of the balance equally over the unlocked symbols':'Give every symbol in this account the same weight. Lock a row (🔒) to keep its amount fixed.'}">${a.rows.some(r=>r.lock)?'Spread rest over unlocked':'Spread evenly'}</button><button data-act="rmacct" title="Remove this account from the plan">Remove account</button></span>
     </div>
     <div class="tablewrap" style="border:0"><table class="plan-tbl"><thead><tr>
       <th>Symbol</th><th>Distribution type</th><th>Payout</th><th class="num" title="Forward or TTM yield (switch at the top). Type a number to use your own.">Yield</th><th class="num">Expense ratio</th>
-      <th class="num">Weight %</th><th class="num">Amount</th><th class="num">Income / yr</th><th class="num">Per month</th><th class="num" title="Market value you hold now in this symbol (all accounts)">You hold now</th><th></th></tr></thead>
-      <tbody>${a.rows.map((r,ri)=>planRowHtml(r,ri,held)).join('') || `<tr><td colspan="11" class="muted" style="padding:14px 8px">No symbols yet. Add one below or pick from your holdings.</td></tr>`}</tbody>
-      ${a.rows.length?`<tfoot><tr><td>Total</td><td></td><td></td><td class="num" data-c="ay"></td><td></td><td class="num" data-c="aw"></td><td class="num" data-c="aamt"></td><td class="num" data-c="ainc"></td><td class="num" data-c="amo"></td><td></td><td></td></tr></tfoot>`:''}
+      <th class="num">Weight %</th><th class="num">Amount</th><th title="Lock a row to keep its dollar amount when you spread the rest of the balance">Lock</th><th class="num">Income / yr</th><th class="num">Per month</th><th class="num" title="Market value you hold now in this symbol (all accounts)">You hold now</th><th></th></tr></thead>
+      <tbody>${a.rows.map((r,ri)=>planRowHtml(r,ri,held)).join('') || `<tr><td colspan="12" class="muted" style="padding:14px 8px">No symbols yet. Add one below or pick from your holdings.</td></tr>`}</tbody>
+      ${a.rows.length?`<tfoot><tr><td>Total</td><td></td><td></td><td class="num" data-c="ay"></td><td></td><td class="num" data-c="aw"></td><td class="num" data-c="aamt"></td><td></td><td class="num" data-c="ainc"></td><td class="num" data-c="amo"></td><td></td><td></td></tr></tfoot>`:''}
     </table></div>
     <form class="cmp-add plan-add" autocomplete="off"><input list="plList" placeholder="Add symbols, e.g. VYM, DIVO" aria-label="Add symbol"><button type="submit">Add</button></form>
     ${quick.length?`<div class="cmp-quick">Your holdings: ${quick.map(s=>`<button type="button" data-add="${esc(s)}">+ ${symHtml(s)}</button>`).join('')} <button type="button" data-add="${esc(quick.join(','))}" style="margin-left:6px">+ All</button></div>`:''}
@@ -1683,7 +1703,8 @@ function planRowHtml(r, ri, held){
     <td class="num"><input class="plan-in${r.y!=null&&r.y!==''?' mine':''}" data-f="y" inputmode="decimal" value="${r.y!=null&&r.y!==''?r.y:''}" placeholder="${auto!=null?auto.toFixed(2):'—'}" title="${auto!=null?`Data: ${auto.toFixed(2)}%. Type to use your own; clear to go back.`:'Type a yield %'}"></td>
     <td class="num">${q&&!q.error?fmt.pct(q.expense_ratio):'—'}</td>
     <td class="num"><input class="plan-in" data-f="w" inputmode="decimal" value="${r.w?round(r.w,2):''}" placeholder="0"></td>
-    <td class="num"><input class="plan-in plan-amt" data-f="amt" inputmode="decimal" placeholder="$0"></td>
+    <td class="num"><input class="plan-in plan-amt${r.lock?' locked':''}" data-f="amt" inputmode="decimal" placeholder="$0" title="${r.lock?'Locked: this amount stays put when you spread the rest':'Dollar amount; lock it to keep it when you spread the rest'}"></td>
+    <td><button class="plan-lk${r.lock?' on':''}" data-act="lock" aria-pressed="${r.lock?'true':'false'}" title="${r.lock?`Unlock ${esc(r.s)}`:`Lock ${esc(r.s)} at this dollar amount`}" aria-label="${r.lock?'Unlock':'Lock'} ${esc(r.s)}">${r.lock?'🔒':'🔓'}</button></td>
     <td class="num" data-c="inc"></td><td class="num" data-c="mo"></td>
     <td class="num">${held[r.s]?.market_value?fmt.money(held[r.s].market_value,0):'<span class="muted">—</span>'}</td>
     <td><button class="plan-x" data-act="rm" title="Remove ${esc(r.s)}" aria-label="Remove ${esc(r.s)}">×</button></td></tr>`;
@@ -1709,9 +1730,9 @@ function planRender(full=false){
       const t = e.target, f = t.dataset.f, card = t.closest('.plan-acct'); if(!f||!card) return;
       const a = PLAN.accounts[+card.dataset.a], tr = t.closest('tr[data-r]'), r = tr ? a.rows[+tr.dataset.r] : null;
       if(f==='name') a.name = t.value;
-      else if(f==='balance') a.balance = planMoney(t.value);
-      else if(r && f==='w'){ const v = sumExpr(t.value); r.w = v==null||isNaN(v) ? 0 : v; }
-      else if(r && f==='amt'){ const v = planMoney(t.value); r.w = a.balance ? v/a.balance*100 : 0; const w = tr.querySelector('[data-f="w"]'); if(w) w.value = r.w?round(r.w,2):''; }
+      else if(f==='balance'){ a.balance = planMoney(t.value); planLockSync(a); card.querySelectorAll('tbody tr[data-r]').forEach(row=>{ const rr = a.rows[+row.dataset.r], w = row.querySelector('[data-f="w"]'); if(rr?.lock && w) w.value = rr.w?round(rr.w,2):''; }); }
+      else if(r && f==='w'){ const v = sumExpr(t.value); r.w = v==null||isNaN(v) ? 0 : v; if(r.lock) r.amt = round((+a.balance||0)*r.w/100, 2); }
+      else if(r && f==='amt'){ const v = planMoney(t.value); if(r.lock) r.amt = v; r.w = a.balance ? v/a.balance*100 : 0; const w = tr.querySelector('[data-f="w"]'); if(w) w.value = r.w?round(r.w,2):''; }
       else if(r && f==='y'){ const v = t.value.trim(); r.y = v==='' ? null : (isNaN(+v) ? r.y : +v); t.classList.toggle('mine', r.y!=null); }
       planMsg = ''; planStore(); planRender();
     });
@@ -1721,6 +1742,7 @@ function planRender(full=false){
       const ai = +card.dataset.a, a = PLAN.accounts[ai];
       if(b.dataset.add){ planAddSyms(ai, b.dataset.add); return; }
       if(b.dataset.act==='rm'){ a.rows.splice(+b.closest('tr').dataset.r,1); }
+      else if(b.dataset.act==='lock'){ planLock(a, a.rows[+b.closest('tr').dataset.r]); }
       else if(b.dataset.act==='spread'){ planSpread(ai); return; }
       else if(b.dataset.act==='rmacct'){
         if(a.rows.length && b.dataset.sure!=='1'){ b.dataset.sure='1'; b.textContent='Click again to remove'; setTimeout(()=>{ b.dataset.sure=''; b.textContent='Remove account'; },4000); return; }
@@ -1775,7 +1797,8 @@ function planRender(full=false){
       tr.querySelector('[data-c="inc"]').innerHTML = R.y!=null ? fmt.money(R.inc,0) : '<span class="muted">—</span>';
       tr.querySelector('[data-c="mo"]').innerHTML = R.y!=null ? fmt.money(R.inc/12,0) : '<span class="muted">—</span>';
       const amt = tr.querySelector('[data-f="amt"]');
-      if(document.activeElement!==amt) amt.value = R.amt ? Math.round(R.amt).toLocaleString('en-US') : '';
+      const lr = a.rows[+tr.dataset.r];
+      if(document.activeElement!==amt) amt.value = lr?.lock ? ((+lr.amt||0) ? (+lr.amt).toLocaleString('en-US',{maximumFractionDigits:2}) : '') : R.amt ? Math.round(R.amt).toLocaleString('en-US') : '';
     });
     const f = k => card.querySelector(`[data-c="${k}"]`);
     if(f('ainc')){ f('ay').textContent = fmt.pct(A.invested?A.income/A.invested*100:null); f('aw').innerHTML = `<span class="${ok?'':'warnc'}">${w.toFixed(2)}%</span>`;

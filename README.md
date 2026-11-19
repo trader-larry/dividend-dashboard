@@ -249,7 +249,10 @@ Extras:
   holdings** (**+ All** adds every one). For each symbol you set a weight % or a dollar amount,
   and the row shows distribution type, payout frequency, yield, expense ratio, income per year
   and per month, and what you hold in it now. Each account checks that its weights add up to
-  100%; **Spread evenly** splits it equally. Yield is forward or TTM (switch at the top), or type
+  100%; **Spread evenly** splits it equally. To pin an exact dollar amount, type it in the row's
+  Amount box and click its lock (🔒): the amount stays put when the balance changes, and the button
+  becomes **Spread rest over unlocked**, which splits what the locked rows leave of the balance
+  equally over the unlocked ones. Locks are saved with the scenario. Yield is forward or TTM (switch at the top), or type
   your own in the row. Expense ratio is shown for reference only: fund yields are already paid
   after fees, so it is not subtracted again. At the top: total invested, annual and monthly
   income, blended yield, weighted expense ratio and the difference from your portfolio now,
