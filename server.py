@@ -544,7 +544,8 @@ _STRATEGY_RULES = [
 ]
 
 
-def classify_strategy(info: dict, name: str, desc: str, category: str, dist_type: str) -> tuple[str, list[str]]:
+def classify_strategy(info: dict, name: str, desc: str, category: str, dist_type: str,
+                      money_market: bool = False) -> tuple[str, list[str]]:
     text = f"{name}. {desc}".lower()
     tags = []
     for key, pat, label in _STRATEGY_RULES:
@@ -572,6 +573,8 @@ def classify_strategy(info: dict, name: str, desc: str, category: str, dist_type
         primary = "Options income"
     elif qt == "EQUITY":
         primary = "Individual company dividend"
+    elif money_market:
+        primary = "Money market (cash)"
     elif any(k in cat for k in ("bond", "treasury", "muni", "fixed", "credit", "loan")):
         primary = "Bond interest income"
     elif "real estate" in cat or "reit" in text:
@@ -635,9 +638,33 @@ def infer_frequency(divs: list[dict], today: datetime) -> tuple[str, int]:
     return "Annual", 1
 
 
-def guess_distribution_type(info: dict, fund: dict, category: str, name: str) -> str:
+_MONEY_MARKET_RE = re.compile(r"money[- ]market|cash reserves|cash management|liquidity fund|\bmmf\b", re.I)
+
+
+def is_money_market(info: dict, fund: dict, category: str, name: str, symbol: str = "") -> bool:
+    """Money market funds (FDRXX, SPAXX, VMFXX, SWVXX...): their payouts are interest, not dividends.
+
+    Yahoo often has thin data for these (no category, sometimes no name at all, so the name falls back to
+    the ticker), so beyond Yahoo's MONEYMARKET quote type also check the name and category, and the US
+    convention that a 5-letter mutual fund ticker ending in XX is a money market fund."""
+    qt = (info.get("quoteType") or "").upper()
+    if qt == "MONEYMARKET":
+        return True
+    if qt in ("EQUITY", "ETF"):
+        return False
+    text = f"{category} {fund.get('category') or ''} {fund.get('legal_type') or ''} {name}"
+    if _MONEY_MARKET_RE.search(text):
+        return True
+    return bool(re.fullmatch(r"[A-Z]{3}XX", (symbol or "").upper()))
+
+
+def guess_distribution_type(info: dict, fund: dict, category: str, name: str, symbol: str = "") -> str:
     c = f"{category} {name}".lower()
     qt = (info.get("quoteType") or "").upper()
+    if is_money_market(info, fund, category, name, symbol):
+        if "muni" in c or "tax-exempt" in c or "tax exempt" in c:
+            return "Interest - generally federally tax-exempt"
+        return "Interest (taxed as ordinary income)"
     if qt == "EQUITY":
         sector = (info.get("sector") or "").lower()
         industry = (info.get("industry") or "").lower()
@@ -830,10 +857,12 @@ def build_record(raw: dict, position: dict, today: datetime | None = None) -> di
         focus = category
         desc = fund.get("description") or info.get("longBusinessSummary") or ""
 
-    dist_type = position.get("distribution_type") or guess_distribution_type(info, fund, category, name)
+    money_market = is_money_market(info, fund, category, name, sym)
+    dist_type = position.get("distribution_type") or guess_distribution_type(info, fund, category, name, sym)
     dist_src = "you" if position.get("distribution_type") else "estimated"
-    strat_primary, strat_tags = classify_strategy(info, name, desc, category, dist_type)
-    exposure = position.get("exposure") or classify_exposure(info, fund, name, desc, category)
+    strat_primary, strat_tags = classify_strategy(info, name, desc, category, dist_type, money_market)
+    exposure = position.get("exposure") or ("Cash / money market" if money_market
+                                            else classify_exposure(info, fund, name, desc, category))
 
     shares, cost = position.get("shares"), position.get("cost_basis")
     mv = shares * price if shares and price else None
