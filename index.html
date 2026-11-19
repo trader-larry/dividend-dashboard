@@ -406,12 +406,13 @@ const STRAT_INFO = [
   ['Options income','Generates income from options, usually through ELNs or a mix of strategies. Read the fund page for the details.'],
   ['Dividend stock selection','Holds stocks chosen for dividends. No options, so the upside is not capped.'],
   ['Bond interest income','Interest from bonds. Sensitive to interest rates.'],
+  ['Money market (cash)','Short-term government or corporate debt held to keep a stable $1 price. Pays interest, taxed as ordinary income.'],
   ['REIT income','Rent-based income from real estate. Mostly non-qualified dividends.'],
   ['Leveraged weekly payout','Gets about 1.2x leveraged exposure to a stock or basket (through swaps) and pays out weekly. Payouts are large but often mostly return of capital, and the price can fall fast.'],
 ];
 const TAG_SHORT = {'Index options (Sec. 1256 tax treatment)':'Sec. 1256 index options','Uses equity-linked notes (ELNs)':'ELNs','Partial overwrite (keeps some upside)':'Partial overwrite'};
 const yours = src => src==='you'?' <span class="est" title="Set by you in Edit holdings">yours</span>':'';
-const stratClass = s => /call|put|option|leveraged/i.test(s)?'opt':/bond/i.test(s)?'bond':/reit/i.test(s)?'reit':'eq';
+const stratClass = s => /call|put|option|leveraged/i.test(s)?'opt':/bond|money market/i.test(s)?'bond':/reit/i.test(s)?'reit':'eq';
 let OVL = {max:{}, list:{}, groupCount:{}, pairs:{}};
 function computeOverlap(){
   const H = DATA.holdings;
