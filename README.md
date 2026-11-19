@@ -203,7 +203,10 @@ Extras:
   them in Edit holdings (columns `strategy` and `exposure` in holdings.csv).
 - Holdings & performance tab: quantity, average cost per share, current price,
   total cost, market value, unrealized gain/loss ($ and %), portfolio weight,
-  income and yield on cost, with totals.
+  income and yield on cost, with totals. Above the table, **Holdings by size** shows every
+  position by market value, largest first, as a stacked bar (top 19 plus Others) and a
+  ranked list with each one's $ and % of the portfolio; hover to highlight, click a symbol
+  for its details.
 - Monthly projections tab: projected income for each holding over the next 12
   months, with monthly totals and a chart. Monthly and weekly payers count in
   every month; quarterly, semi-annual and annual payers repeat the month of their
@@ -255,7 +258,7 @@ Extras:
   **Save** keeps the plan as a named scenario in `<holdings file name>-plans.json` next to your
   holdings file (so it syncs with it); **Save as new** makes a copy, and the **Saved scenarios**
   table lists them all against your portfolio now. Click one to open it.
- for Excel; Filtered holdings, which is the same
+- Export CSV (the dashboard table for Excel; Filtered holdings, which is the same
   table but only the rows currently shown after your filter text, All / Flagged /
   Not flagged and tab, in the table's sort order; or your holdings file) and Import CSV
   (see "Using it on more than one computer").

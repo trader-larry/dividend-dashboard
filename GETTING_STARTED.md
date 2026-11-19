@@ -67,7 +67,8 @@ alone: keep a copy somewhere safe, and don't send it along if you share the dash
 - **Top tiles:** portfolio value, yearly and monthly income, yield, and the next ex-dividend date.
 - **Main table:** one row per holding. Click a column header to sort, click a row for full details.
 - **Tabs:** Strategy & overlap, Holdings & performance, Monthly projections,
-  Symbol comparison, and Research (look up any ticker, owned or not).
+  Symbol comparison, Research (look up any ticker, owned or not), and Planning
+  (try what-if allocations and save them as named scenarios).
 - **Calendar:** upcoming ex-dividend and pay dates. Click a day to see what's on it.
 - **Flag:** tick it in Edit holdings to highlight a holding you're watching.
 - **Auto / Light / Dark** in the header switches the theme.
