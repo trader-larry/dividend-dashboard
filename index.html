@@ -247,6 +247,7 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 .cmp-add input::placeholder{text-transform:none}
 .cmp-quick{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px}
 .cmp-quick button{padding:1px 8px;font-size:12px;border-radius:10px}
+.cmp-quick button.on{border-color:var(--accent);color:var(--accent);font-weight:600}
 .cmp-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
 .cmp-chart{position:relative;margin-top:4px}
 .cmp-chart svg{display:block;width:100%;overflow:visible}
@@ -1442,6 +1443,7 @@ function renderResearch(){
         <form class="cmp-add" id="resForm" autocomplete="off"><input id="resIn" list="resList" style="width:240px" placeholder="Research a symbol, e.g. VIG" aria-label="Symbol to research"><datalist id="resList"></datalist><button type="submit" class="primary">Look up</button></form>
         <div class="cmp-syms" id="resRecent" style="justify-content:flex-end"></div>
       </div>
+      <div class="cmp-quick" id="resQuick"></div>
     </div>
     <div id="resBody"></div>`;
     $('resForm').onsubmit = e => { e.preventDefault(); const v=$('resIn').value; $('resIn').value=''; loadResearch(v); };
@@ -1449,6 +1451,9 @@ function renderResearch(){
   const held = (DATA?.holdings||[]).map(h=>h.symbol);
   $('resList').innerHTML = held.concat(['SPY','QQQ','VTI','SCHD','VYM','DGRO','VIG','JEPI','JEPQ','O']).filter((s,i,a)=>a.indexOf(s)===i).map(s=>`<option value="${esc(s)}">`).join('');
   $('resRecent').innerHTML = RES.recent.length ? '<span class="muted" style="font-size:12px">Recent:</span>'+RES.recent.map(s=>`<span class="schip" style="${s===RES.sym?'border-color:var(--accent)':''}"><a href="#" data-r="${esc(s)}" style="color:inherit;text-decoration:none">${symHtml(s)}</a><button data-x="${esc(s)}" title="Remove from recent" aria-label="Remove ${esc(s)}">×</button></span>`).join('') : '';
+  $('resQuick').innerHTML = held.length ? 'Your holdings: '+held.map(s=>`<button type="button" data-r="${esc(s)}"${s===RES.sym?' class="on" aria-pressed="true"':''} title="Research ${esc(s)}">${symHtml(s)}</button>`).join('') : '';
+  $('resQuick').hidden = !held.length;
+  $('resQuick').querySelectorAll('button[data-r]').forEach(b=>b.onclick=()=>loadResearch(b.dataset.r));
   $('resRecent').querySelectorAll('a[data-r]').forEach(a=>a.onclick=e=>{ e.preventDefault(); loadResearch(a.dataset.r); });
   $('resRecent').querySelectorAll('button[data-x]').forEach(b=>b.onclick=()=>{ RES.recent=RES.recent.filter(s=>s!==b.dataset.x); resSave(); renderResearch(); });
   const body = $('resBody');
