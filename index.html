@@ -317,7 +317,16 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 #sumSheet .tiles{margin-bottom:12px}
 .sum-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 .sum-row > .card{margin:0}
-@media (max-width:900px){.sum-row{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){.sum-row,.sum-row.sum-r1{grid-template-columns:minmax(0,1fr)}}
+.sum-row.sum-r1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.fq-row{display:grid;grid-template-columns:minmax(0,1fr) auto 48px;gap:4px 10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.fq-row:last-child{border-bottom:0}
+.fq-row .syms{grid-column:1/-1;color:var(--muted);font-size:12px;line-height:1.5}
+.fq-row b{font-weight:600}.fq-row .n{color:var(--muted);font-size:12px;font-weight:400;margin-left:6px}
+.fq-row em{font-style:normal;font-variant-numeric:tabular-nums;text-align:right}
+.fq-row em.pc{color:var(--muted)}
+.fq-row .bar{grid-column:1/-1;height:8px;border-radius:4px;background:var(--soft);overflow:hidden}
+.fq-row .bar span{display:block;height:100%;border-radius:4px}
 .sum-inc{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:14px;align-items:center}
 @media (max-width:560px){.sum-inc{grid-template-columns:minmax(0,1fr)}}
 .sum-side{display:grid;gap:8px}
@@ -345,7 +354,8 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 /* Export copy: always the wide layout, no switches, no scroll boxes */
 .sum-export .seg{display:none}
 .sum-export .sum-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.sum-export .sum-export .sum-inc{grid-template-columns:minmax(0,1fr) 150px}
+.sum-export .sum-r1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.sum-export .sum-inc{grid-template-columns:minmax(0,1fr) 150px}
 .sum-export .dn-wrap{grid-template-columns:170px minmax(0,1fr)}
 .sum-export .size-leg{columns:4}
 .sum-export .dist-leg{grid-auto-flow:column}
@@ -1906,6 +1916,15 @@ function donutCard(title, note, groups, total, center, sub){
   return `<div class="card sum-blk"><h2>${title}</h2><div class="muted small" style="margin:-4px 0 8px">${note}</div>
     <div class="dn-wrap">${donut(items, total, center, sub)}<div class="dn-leg">${items.map(x=>`<div${x.oth?'':` data-s="${esc(x.l)}"`}><i style="background:${x.c}"></i><b title="${esc(x.l)}">${x.oth?esc(x.l):(DATA.holdings.some(h=>h.symbol===x.l)?symHtml(x.l):esc(x.l))}</b>${MASK?'':`<em>${fmt.money(x.v,0)}</em>`}<em class="pc">${(x.v/total*100).toFixed(1)}%</em></div>`).join('')}</div></div></div>`;
 }
+// Income by payout frequency: how the next 12 months of income splits across weekly, monthly, quarterly… payers
+function freqCard(held, yr){
+  const g = {};
+  held.forEach(h=>{ const v = pmTotal(h); if(!v) return; const k = h.frequency||'Unknown';
+    (g[k] ||= {v:0, n:0, f:h.freq_n||0, s:[]}); g[k].v += v; g[k].n++; g[k].s.push([h.symbol, v]); });
+  const rows = Object.entries(g).sort((a,b)=>b[1].f-a[1].f||b[1].v-a[1].v);
+  return `<div class="card sum-blk"><h2>Income by payout frequency</h2><div class="muted small" style="margin:-4px 0 6px">Share of the next 12 months of income</div>
+    ${rows.map(([k,x],i)=>`<div class="fq-row"><b>${esc(k)}<span class="n">${x.n} holding${x.n===1?'':'s'}</span></b>${MASK?'<span></span>':`<em>${fmt.money(x.v,0)}</em>`}<em class="pc">${(x.v/yr*100).toFixed(1)}%</em><div class="bar"><span style="width:${x.v/yr*100}%;background:var(--s${i%10+1})"></span></div><div class="syms">${x.s.sort((a,b)=>b[1]-a[1]).map(([sy])=>symHtml(sy)).join(', ')}</div></div>`).join('')}</div>`;
+}
 function renderSumTab(){
   MASK = sumHide;
   try{ sumDraw(); } finally { MASK = false; }
@@ -1928,7 +1947,7 @@ function sumDraw(){
   // Next 12 months of income, same projection as the Monthly projections tab
   const tot = PM.map((_,i)=>held.reduce((a,h)=>a+pmv(h,i),0)), yr = tot.reduce((a,v)=>a+v,0);
   const lo = tot.indexOf(Math.min(...tot)), hi = tot.indexOf(Math.max(...tot));
-  const chart = yr ? barChart(PM.map((m,i)=>({l:m.label, v:tot[i]})), {money:true, h:190, minW:900, lab: MASK ? v=>(v/yr*100).toFixed(0)+'%' : null}) : '<p class="muted">Add share counts in Edit holdings to see projected income.</p>';
+  const chart = yr ? barChart(PM.map((m,i)=>({l:m.label, v:tot[i]})), {money:true, h:190, lab: MASK ? v=>(v/yr*100).toFixed(0)+'%' : null}) : '<p class="muted">Add share counts in Edit holdings to see projected income.</p>';
   const stat = (k,v,s='') => `<div class="sum-stat"><div class="k">${k}</div><div class="v">${v}</div>${s?`<div class="muted small">${s}</div>`:''}</div>`;
   // Allocation donuts
   const byHold = Object.fromEntries(held.filter(h=>h.market_value>0).map(h=>[h.symbol, h.market_value]));
@@ -1944,8 +1963,11 @@ function sumDraw(){
     <div id="sumSheet">
       <div class="sum-head sum-blk"><div><h1>Dividend portfolio summary</h1><div class="muted">${now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})} · prices as of ${new Date(ts*1000).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}${DATA.demo?' · demo data':''}</div></div></div>
       <div class="tiles sum-blk">${tiles.map(([k,v])=>`<div class="tile${k==='Total gain / loss'?' wide':''}"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>
+      <div class="sum-row sum-r1">
       <div class="card sum-blk"><h2>Projected income, next 12 months</h2><div class="sum-inc"><div>${chart}</div>
           <div class="sum-side">${stat('Next 12 months', `<strong>${fmt.money(yr,0)}</strong>`)}${stat('Average per month', fmt.money(yr/12,0))}${yr?stat('Highest month', fmt.money(tot[hi],0), PM[hi].label)+stat('Lowest month', fmt.money(tot[lo],0), PM[lo].label):''}</div></div></div>
+      ${yr?freqCard(held, yr):''}
+      </div>
       <div class="sum-row">
         ${mv?donutCard('Allocation by holding', 'Market value, largest first', byHold, mv, MASK?`${held.length}`:fmt.big(mv), MASK?'holdings':'total'):''}
         ${mv?donutCard('Allocation by Core focus', `${nFocus} categor${nFocus===1?'y':'ies'}, by market value`, byFocus, mv, String(nFocus), nFocus===1?'category':'categories'):''}
