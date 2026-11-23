@@ -263,8 +263,7 @@ Extras:
   table lists them all against your portfolio now. Click one to open it.
 - Summary tab: a one-page snapshot of the whole portfolio to print or share. It shows metric
   cards (portfolio value, annual and monthly income, current yield, yield on cost, total gain / loss,
-  holdings), the next 12 months of projected income with the annual total, pay dates in the next
-  30 days, allocation donuts by holding and by Core focus, Holdings by size (with the $ / % / Both
+  holdings), the next 12 months of projected income with the annual total, allocation donuts by holding and by Core focus, Holdings by size (with the $ / % / Both
   switch), Annual projection by holding (with its % / $ switch) and your flagged holdings. The date
   is stamped at the top. **Save as PNG** saves it as one image and **Download PDF** as a letter-size
   PDF, both in the theme you are using, made in the browser with no add-ons and no internet needed.
