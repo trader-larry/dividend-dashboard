@@ -316,19 +316,25 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 .sum-head h1{font-size:20px;margin:0 0 2px}
 #sumSheet .tiles{margin-bottom:12px}
 .sum-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
-.sum-row.sum-r1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
 .sum-row > .card{margin:0}
 @media (max-width:900px){.sum-row,.sum-row.sum-r1{grid-template-columns:minmax(0,1fr)}}
+.sum-row.sum-r1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.fq-row{display:grid;grid-template-columns:minmax(0,1fr) auto 48px;gap:4px 10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.fq-row:last-child{border-bottom:0}
+.fq-row .syms{grid-column:1/-1;color:var(--muted);font-size:12px;line-height:1.5}
+.fq-row b{font-weight:600}.fq-row .n{color:var(--muted);font-size:12px;font-weight:400;margin-left:6px}
+.fq-row em{font-style:normal;font-variant-numeric:tabular-nums;text-align:right}
+.fq-row em.pc{color:var(--muted)}
+.fq-row .bar{grid-column:1/-1;height:8px;border-radius:4px;background:var(--soft);overflow:hidden}
+.fq-row .bar span{display:block;height:100%;border-radius:4px}
 .sum-inc{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:14px;align-items:center}
 @media (max-width:560px){.sum-inc{grid-template-columns:minmax(0,1fr)}}
 .sum-side{display:grid;gap:8px}
 .sum-stat .k{color:var(--muted);font-size:12px}
+.tile.wide{grid-column:span 2}
+#sumSheet .tile .v{white-space:nowrap}
+.sum-gp{font-size:14px;font-weight:500;margin-left:4px}
 .sum-stat .v{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
-.sum-pays{font-size:13px;max-height:300px;overflow-y:auto}
-.sp-day{display:grid;grid-template-columns:64px 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}
-.sp-day:last-child{border-bottom:0}
-.sp-day .d{font-weight:600}.sp-day .d small{display:block;color:var(--muted);font-weight:400}
-.sp-day .ev{display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
 .dn-wrap{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;align-items:center}
 @media (max-width:480px){.dn-wrap{grid-template-columns:minmax(0,1fr)}.donut{max-width:200px;margin:0 auto}}
 .donut{width:100%;display:block}
@@ -348,17 +354,13 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 /* Export copy: always the wide layout, no switches, no scroll boxes */
 .sum-export .seg{display:none}
 .sum-export .sum-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.sum-export .sum-row.sum-r1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.sum-export .sum-r1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
 .sum-export .sum-inc{grid-template-columns:minmax(0,1fr) 150px}
 .sum-export .dn-wrap{grid-template-columns:170px minmax(0,1fr)}
 .sum-export .size-leg{columns:4}
 .sum-export .dist-leg{grid-auto-flow:column}
-.sum-export .tiles{grid-template-columns:repeat(7,minmax(0,1fr))}
+.sum-export .tiles{grid-template-columns:repeat(8,minmax(0,1fr))}
 .sum-export .tablewrap{overflow:visible}
-.sum-export .sum-pays{max-height:none;overflow:visible}
-.sum-export .sp-day.x{display:none}
-.sp-more{display:none;padding-top:6px}
-.sum-export .sp-more{display:block}
 </style>
 </head>
 <body>
@@ -864,8 +866,8 @@ function renderSummary(){
     : '<p class="muted">Add share counts in Edit holdings to see projected income.</p>';
 }
 
-function barChart(items,{money=false,h=160,dec=2,lab:labFn=null}={}){
-  const W=Math.max(320,items.length*48), pad=28, max=Math.max(...items.map(i=>i.v),1e-9);
+function barChart(items,{money=false,h=160,dec=2,lab:labFn=null,minW=320}={}){
+  const W=Math.max(minW,items.length*48), pad=28, max=Math.max(...items.map(i=>i.v),1e-9);
   const bw=(W-pad)/items.length;
   const bars = items.map((it,i)=>{
     const bh=(it.v/max)*(h-40), x=pad+i*bw+bw*0.15, y=h-20-bh;
@@ -1914,6 +1916,15 @@ function donutCard(title, note, groups, total, center, sub){
   return `<div class="card sum-blk"><h2>${title}</h2><div class="muted small" style="margin:-4px 0 8px">${note}</div>
     <div class="dn-wrap">${donut(items, total, center, sub)}<div class="dn-leg">${items.map(x=>`<div${x.oth?'':` data-s="${esc(x.l)}"`}><i style="background:${x.c}"></i><b title="${esc(x.l)}">${x.oth?esc(x.l):(DATA.holdings.some(h=>h.symbol===x.l)?symHtml(x.l):esc(x.l))}</b>${MASK?'':`<em>${fmt.money(x.v,0)}</em>`}<em class="pc">${(x.v/total*100).toFixed(1)}%</em></div>`).join('')}</div></div></div>`;
 }
+// Income by payout frequency: how the next 12 months of income splits across weekly, monthly, quarterly… payers
+function freqCard(held, yr){
+  const g = {};
+  held.forEach(h=>{ const v = pmTotal(h); if(!v) return; const k = h.frequency||'Unknown';
+    (g[k] ||= {v:0, n:0, f:h.freq_n||0, s:[]}); g[k].v += v; g[k].n++; g[k].s.push([h.symbol, v]); });
+  const rows = Object.entries(g).sort((a,b)=>b[1].f-a[1].f||b[1].v-a[1].v);
+  return `<div class="card sum-blk"><h2>Income by payout frequency</h2><div class="muted small" style="margin:-4px 0 6px">Share of the next 12 months of income</div>
+    ${rows.map(([k,x],i)=>`<div class="fq-row"><b>${esc(k)}<span class="n">${x.n} holding${x.n===1?'':'s'}</span></b>${MASK?'<span></span>':`<em>${fmt.money(x.v,0)}</em>`}<em class="pc">${(x.v/yr*100).toFixed(1)}%</em><div class="bar"><span style="width:${x.v/yr*100}%;background:var(--s${i%10+1})"></span></div><div class="syms">${x.s.sort((a,b)=>b[1]-a[1]).map(([sy])=>symHtml(sy)).join(', ')}</div></div>`).join('')}</div>`;
+}
 function renderSumTab(){
   MASK = sumHide;
   try{ sumDraw(); } finally { MASK = false; }
@@ -1930,7 +1941,7 @@ function sumDraw(){
     ['Monthly average', fmt.money(p.monthly_avg,0)],
     ['Current yield', fmt.pct(p.yield)],
     ['Yield on cost', fmt.pct(p.yield_on_cost)],
-    ['Total gain / loss', gainCell(p.gain, p.gain!=null&&p.cost?p.gain/p.cost*100:null)],
+    ['Total gain / loss', p.gain==null?'—':`<span class="${p.gain>=0?'pos':'neg'}">${p.gain>=0?'+':''}${fmt.money(p.gain,0)}${p.cost?` <span class="sum-gp">${p.gain>=0?'+':''}${(p.gain/p.cost*100).toFixed(1)}%</span>`:''}</span>`],
     ['Holdings', `${held.length}${watch?` <span class="muted" style="font-size:13px">+ ${watch} watched</span>`:''}`],
   ];
   // Next 12 months of income, same projection as the Monthly projections tab
@@ -1938,14 +1949,6 @@ function sumDraw(){
   const lo = tot.indexOf(Math.min(...tot)), hi = tot.indexOf(Math.max(...tot));
   const chart = yr ? barChart(PM.map((m,i)=>({l:m.label, v:tot[i]})), {money:true, h:190, lab: MASK ? v=>(v/yr*100).toFixed(0)+'%' : null}) : '<p class="muted">Add share counts in Edit holdings to see projected income.</p>';
   const stat = (k,v,s='') => `<div class="sum-stat"><div class="k">${k}</div><div class="v">${v}</div>${s?`<div class="muted small">${s}</div>`:''}</div>`;
-  // Pay dates in the next 30 days
-  const cutoff = ymd(new Date(Date.now()+30*86400000)), today = ymd(now);
-  const pays = EVENTS.filter(e=>e.kind==='pay' && e.date>=today && e.date<=cutoff);
-  const payTot = pays.reduce((a,e)=>a+(e.cash||0),0), byDay = {};
-  pays.forEach(e=>(byDay[e.date] ||= []).push(e));
-  const days = Object.entries(byDay), PAY_SHOW = 8, extra = days.slice(PAY_SHOW).reduce((a,[,es])=>a+es.length,0);
-  // the page scrolls the whole list; exports show the first 8 days and count the rest
-  const payList = pays.length ? `<div class="sum-pays">${days.map(([d,es],i)=>`<div class="sp-day${i>=PAY_SHOW?' x':''}"><div class="d">${parseD(d).toLocaleDateString(undefined,{month:'short',day:'numeric'})}<small>${parseD(d).toLocaleDateString(undefined,{weekday:'short'})}</small></div><div>${es.map(e=>`<div class="ev"><span><strong>${symHtml(e.sym)}</strong>${e.est?' <span class="est">est.</span>':''}</span><span>${e.cash?'~'+fmt.money(e.cash,0):''}</span></div>`).join('')}</div></div>`).join('')}${extra?`<div class="sp-more muted small">+ ${extra} more payment${extra===1?'':'s'} through ${parseD(cutoff).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>`:''}</div>` : '<p class="muted">No pay dates in the next 30 days.</p>';
   // Allocation donuts
   const byHold = Object.fromEntries(held.filter(h=>h.market_value>0).map(h=>[h.symbol, h.market_value]));
   const byFocus = {}; held.forEach(h=>{ if(h.market_value>0){ const k = h.focus||'Not set'; byFocus[k] = (byFocus[k]||0)+h.market_value; } });
@@ -1959,11 +1962,11 @@ function sumDraw(){
       <button id="sumPng">Save as PNG</button><button id="sumPdf" class="primary">Download PDF</button></div>
     <div id="sumSheet">
       <div class="sum-head sum-blk"><div><h1>Dividend portfolio summary</h1><div class="muted">${now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})} · prices as of ${new Date(ts*1000).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}${DATA.demo?' · demo data':''}</div></div></div>
-      <div class="tiles sum-blk">${tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>
+      <div class="tiles sum-blk">${tiles.map(([k,v])=>`<div class="tile${k==='Total gain / loss'?' wide':''}"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>
       <div class="sum-row sum-r1">
-        <div class="card sum-blk"><h2>Projected income, next 12 months</h2><div class="sum-inc"><div>${chart}</div>
+      <div class="card sum-blk"><h2>Projected income, next 12 months</h2><div class="sum-inc"><div>${chart}</div>
           <div class="sum-side">${stat('Next 12 months', `<strong>${fmt.money(yr,0)}</strong>`)}${stat('Average per month', fmt.money(yr/12,0))}${yr?stat('Highest month', fmt.money(tot[hi],0), PM[hi].label)+stat('Lowest month', fmt.money(tot[lo],0), PM[lo].label):''}</div></div></div>
-        <div class="card sum-blk"><div class="dist-hd"><h2>Pay dates, next 30 days</h2>${payTot?`<span class="muted small">~${fmt.money(payTot,0)} from ${pays.length} payment${pays.length===1?'':'s'}</span>`:''}</div>${payList}</div>
+      ${yr?freqCard(held, yr):''}
       </div>
       <div class="sum-row">
         ${mv?donutCard('Allocation by holding', 'Market value, largest first', byHold, mv, MASK?`${held.length}`:fmt.big(mv), MASK?'holdings':'total'):''}
