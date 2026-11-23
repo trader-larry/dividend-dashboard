@@ -347,9 +347,6 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 .dn-leg b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dn-leg em{font-style:normal;font-variant-numeric:tabular-nums;text-align:right}
 .dn-leg em.pc{color:var(--muted)}
-.sum-tbl tr[data-s]{cursor:pointer}
-.sum-tbl .wrapn{white-space:normal;min-width:160px;color:var(--muted)}
-.sum-tbl .nm{color:var(--muted);font-size:12px}
 #sumSheet #sizeCard{margin-top:0}
 /* Export copy: always the wide layout, no switches, no scroll boxes */
 .sum-export .seg{display:none}
@@ -1953,9 +1950,6 @@ function sumDraw(){
   const byHold = Object.fromEntries(held.filter(h=>h.market_value>0).map(h=>[h.symbol, h.market_value]));
   const byFocus = {}; held.forEach(h=>{ if(h.market_value>0){ const k = h.focus||'Not set'; byFocus[k] = (byFocus[k]||0)+h.market_value; } });
   const nFocus = Object.keys(byFocus).length;
-  // Flagged holdings
-  const fl = H.filter(h=>h.flagged).sort((a,b)=>(b.market_value||0)-(a.market_value||0));
-  const flTbl = fl.length ? `<div class="tablewrap"><table class="sum-tbl"><thead><tr><th>Symbol</th><th class="num">Value</th><th class="num">% of portfolio</th><th class="num">Yield fwd</th><th class="num">Income / yr</th><th class="num">Unrealized</th><th>Notes</th></tr></thead><tbody>${fl.map(h=>`<tr data-s="${esc(h.symbol)}"><td><div class="sym">${symHtml(h.symbol)}</div><div class="nm">${esc(h.name)}</div></td><td class="num">${h.shares?fmt.money(h.market_value,0):'<span class="muted">watch</span>'}</td><td class="num">${h.weight==null?'—':fmt.pct(h.weight,1)}</td><td class="num">${fmt.pct(h.fwd_yield)}</td><td class="num">${h.annual_income?fmt.money(h.annual_income,0):'—'}</td><td class="num">${h.gain==null?'—':gainCell(h.gain, h.gain_pct)}</td><td class="wrapn">${esc(h.notes||'')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="muted">No flagged holdings. Flag a symbol in Edit holdings to list it here.</p>';
   el.innerHTML = `<div class="sum-tools noexp">
       <span class="muted small">A one-page snapshot. Exports use your ${document.documentElement.dataset.theme||'Auto'} theme.</span>
       <label class="sum-hide" title="Replace dollar amounts with $••• so you can share it"><input type="checkbox" id="sumHide"${sumHide?' checked':''}> Hide $ amounts</label>
@@ -1974,10 +1968,9 @@ function sumDraw(){
       </div>
       ${mv?`<div class="card sum-blk" id="sizeCard">${sizePanel(held, mv)}</div>`:''}
       ${yr?`<div class="card sum-blk" id="distCard">${distPanel(held, yr)}</div>`:''}
-      <div class="card sum-blk"><h2>Flagged holdings${fl.length?` (${fl.length})`:''}</h2><div class="muted small" style="margin:-4px 0 8px">Not adding to them or cautiously watching</div>${flTbl}</div>
     </div>`;
   wireSize(held, mv, renderSumTab); wireDist(held, yr, renderSumTab);
-  el.querySelectorAll('.dn-leg div[data-s], .sum-tbl tr[data-s]').forEach(d=>{ if(DATA.holdings.some(h=>h.symbol===d.dataset.s)) d.onclick=()=>showDetail(d.dataset.s); else d.style.cursor='default'; });
+  el.querySelectorAll('.dn-leg div[data-s]').forEach(d=>{ if(DATA.holdings.some(h=>h.symbol===d.dataset.s)) d.onclick=()=>showDetail(d.dataset.s); else d.style.cursor='default'; });
   $('sumHide').onchange = e => { sumHide = e.target.checked; try{localStorage.setItem('divdash.sumHide', sumHide?'1':'');}catch(x){} renderSumTab(); };
   $('sumPng').onclick = () => sumExport('png');
   $('sumPdf').onclick = () => sumExport('pdf');
