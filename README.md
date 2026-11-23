@@ -205,7 +205,7 @@ Extras:
   total cost, market value, unrealized gain/loss ($ and %), portfolio weight,
   income and yield on cost, with totals. Above the table, **Holdings by size** shows every
   position by market value, largest first, as a stacked bar (top 19 plus Others) and a
-  ranked list with each one's $ and % of the portfolio; hover to highlight, click a symbol
+  ranked list with each one's $ and % of the portfolio (switch between $, % or Both); hover to highlight, click a symbol
   for its details.
 - Monthly projections tab: projected income for each holding over the next 12
   months, with monthly totals and a chart. Monthly and weekly payers count in
@@ -261,6 +261,15 @@ Extras:
   **Save** keeps the plan as a named scenario in `<holdings file name>-plans.json` next to your
   holdings file (so it syncs with it); **Save as new** makes a copy, and the **Saved scenarios**
   table lists them all against your portfolio now. Click one to open it.
+- Summary tab: a one-page snapshot of the whole portfolio to print or share. It shows metric
+  cards (portfolio value, annual and monthly income, current yield, yield on cost, total gain / loss,
+  holdings), the next 12 months of projected income with the annual total, pay dates in the next
+  30 days, allocation donuts by holding and by Core focus, Holdings by size (with the $ / % / Both
+  switch), Annual projection by holding (with its % / $ switch) and your flagged holdings. The date
+  is stamped at the top. **Save as PNG** saves it as one image and **Download PDF** as a letter-size
+  PDF, both in the theme you are using, made in the browser with no add-ons and no internet needed.
+  **Hide $ amounts** swaps every dollar figure for $••• (percentages stay) so you can post it
+  without showing your balances; the exports follow it too.
 - Export CSV (the dashboard table for Excel; Filtered holdings, which is the same
   table but only the rows currently shown after your filter text, All / Flagged /
   Not flagged and tab, in the table's sort order; or your holdings file) and Import CSV
