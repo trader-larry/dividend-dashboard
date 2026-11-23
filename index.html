@@ -190,6 +190,8 @@ tfoot td{font-weight:600;border-top:2px solid var(--line);border-bottom:0;backgr
 .size-leg b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .size-leg em{font-style:normal;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
 .size-leg em.pc{color:var(--muted)}
+.size-leg.one div{grid-template-columns:18px 10px minmax(0,1fr) auto}
+.size-leg.one em.pc{color:var(--ink)}
 .pm-low{color:var(--warn)}
 .menuwrap{position:relative}
 .menu{position:absolute;right:0;top:calc(100% + 4px);background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);padding:4px;min-width:280px;z-index:20}
@@ -306,6 +308,57 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 .res-head > div:first-child{flex:1 1 300px}
 .res-btns{display:flex;gap:6px;align-self:center}
 #resPanel .calhead{flex-wrap:wrap}
+/* Summary tab */
+.sum-tools{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;justify-content:flex-end;margin-bottom:10px}
+.sum-tools > span{margin-right:auto}
+.sum-hide{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;border:1px solid var(--line);border-radius:6px;padding:5px 10px;background:var(--panel)}
+#sumSheet > *{margin-bottom:12px}
+.sum-head h1{font-size:20px;margin:0 0 2px}
+#sumSheet .tiles{margin-bottom:12px}
+.sum-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.sum-row.sum-r1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.sum-row > .card{margin:0}
+@media (max-width:900px){.sum-row,.sum-row.sum-r1{grid-template-columns:minmax(0,1fr)}}
+.sum-inc{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:14px;align-items:center}
+@media (max-width:560px){.sum-inc{grid-template-columns:minmax(0,1fr)}}
+.sum-side{display:grid;gap:8px}
+.sum-stat .k{color:var(--muted);font-size:12px}
+.sum-stat .v{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.sum-pays{font-size:13px;max-height:300px;overflow-y:auto}
+.sp-day{display:grid;grid-template-columns:64px 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}
+.sp-day:last-child{border-bottom:0}
+.sp-day .d{font-weight:600}.sp-day .d small{display:block;color:var(--muted);font-weight:400}
+.sp-day .ev{display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
+.dn-wrap{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:480px){.dn-wrap{grid-template-columns:minmax(0,1fr)}.donut{max-width:200px;margin:0 auto}}
+.donut{width:100%;display:block}
+.donut text{font-size:9px}
+.donut .dn-v{fill:var(--ink);font-size:15px;font-weight:600}
+.dn-leg{font-size:13px}
+.dn-leg div{display:grid;grid-template-columns:10px minmax(0,1fr) auto 48px;gap:8px;align-items:center;padding:2px 4px;border-radius:4px}
+.dn-leg div[data-s]{cursor:pointer}.dn-leg div[data-s]:hover{background:var(--soft)}
+.dn-leg i{width:10px;height:10px;border-radius:2px;display:block}
+.dn-leg b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dn-leg em{font-style:normal;font-variant-numeric:tabular-nums;text-align:right}
+.dn-leg em.pc{color:var(--muted)}
+.sum-tbl tr[data-s]{cursor:pointer}
+.sum-tbl .wrapn{white-space:normal;min-width:160px;color:var(--muted)}
+.sum-tbl .nm{color:var(--muted);font-size:12px}
+#sumSheet #sizeCard{margin-top:0}
+/* Export copy: always the wide layout, no switches, no scroll boxes */
+.sum-export .seg{display:none}
+.sum-export .sum-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.sum-export .sum-row.sum-r1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.sum-export .sum-inc{grid-template-columns:minmax(0,1fr) 150px}
+.sum-export .dn-wrap{grid-template-columns:170px minmax(0,1fr)}
+.sum-export .size-leg{columns:4}
+.sum-export .dist-leg{grid-auto-flow:column}
+.sum-export .tiles{grid-template-columns:repeat(7,minmax(0,1fr))}
+.sum-export .tablewrap{overflow:visible}
+.sum-export .sum-pays{max-height:none;overflow:visible}
+.sum-export .sp-day.x{display:none}
+.sp-more{display:none;padding-top:6px}
+.sum-export .sp-more{display:block}
 </style>
 </head>
 <body>
@@ -358,6 +411,7 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
   <div id="cmpPanel" hidden></div>
   <div id="resPanel" hidden></div>
   <div id="planPanel" hidden></div>
+  <div id="sumPanel" hidden></div>
   <p class="foot">Data from Yahoo Finance, cached for 15 minutes. Yield (TTM) = last 12 months of dividends ÷ price; Fwd = latest payment × frequency ÷ price; Total return assumes dividends reinvested. Distribution type marked "est." is a guess from the fund's category: confirm with the fund's 19a-1 notices or your 1099-DIV and set it in Edit holdings. Not investment advice.</p>
 </main>
 
@@ -375,8 +429,10 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 const $ = id => document.getElementById(id);
 let DATA = null, sortKey = 'market_value', sortDir = -1;
 
+// MASK: the Summary tab's "Hide $" switch. Turned on only while the Summary tab draws itself.
+let MASK = false;
 const fmt = {
-  money:(v,d=2)=>v==null?'—':(v<0?'-':'')+'$'+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}),
+  money:(v,d=2)=>v==null?'—':MASK?'$•••':(v<0?'-':'')+'$'+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}),
   big:v=>v==null?'—':v>=1e9?'$'+(v/1e9).toFixed(1)+'B':v>=1e6?'$'+(v/1e6).toFixed(1)+'M':fmt.money(v,0),
   pct:(v,d=2)=>v==null||isNaN(v)?'—':v.toFixed(d)+'%',
   spct:(v,d=1)=>v==null||isNaN(v)?'—':`<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v.toFixed(d)}%</span>`,
@@ -486,7 +542,7 @@ function renderOverlapPanels(){
 }
 
 // Each column: k=id, t=header, tab=which tab (0 = always shown), n=numeric, v=sort value, r=cell html
-const TABS = ['Price & fund', 'Dividends & income', 'Strategy & overlap', 'Holdings & performance', 'Monthly projections', 'Symbol comparison', 'Research', 'Planning'];
+const TABS = ['Price & fund', 'Dividends & income', 'Strategy & overlap', 'Holdings & performance', 'Monthly projections', 'Symbol comparison', 'Research', 'Planning', 'Summary'];
 const CMP_TAB = 6, RES_TAB = 7;
 // Rolling 12 months for the projections tab, starting with the current month
 const PM = (()=>{ const n=new Date(); return Array.from({length:12},(_,i)=>{ const d=new Date(n.getFullYear(), n.getMonth()+i, 1);
@@ -576,9 +632,10 @@ function render(){
   if(!DATA) return;
   renderTabs();
   // The Symbol comparison tab has its own panel instead of the holdings table.
-  const cmp = tab===CMP_TAB, res = tab===RES_TAB, pln = tab===PLAN_TAB, own = cmp||res||pln;
-  ['mainTable','q','count'].forEach(id=>$(id).hidden=own); $('cmpPanel').hidden=!cmp; $('resPanel').hidden=!res; $('planPanel').hidden=!pln;
-  if(own){ $('flagF').hidden=true; $('tabTop').hidden=true; $('tab3extra').hidden=true; cmp?renderCompare():res?renderResearch():planRender(true); return; }
+  const cmp = tab===CMP_TAB, res = tab===RES_TAB, pln = tab===PLAN_TAB, sum = tab===SUM_TAB, own = cmp||res||pln||sum;
+  ['mainTable','q','count'].forEach(id=>$(id).hidden=own); $('cmpPanel').hidden=!cmp; $('resPanel').hidden=!res; $('planPanel').hidden=!pln; $('sumPanel').hidden=!sum;
+  if(!sum) $('sumPanel').innerHTML='';
+  if(own){ $('flagF').hidden=true; $('tabTop').hidden=true; $('tabTop').innerHTML=''; $('tab3extra').hidden=true; cmp?renderCompare():res?renderResearch():sum?renderSumTab():planRender(true); return; }
   renderHead();
   const rows = sortedRows(filteredRows());
   const cols = visCols();
@@ -618,7 +675,7 @@ function renderTabTop(rows){
       ['Winners / losers', `<span class="pos">${win}</span> / <span class="neg">${lose}</span>`],
     ]) + `<p class="muted small">Unrealized gain is (current price − your avg cost) × quantity. It does not include dividends you have already received. Positions without a cost per share are left out of the gain totals; add it in Edit holdings.</p>`
       + (mv ? `<div class="card" id="sizeCard">${sizePanel(rows, mv)}</div>` : '');
-    wireSize();
+    wireSize(rows, mv);
     return;
   }
   const tot = PM.map((_,i)=>rows.reduce((a,h)=>a+pmv(h,i),0)), sum = tot.reduce((a,v)=>a+v,0);
@@ -649,19 +706,20 @@ function distItems(rows){
   return {items, count:all.length, all};
 }
 function distPanel(rows, sum){
-  const {items, count, all} = distItems(rows);
-  const val = x => distMode==='%' ? (x.v/sum*100).toFixed(1)+'%' : fmt.money(x.v,0);
+  const {items, count, all} = distItems(rows), dm = MASK ? '%' : distMode;
+  const val = x => dm==='%' ? (x.v/sum*100).toFixed(1)+'%' : fmt.money(x.v,0);
   const top5 = all.slice(0,5).reduce((a,x)=>a+x.v,0)/sum*100;
   const half = Math.ceil(items.length/2);
   return `<div class="dist-hd"><div><h2>Annual projection by holding</h2>
       <div class="muted small">${fmt.money(sum,0)} over the next 12 months from ${count} holding${count===1?'':'s'}${count>5?` · top 5 = ${top5.toFixed(0)}%`:''}</div></div>
-      <div class="seg" id="distMode" role="group" aria-label="Show as"><button data-m="%" class="${distMode==='%'?'on':''}" title="Share of projected income">%</button><button data-m="$" class="${distMode==='$'?'on':''}" title="Projected dollars per year">$</button></div></div>
+      ${MASK?'':`<div class="seg" id="distMode" role="group" aria-label="Show as"><button data-m="%" class="${dm==='%'?'on':''}" title="Share of projected income">%</button><button data-m="$" class="${dm==='$'?'on':''}" title="Projected dollars per year">$</button></div>`}</div>
     <div class="dist-bar" id="distBar">${items.map((x,i)=>`<span data-i="${i}" style="width:${x.v/sum*100}%;background:${x.c}" title="${esc(x.sym)}${x.oth?` (${x.n} holdings)`:''}: ${fmt.money(x.v,0)} · ${(x.v/sum*100).toFixed(1)}%"></span>`).join('')}</div>
     <div class="dist-leg" style="grid-template-rows:repeat(${half},auto)">${items.map((x,i)=>`<div data-i="${i}"${x.oth?' class="oth"':` data-s="${esc(x.sym)}"`} title="${x.oth?`${x.n} smaller holdings`:'Click for details'}"><i style="background:${x.c}"></i><b>${x.oth?`Others <span class="muted" style="font-weight:400">(${x.n})</span>`:symHtml(x.sym)}</b><em>${val(x)}</em></div>`).join('')}</div>`;
 }
-function wireDist(rows, sum){
+// redraw: what to do after the $/% switch changes (the Summary tab redraws itself so "Hide $" still applies)
+function wireDist(rows, sum, redraw){
   const card = $('distCard'); if(!card) return;
-  card.querySelectorAll('#distMode button').forEach(b=>b.onclick=()=>{ distMode=b.dataset.m; try{localStorage.setItem('divdash.distMode',distMode);}catch(e){} card.innerHTML=distPanel(rows,sum); wireDist(rows,sum); });
+  card.querySelectorAll('#distMode button').forEach(b=>b.onclick=()=>{ distMode=b.dataset.m; try{localStorage.setItem('divdash.distMode',distMode);}catch(e){} if(redraw) return redraw(); card.innerHTML=distPanel(rows,sum); wireDist(rows,sum); });
   const bar = $('distBar');
   const hl = i => { bar.classList.toggle('hl', i!=null); bar.querySelectorAll('span').forEach(s=>s.classList.toggle('on', s.dataset.i===i));
     card.querySelectorAll('.dist-leg div').forEach(d=>d.classList.toggle('on', d.dataset.i===i)); };
@@ -669,8 +727,11 @@ function wireDist(rows, sum){
   card.querySelectorAll('.dist-leg div[data-s]').forEach(d=>d.onclick=()=>showDetail(d.dataset.s));
 }
 
-// ---- Holdings by size (Holdings & performance tab): stacked bar + four-column list of every position ----
+// ---- Holdings by size (Holdings & performance and Summary tabs): stacked bar + four-column list of every position ----
+let sizeMode = 'both';  // what each row shows: '$', '%' or 'both'
+try{ const m = localStorage.getItem('divdash.sizeMode'); if(m==='$'||m==='%') sizeMode = m; }catch(e){}
 function sizePanel(rows, mv){
+  const sm = MASK ? '%' : sizeMode;
   const all = rows.filter(h=>h.market_value>0).map(h=>({sym:h.symbol, v:h.market_value})).sort((a,b)=>b.v-a.v);
   const many = all.length>DIST_TOP+1;
   // top 19 get their own color; the rest share one gray "Others" segment in the bar but are still listed
@@ -678,12 +739,14 @@ function sizePanel(rows, mv){
   const segs = []; all.forEach(x=>{ (segs[x.seg] ||= {v:0, n:0, c:x.c, sym:x.sym}); segs[x.seg].v+=x.v; segs[x.seg].n++; });
   const top5 = all.slice(0,5).reduce((a,x)=>a+x.v,0)/mv*100, pct = v => (v/mv*100).toFixed(1)+'%';
   return `<div class="dist-hd"><div><h2>Holdings by size</h2>
-      <div class="muted small">${fmt.money(mv,0)} market value across ${all.length} position${all.length===1?'':'s'}${all.length>5?` · top 5 = ${top5.toFixed(0)}%`:''} · largest first</div></div></div>
+      <div class="muted small">${MASK?'':fmt.money(mv,0)+' market value across '}${all.length} position${all.length===1?'':'s'}${all.length>5?` · top 5 = ${top5.toFixed(0)}%`:''} · largest first</div></div>
+      ${MASK?'':`<div class="seg" id="sizeMode" role="group" aria-label="Show as">${[['$','Market value'],['%','Share of portfolio'],['both','Both']].map(([m,t])=>`<button data-m="${m}" class="${sm===m?'on':''}" title="${t}">${m==='both'?'Both':m}</button>`).join('')}</div>`}</div>
     <div class="dist-bar" id="sizeBar">${segs.map((x,i)=>`<span data-g="${i}" style="width:${x.v/mv*100}%;background:${x.c}" title="${x.n>1?`Others (${x.n} holdings)`:esc(x.sym)}: ${fmt.money(x.v,0)} · ${pct(x.v)}"></span>`).join('')}</div>
-    <div class="size-leg">${all.map((x,i)=>`<div data-g="${x.seg}" data-s="${esc(x.sym)}" title="Click for details"><span class="rk">${i+1}</span><i style="background:${x.c}"></i><b>${symHtml(x.sym)}</b><em>${fmt.money(x.v,0)}</em><em class="pc">${pct(x.v)}</em></div>`).join('')}</div>`;
+    <div class="size-leg${sm==='both'?'':' one'}">${all.map((x,i)=>`<div data-g="${x.seg}" data-s="${esc(x.sym)}" title="Click for details"><span class="rk">${i+1}</span><i style="background:${x.c}"></i><b>${symHtml(x.sym)}</b>${sm!=='%'?`<em>${fmt.money(x.v,0)}</em>`:''}${sm!=='$'?`<em class="pc">${pct(x.v)}</em>`:''}</div>`).join('')}</div>`;
 }
-function wireSize(){
+function wireSize(rows, mv, redraw){
   const card = $('sizeCard'); if(!card) return;
+  card.querySelectorAll('#sizeMode button').forEach(b=>b.onclick=()=>{ sizeMode=b.dataset.m; try{localStorage.setItem('divdash.sizeMode',sizeMode);}catch(e){} if(redraw) return redraw(); card.innerHTML=sizePanel(rows,mv); wireSize(rows,mv); });
   const bar = $('sizeBar');
   const hl = (g, el) => { bar.classList.toggle('hl', g!=null); bar.querySelectorAll('span').forEach(s=>s.classList.toggle('on', s.dataset.g===g));
     card.querySelectorAll('.size-leg div').forEach(d=>d.classList.toggle('on', el ? d===el : d.dataset.g===g)); };
@@ -801,12 +864,12 @@ function renderSummary(){
     : '<p class="muted">Add share counts in Edit holdings to see projected income.</p>';
 }
 
-function barChart(items,{money=false,h=160,dec=2}={}){
+function barChart(items,{money=false,h=160,dec=2,lab:labFn=null}={}){
   const W=Math.max(320,items.length*48), pad=28, max=Math.max(...items.map(i=>i.v),1e-9);
   const bw=(W-pad)/items.length;
   const bars = items.map((it,i)=>{
     const bh=(it.v/max)*(h-40), x=pad+i*bw+bw*0.15, y=h-20-bh;
-    const lab = money?'$'+(it.v>=1000?(it.v/1000).toFixed(1)+'k':it.v.toFixed(0)):it.v.toFixed(dec);
+    const lab = labFn?labFn(it.v):money?'$'+(it.v>=1000?(it.v/1000).toFixed(1)+'k':it.v.toFixed(0)):it.v.toFixed(dec);
     return `<rect x="${x}" y="${y}" width="${bw*0.7}" height="${bh}" rx="2" fill="var(--bar)"><title>${esc(it.l)}: ${lab}</title></rect>
       ${it.v>0?`<text x="${x+bw*0.35}" y="${y-4}" text-anchor="middle">${lab}</text>`:''}
       <text x="${x+bw*0.35}" y="${h-5}" text-anchor="middle">${esc(it.l)}</text>`;
@@ -1831,6 +1894,164 @@ function planBars(items, h=180){
 }
 const planHbars = (obj, tot) => { const e = Object.entries(obj).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]), mx = e[0]?.[1]||1;
   return e.map(([k,v])=>`<div class="hbar plan-hb"><span class="nm2" title="${esc(k)}">${esc(k)}</span><div class="b" style="width:${v/mx*100}%"></div><span class="num">${fmt.money(v,0)}</span><span class="num muted">${(v/tot*100).toFixed(0)}%</span></div>`).join(''); };
+// ---- Summary tab: a one-page snapshot of the portfolio, exportable as PNG or PDF ----
+const SUM_TAB = 9;
+let sumHide = false;  // "Hide $": swap dollar amounts for $••• so the page can be shared
+try{ sumHide = localStorage.getItem('divdash.sumHide')==='1'; }catch(e){}
+// Donut: one circle per slice, drawn with stroke dashes (plain SVG, so it exports cleanly)
+function donut(items, total, center, sub){
+  const R = 54, C = 2*Math.PI*R; let off = 0;
+  const arcs = items.map(x=>{ const len = x.v/total*C, a = `<circle r="${R}" cx="70" cy="70" fill="none" stroke="${x.c}" stroke-width="22" stroke-dasharray="${Math.max(len-1,0.5)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"><title>${esc(x.l)}: ${(x.v/total*100).toFixed(1)}%${MASK?'':' · '+fmt.money(x.v,0)}</title></circle>`; off += len; return a; }).join('');
+  return `<svg viewBox="0 0 140 140" class="donut" role="img"><circle r="${R}" cx="70" cy="70" fill="none" stroke="var(--soft)" stroke-width="22"/>${arcs}
+    <text x="70" y="68" text-anchor="middle" class="dn-v">${esc(center)}</text><text x="70" y="84" text-anchor="middle">${esc(sub)}</text></svg>`;
+}
+// Top 9 slices plus "Others", with a legend beside the donut
+function donutCard(title, note, groups, total, center, sub){
+  const all = Object.entries(groups).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const top = all.length>10 ? all.slice(0,9) : all, rest = all.slice(top.length);
+  const items = top.map(([l,v],i)=>({l, v, c:`var(--s${i+1})`}));
+  if(rest.length) items.push({l:`Others (${rest.length})`, v:rest.reduce((a,x)=>a+x[1],0), c:'var(--muted)', oth:1});
+  return `<div class="card sum-blk"><h2>${title}</h2><div class="muted small" style="margin:-4px 0 8px">${note}</div>
+    <div class="dn-wrap">${donut(items, total, center, sub)}<div class="dn-leg">${items.map(x=>`<div${x.oth?'':` data-s="${esc(x.l)}"`}><i style="background:${x.c}"></i><b title="${esc(x.l)}">${x.oth?esc(x.l):(DATA.holdings.some(h=>h.symbol===x.l)?symHtml(x.l):esc(x.l))}</b>${MASK?'':`<em>${fmt.money(x.v,0)}</em>`}<em class="pc">${(x.v/total*100).toFixed(1)}%</em></div>`).join('')}</div></div></div>`;
+}
+function renderSumTab(){
+  MASK = sumHide;
+  try{ sumDraw(); } finally { MASK = false; }
+}
+function sumDraw(){
+  const el = $('sumPanel'), p = DATA.portfolio, H = DATA.holdings, held = H.filter(h=>h.shares>0);
+  const mv = held.reduce((a,h)=>a+(h.market_value||0),0);
+  const now = new Date(), ts = Math.min(...H.map(h=>h.fetched_at||Date.now()/1000));
+  // Metric cards
+  const watch = H.length-held.length;
+  const tiles = [
+    ['Portfolio value', fmt.money(p.market_value,0)],
+    ['Annual dividend income', fmt.money(p.annual_income,0)],
+    ['Monthly average', fmt.money(p.monthly_avg,0)],
+    ['Current yield', fmt.pct(p.yield)],
+    ['Yield on cost', fmt.pct(p.yield_on_cost)],
+    ['Total gain / loss', gainCell(p.gain, p.gain!=null&&p.cost?p.gain/p.cost*100:null)],
+    ['Holdings', `${held.length}${watch?` <span class="muted" style="font-size:13px">+ ${watch} watched</span>`:''}`],
+  ];
+  // Next 12 months of income, same projection as the Monthly projections tab
+  const tot = PM.map((_,i)=>held.reduce((a,h)=>a+pmv(h,i),0)), yr = tot.reduce((a,v)=>a+v,0);
+  const lo = tot.indexOf(Math.min(...tot)), hi = tot.indexOf(Math.max(...tot));
+  const chart = yr ? barChart(PM.map((m,i)=>({l:m.label, v:tot[i]})), {money:true, h:190, lab: MASK ? v=>(v/yr*100).toFixed(0)+'%' : null}) : '<p class="muted">Add share counts in Edit holdings to see projected income.</p>';
+  const stat = (k,v,s='') => `<div class="sum-stat"><div class="k">${k}</div><div class="v">${v}</div>${s?`<div class="muted small">${s}</div>`:''}</div>`;
+  // Pay dates in the next 30 days
+  const cutoff = ymd(new Date(Date.now()+30*86400000)), today = ymd(now);
+  const pays = EVENTS.filter(e=>e.kind==='pay' && e.date>=today && e.date<=cutoff);
+  const payTot = pays.reduce((a,e)=>a+(e.cash||0),0), byDay = {};
+  pays.forEach(e=>(byDay[e.date] ||= []).push(e));
+  const days = Object.entries(byDay), PAY_SHOW = 8, extra = days.slice(PAY_SHOW).reduce((a,[,es])=>a+es.length,0);
+  // the page scrolls the whole list; exports show the first 8 days and count the rest
+  const payList = pays.length ? `<div class="sum-pays">${days.map(([d,es],i)=>`<div class="sp-day${i>=PAY_SHOW?' x':''}"><div class="d">${parseD(d).toLocaleDateString(undefined,{month:'short',day:'numeric'})}<small>${parseD(d).toLocaleDateString(undefined,{weekday:'short'})}</small></div><div>${es.map(e=>`<div class="ev"><span><strong>${symHtml(e.sym)}</strong>${e.est?' <span class="est">est.</span>':''}</span><span>${e.cash?'~'+fmt.money(e.cash,0):''}</span></div>`).join('')}</div></div>`).join('')}${extra?`<div class="sp-more muted small">+ ${extra} more payment${extra===1?'':'s'} through ${parseD(cutoff).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>`:''}</div>` : '<p class="muted">No pay dates in the next 30 days.</p>';
+  // Allocation donuts
+  const byHold = Object.fromEntries(held.filter(h=>h.market_value>0).map(h=>[h.symbol, h.market_value]));
+  const byFocus = {}; held.forEach(h=>{ if(h.market_value>0){ const k = h.focus||'Not set'; byFocus[k] = (byFocus[k]||0)+h.market_value; } });
+  const nFocus = Object.keys(byFocus).length;
+  // Flagged holdings
+  const fl = H.filter(h=>h.flagged).sort((a,b)=>(b.market_value||0)-(a.market_value||0));
+  const flTbl = fl.length ? `<div class="tablewrap"><table class="sum-tbl"><thead><tr><th>Symbol</th><th class="num">Value</th><th class="num">% of portfolio</th><th class="num">Yield fwd</th><th class="num">Income / yr</th><th class="num">Unrealized</th><th>Notes</th></tr></thead><tbody>${fl.map(h=>`<tr data-s="${esc(h.symbol)}"><td><div class="sym">${symHtml(h.symbol)}</div><div class="nm">${esc(h.name)}</div></td><td class="num">${h.shares?fmt.money(h.market_value,0):'<span class="muted">watch</span>'}</td><td class="num">${h.weight==null?'—':fmt.pct(h.weight,1)}</td><td class="num">${fmt.pct(h.fwd_yield)}</td><td class="num">${h.annual_income?fmt.money(h.annual_income,0):'—'}</td><td class="num">${h.gain==null?'—':gainCell(h.gain, h.gain_pct)}</td><td class="wrapn">${esc(h.notes||'')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="muted">No flagged holdings. Flag a symbol in Edit holdings to list it here.</p>';
+  el.innerHTML = `<div class="sum-tools noexp">
+      <span class="muted small">A one-page snapshot. Exports use your ${document.documentElement.dataset.theme||'Auto'} theme.</span>
+      <label class="sum-hide" title="Replace dollar amounts with $••• so you can share it"><input type="checkbox" id="sumHide"${sumHide?' checked':''}> Hide $ amounts</label>
+      <button id="sumPng">Save as PNG</button><button id="sumPdf" class="primary">Download PDF</button></div>
+    <div id="sumSheet">
+      <div class="sum-head sum-blk"><div><h1>Dividend portfolio summary</h1><div class="muted">${now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})} · prices as of ${new Date(ts*1000).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}${DATA.demo?' · demo data':''}</div></div></div>
+      <div class="tiles sum-blk">${tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>
+      <div class="sum-row sum-r1">
+        <div class="card sum-blk"><h2>Projected income, next 12 months</h2><div class="sum-inc"><div>${chart}</div>
+          <div class="sum-side">${stat('Next 12 months', `<strong>${fmt.money(yr,0)}</strong>`)}${stat('Average per month', fmt.money(yr/12,0))}${yr?stat('Highest month', fmt.money(tot[hi],0), PM[hi].label)+stat('Lowest month', fmt.money(tot[lo],0), PM[lo].label):''}</div></div></div>
+        <div class="card sum-blk"><div class="dist-hd"><h2>Pay dates, next 30 days</h2>${payTot?`<span class="muted small">~${fmt.money(payTot,0)} from ${pays.length} payment${pays.length===1?'':'s'}</span>`:''}</div>${payList}</div>
+      </div>
+      <div class="sum-row">
+        ${mv?donutCard('Allocation by holding', 'Market value, largest first', byHold, mv, MASK?`${held.length}`:fmt.big(mv), MASK?'holdings':'total'):''}
+        ${mv?donutCard('Allocation by Core focus', `${nFocus} categor${nFocus===1?'y':'ies'}, by market value`, byFocus, mv, String(nFocus), nFocus===1?'category':'categories'):''}
+      </div>
+      ${mv?`<div class="card sum-blk" id="sizeCard">${sizePanel(held, mv)}</div>`:''}
+      ${yr?`<div class="card sum-blk" id="distCard">${distPanel(held, yr)}</div>`:''}
+      <div class="card sum-blk"><h2>Flagged holdings${fl.length?` (${fl.length})`:''}</h2><div class="muted small" style="margin:-4px 0 8px">Not adding to them or cautiously watching</div>${flTbl}</div>
+    </div>`;
+  wireSize(held, mv, renderSumTab); wireDist(held, yr, renderSumTab);
+  el.querySelectorAll('.dn-leg div[data-s], .sum-tbl tr[data-s]').forEach(d=>{ if(DATA.holdings.some(h=>h.symbol===d.dataset.s)) d.onclick=()=>showDetail(d.dataset.s); else d.style.cursor='default'; });
+  $('sumHide').onchange = e => { sumHide = e.target.checked; try{localStorage.setItem('divdash.sumHide', sumHide?'1':'');}catch(x){} renderSumTab(); };
+  $('sumPng').onclick = () => sumExport('png');
+  $('sumPdf').onclick = () => sumExport('pdf');
+}
+
+// Export: copy #sumSheet into an off-screen box at a fixed width, draw it into a canvas through an
+// SVG <foreignObject> (no add-ons needed, works offline), then save as PNG or build a letter-size PDF.
+const SUM_W = 1200, SUM_PAD = 28;
+async function sumCanvas(){
+  const src = $('sumSheet'), box = document.createElement('div');
+  box.className = 'sum-export';
+  box.style.cssText = `position:absolute;left:-100000px;top:0;width:${SUM_W}px;padding:${SUM_PAD}px;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif`;
+  box.appendChild(src.cloneNode(true)); document.body.appendChild(box);
+  try{
+    const top = box.getBoundingClientRect().top, Ht = Math.ceil(box.getBoundingClientRect().height);
+    // places a PDF page may end without cutting a card in half (the gap below each block)
+    const breaks = [...box.querySelectorAll('.sum-blk')].map(b=>Math.ceil(b.getBoundingClientRect().bottom-top)+6).sort((a,b)=>a-b);
+    // the theme's colors, written onto the copy so the image matches what you see
+    const css = [...document.styleSheets].map(ss=>{ try{ return [...ss.cssRules].map(r=>r.cssText).join('\n'); }catch(e){ return ''; } }).join('\n');
+    const rs = getComputedStyle(document.documentElement);
+    const vars = [...new Set(css.match(/--[\w-]+(?=\s*:)/g)||[])].map(v=>`${v}:${rs.getPropertyValue(v).trim()}`).join(';');
+    box.style.cssText = `width:${SUM_W}px;padding:${SUM_PAD}px;${vars};color-scheme:${rs.colorScheme||'normal'};background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif`;
+    box.setAttribute('xmlns','http://www.w3.org/1999/xhtml');
+    const st = document.createElement('style'); st.textContent = css; box.prepend(st);
+    const xml = new XMLSerializer().serializeToString(box);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${SUM_W}" height="${Ht}"><foreignObject x="0" y="0" width="100%" height="100%">${xml}</foreignObject></svg>`;
+    const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    await img.decode();
+    const k = 2, cv = document.createElement('canvas'); cv.width = SUM_W*k; cv.height = Ht*k;
+    const g = cv.getContext('2d'); g.fillStyle = getComputedStyle(document.body).backgroundColor; g.fillRect(0,0,cv.width,cv.height);
+    g.drawImage(img, 0, 0, cv.width, cv.height);
+    return {cv, Ht, breaks, k};
+  } finally { box.remove(); }
+}
+const sumFile = ext => `dividend-summary-${ymd(new Date())}.${ext}`;
+const saveBlob = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 5000); };
+async function sumExport(kind){
+  const btn = $(kind==='png'?'sumPng':'sumPdf'), label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Preparing…';
+  try{
+    const r = await sumCanvas();
+    if(kind==='png') saveBlob(await new Promise(ok=>r.cv.toBlob(ok,'image/png')), sumFile('png'));
+    else saveBlob(await sumPdfBlob(r), sumFile('pdf'));
+  }catch(e){ alert('Could not export the summary: '+(e.message||e)); }
+  btn.disabled = false; btn.textContent = label;
+}
+// Letter-size PDF (612 × 792 pt), one JPEG per page, pages broken between cards where possible
+async function sumPdfBlob({cv, Ht, breaks, k}){
+  const PW = 612, PH = 792, M = 24, s = (PW-2*M)/SUM_W, ph = Math.floor((PH-2*M)/s);
+  const cuts = [0]; let at = 0;
+  while(Ht-at > ph){ const b = breaks.filter(x=>x>at+ph*0.35 && x<=at+ph).pop(); at = b || at+ph; cuts.push(at); }
+  cuts.push(Ht);
+  const pages = [];
+  for(let i=0;i<cuts.length-1;i++){
+    const y0 = cuts[i], hh = cuts[i+1]-y0, c = document.createElement('canvas');
+    c.width = cv.width; c.height = Math.round(hh*k);
+    c.getContext('2d').drawImage(cv, 0, Math.round(y0*k), cv.width, c.height, 0, 0, c.width, c.height);
+    const bytes = new Uint8Array(await (await new Promise(ok=>c.toBlob(ok,'image/jpeg',0.92))).arrayBuffer());
+    pages.push({bytes, w:c.width, h:c.height, dw:SUM_W*s, dh:hh*s, x:M, y:PH-M-hh*s});
+  }
+  const bg = (getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g)||[255,255,255]).slice(0,3).map(v=>(v/255).toFixed(3)).join(' ');
+  const enc = new TextEncoder(), parts = [], offs = []; let len = 0;
+  const put = x => { const u = typeof x==='string' ? enc.encode(x) : x; parts.push(u); len += u.length; };
+  const obj = (n, f) => { offs[n] = len; put(`${n} 0 obj\n`); f(); put('\nendobj\n'); };
+  put('%PDF-1.4\n');
+  obj(1, ()=>put('<< /Type /Catalog /Pages 2 0 R >>'));
+  obj(2, ()=>put(`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>`${3+3*i} 0 R`).join(' ')}] >>`));
+  pages.forEach((p,i)=>{ const n = 3+3*i;
+    obj(n, ()=>put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 ${n+2} 0 R >> >> /Contents ${n+1} 0 R >>`));
+    const cs = `${bg} rg 0 0 ${PW} ${PH} re f q ${p.dw.toFixed(2)} 0 0 ${p.dh.toFixed(2)} ${p.x.toFixed(2)} ${p.y.toFixed(2)} cm /Im0 Do Q`;
+    obj(n+1, ()=>put(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`));
+    obj(n+2, ()=>{ put(`<< /Type /XObject /Subtype /Image /Width ${p.w} /Height ${p.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.bytes.length} >>\nstream\n`); put(p.bytes); put('\nendstream'); });
+  });
+  const xref = len, N = 3+3*pages.length;
+  put(`xref\n0 ${N}\n0000000000 65535 f \n${offs.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')}trailer\n<< /Size ${N} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(parts, {type:'application/pdf'});
+}
 load(false);
 </script>
 </body>
