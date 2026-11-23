@@ -331,9 +331,9 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 @media (max-width:560px){.sum-inc{grid-template-columns:minmax(0,1fr)}}
 .sum-side{display:grid;gap:8px}
 .sum-stat .k{color:var(--muted);font-size:12px}
-.tile.wide{grid-column:span 2}
-#sumSheet .tile .v{white-space:nowrap}
-.sum-gp{font-size:14px;font-weight:500;margin-left:4px}
+#sumSheet .tile .v{font-size:18px}
+.sum-gv{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:5px}
+.sum-gp{font-size:12px;font-weight:500}
 .sum-stat .v{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
 .dn-wrap{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;align-items:center}
 @media (max-width:480px){.dn-wrap{grid-template-columns:minmax(0,1fr)}.donut{max-width:200px;margin:0 auto}}
@@ -356,7 +356,7 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 .sum-export .dn-wrap{grid-template-columns:170px minmax(0,1fr)}
 .sum-export .size-leg{columns:4}
 .sum-export .dist-leg{grid-auto-flow:column}
-.sum-export .tiles{grid-template-columns:repeat(8,minmax(0,1fr))}
+.sum-export .tiles{grid-template-columns:repeat(7,minmax(0,1fr))}
 .sum-export .tablewrap{overflow:visible}
 </style>
 </head>
@@ -1934,11 +1934,11 @@ function sumDraw(){
   const watch = H.length-held.length;
   const tiles = [
     ['Portfolio value', fmt.money(p.market_value,0)],
-    ['Annual dividend income', fmt.money(p.annual_income,0)],
+    ['Annual income', fmt.money(p.annual_income,0)],
     ['Monthly average', fmt.money(p.monthly_avg,0)],
     ['Current yield', fmt.pct(p.yield)],
     ['Yield on cost', fmt.pct(p.yield_on_cost)],
-    ['Total gain / loss', p.gain==null?'—':`<span class="${p.gain>=0?'pos':'neg'}">${p.gain>=0?'+':''}${fmt.money(p.gain,0)}${p.cost?` <span class="sum-gp">${p.gain>=0?'+':''}${(p.gain/p.cost*100).toFixed(1)}%</span>`:''}</span>`],
+    ['Total gain / loss', p.gain==null?'—':`<span class="sum-gv ${p.gain>=0?'pos':'neg'}"><span>${p.gain>=0?'+':''}${fmt.money(p.gain,0)}</span>${p.cost?`<span class="sum-gp">${p.gain>=0?'+':''}${(p.gain/p.cost*100).toFixed(1)}%</span>`:''}</span>`],
     ['Holdings', `${held.length}${watch?` <span class="muted" style="font-size:13px">+ ${watch} watched</span>`:''}`],
   ];
   // Next 12 months of income, same projection as the Monthly projections tab
@@ -1956,7 +1956,7 @@ function sumDraw(){
       <button id="sumPng">Save as PNG</button><button id="sumPdf" class="primary">Download PDF</button></div>
     <div id="sumSheet">
       <div class="sum-head sum-blk"><div><h1>Dividend portfolio summary</h1><div class="muted">${now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})} · prices as of ${new Date(ts*1000).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}${DATA.demo?' · demo data':''}</div></div></div>
-      <div class="tiles sum-blk">${tiles.map(([k,v])=>`<div class="tile${k==='Total gain / loss'?' wide':''}"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>
+      <div class="tiles sum-blk">${tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>
       <div class="sum-row sum-r1">
       <div class="card sum-blk"><h2>Projected income, next 12 months</h2><div class="sum-inc"><div>${chart}</div>
           <div class="sum-side">${stat('Next 12 months', `<strong>${fmt.money(yr,0)}</strong>`)}${stat('Average per month', fmt.money(yr/12,0))}${yr?stat('Highest month', fmt.money(tot[hi],0), PM[hi].label)+stat('Lowest month', fmt.money(tot[lo],0), PM[lo].label):''}</div></div></div>
@@ -1978,7 +1978,7 @@ function sumDraw(){
 
 // Export: copy #sumSheet into an off-screen box at a fixed width, draw it into a canvas through an
 // SVG <foreignObject> (no add-ons needed, works offline), then save as PNG or build a letter-size PDF.
-const SUM_W = 1200, SUM_PAD = 28;
+const SUM_W = 1320, SUM_PAD = 28;
 async function sumCanvas(){
   const src = $('sumSheet'), box = document.createElement('div');
   box.className = 'sum-export';

@@ -262,7 +262,7 @@ Extras:
   holdings file (so it syncs with it); **Save as new** makes a copy, and the **Saved scenarios**
   table lists them all against your portfolio now. Click one to open it.
 - Summary tab: a one-page snapshot of the whole portfolio to print or share. It shows metric
-  cards (portfolio value, annual and monthly income, current yield, yield on cost, total gain / loss,
+  cards (portfolio value, annual income, monthly average, current yield, yield on cost, total gain / loss,
   holdings), the next 12 months of projected income with the annual total, income by payout
   frequency (weekly, monthly, quarterly and so on), allocation donuts by holding and by Core focus, Holdings by size (with the $ / % / Both
   switch), Annual projection by holding (with its % / $ switch). Flagged holdings are highlighted in those panels. The date
