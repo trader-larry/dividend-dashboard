@@ -265,7 +265,7 @@ Extras:
   cards (portfolio value, annual income, monthly average, current yield, yield on cost, total gain / loss,
   holdings), the next 12 months of projected income with the annual total, income by payout
   frequency (weekly, monthly, quarterly and so on), allocation donuts by holding and by Core focus, Holdings by size (with the $ / % / Both
-  switch), Annual projection by holding (with its % / $ switch). Flagged holdings are highlighted in those panels. The date
+  switch), Annual projection by holding (with its % / $ / Both switch). Flagged holdings are highlighted in those panels. The date
   is stamped at the top. **Save as PNG** saves it as one image and **Download PDF** as a letter-size
   PDF, both in the theme you are using, made in the browser with no add-ons and no internet needed.
   **Hide $ amounts** swaps every dollar figure for $••• (percentages stay) so you can post it

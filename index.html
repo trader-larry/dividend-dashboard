@@ -175,6 +175,8 @@ tfoot td{font-weight:600;border-top:2px solid var(--line);border-bottom:0;backgr
 .dist-leg div{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;padding:2px 4px;border-radius:4px;cursor:pointer;min-width:0}
 .dist-leg div:hover,.dist-leg div.on{background:var(--soft)}
 .dist-leg div.oth{cursor:default}
+.dist-leg.both div{grid-template-columns:10px 1fr auto 48px}
+.dist-leg em.pc{color:var(--muted);text-align:right}
 .dist-leg i{width:10px;height:10px;border-radius:2px;display:block}
 .dist-leg b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dist-leg em{font-style:normal;font-variant-numeric:tabular-nums;color:var(--ink)}
@@ -693,7 +695,7 @@ function renderTabTop(rows){
 
 // ---- Annual projection by holding: stacked bar + two-column legend (top 19 + Others) ----
 let distMode = '$';
-try{ distMode = localStorage.getItem('divdash.distMode')==='%' ? '%' : '$'; }catch(e){}
+try{ const m = localStorage.getItem('divdash.distMode'); distMode = m==='%'||m==='both' ? m : '$'; }catch(e){}
 const DIST_TOP = 19;
 // 10 palette colors, then the same 10 lighter for ranks 11-19, so neighbours never share a color
 const distColor = i => i<10 ? `var(--s${i+1})` : `color-mix(in srgb, var(--s${i-9}) 55%, var(--panel))`;
@@ -706,14 +708,15 @@ function distItems(rows){
 }
 function distPanel(rows, sum){
   const {items, count, all} = distItems(rows), dm = MASK ? '%' : distMode;
-  const val = x => dm==='%' ? (x.v/sum*100).toFixed(1)+'%' : fmt.money(x.v,0);
+  const pc = x => (x.v/sum*100).toFixed(1)+'%';
+  const val = x => dm==='%' ? `<em>${pc(x)}</em>` : dm==='both' ? `<em>${fmt.money(x.v,0)}</em><em class="pc">${pc(x)}</em>` : `<em>${fmt.money(x.v,0)}</em>`;
   const top5 = all.slice(0,5).reduce((a,x)=>a+x.v,0)/sum*100;
   const half = Math.ceil(items.length/2);
   return `<div class="dist-hd"><div><h2>Annual projection by holding</h2>
       <div class="muted small">${fmt.money(sum,0)} over the next 12 months from ${count} holding${count===1?'':'s'}${count>5?` · top 5 = ${top5.toFixed(0)}%`:''}</div></div>
-      ${MASK?'':`<div class="seg" id="distMode" role="group" aria-label="Show as"><button data-m="%" class="${dm==='%'?'on':''}" title="Share of projected income">%</button><button data-m="$" class="${dm==='$'?'on':''}" title="Projected dollars per year">$</button></div>`}</div>
+      ${MASK?'':`<div class="seg" id="distMode" role="group" aria-label="Show as"><button data-m="%" class="${dm==='%'?'on':''}" title="Share of projected income">%</button><button data-m="$" class="${dm==='$'?'on':''}" title="Projected dollars per year">$</button><button data-m="both" class="${dm==='both'?'on':''}" title="Dollars and share">Both</button></div>`}</div>
     <div class="dist-bar" id="distBar">${items.map((x,i)=>`<span data-i="${i}" style="width:${x.v/sum*100}%;background:${x.c}" title="${esc(x.sym)}${x.oth?` (${x.n} holdings)`:''}: ${fmt.money(x.v,0)} · ${(x.v/sum*100).toFixed(1)}%"></span>`).join('')}</div>
-    <div class="dist-leg" style="grid-template-rows:repeat(${half},auto)">${items.map((x,i)=>`<div data-i="${i}"${x.oth?' class="oth"':` data-s="${esc(x.sym)}"`} title="${x.oth?`${x.n} smaller holdings`:'Click for details'}"><i style="background:${x.c}"></i><b>${x.oth?`Others <span class="muted" style="font-weight:400">(${x.n})</span>`:symHtml(x.sym)}</b><em>${val(x)}</em></div>`).join('')}</div>`;
+    <div class="dist-leg${dm==='both'?' both':''}" style="grid-template-rows:repeat(${half},auto)">${items.map((x,i)=>`<div data-i="${i}"${x.oth?' class="oth"':` data-s="${esc(x.sym)}"`} title="${x.oth?`${x.n} smaller holdings`:'Click for details'}"><i style="background:${x.c}"></i><b>${x.oth?`Others <span class="muted" style="font-weight:400">(${x.n})</span>`:symHtml(x.sym)}</b>${val(x)}</div>`).join('')}</div>`;
 }
 // redraw: what to do after the $/% switch changes (the Summary tab redraws itself so "Hide $" still applies)
 function wireDist(rows, sum, redraw){
