@@ -1,0 +1,29 @@
+{
+ "version": 1,
+ "plans": [
+  {
+   "id": "demo-retire",
+   "name": "Retirement income mix",
+   "basis": "fwd",
+   "saved_at": "2026-11-01T15:00:00.000Z",
+   "accounts": [
+    {"name": "Taxable", "balance": 150000, "rows": [
+     {"s": "SCHD", "w": 35}, {"s": "VYM", "w": 20}, {"s": "JEPI", "w": 20}, {"s": "O", "w": 15}, {"s": "SGOV", "w": 10}]},
+    {"name": "Traditional IRA", "balance": 120000, "rows": [
+     {"s": "JEPQ", "w": 30}, {"s": "MAIN", "w": 20}, {"s": "ARCC", "w": 20}, {"s": "BND", "w": 30}]},
+    {"name": "Roth IRA", "balance": 60000, "rows": [
+     {"s": "DGRO", "w": 50}, {"s": "VIG", "w": 50}]}
+   ]
+  },
+  {
+   "id": "demo-monthly",
+   "name": "Monthly payers only",
+   "basis": "ttm",
+   "saved_at": "2026-11-10T15:00:00.000Z",
+   "accounts": [
+    {"name": "Brokerage", "balance": 100000, "rows": [
+     {"s": "JEPI", "w": 20}, {"s": "JEPQ", "w": 20}, {"s": "SPYI", "w": 15}, {"s": "DIVO", "w": 15}, {"s": "O", "w": 15}, {"s": "MAIN", "w": 15}]}
+   ]
+  }
+ ]
+}

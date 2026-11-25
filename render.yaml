@@ -1,0 +1,23 @@
+# Render Blueprint for the public, read-only live demo of the dashboard.
+# Deploy steps: see DEPLOY.md. Your own holdings.csv is never used or uploaded:
+# the demo shows the sample portfolio in demo/demo-holdings.csv.
+services:
+  - type: web
+    name: dividend-dashboard-demo
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py --public-demo
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: PUBLIC_DEMO
+        value: "1"
+      # Hours to reuse live prices before fetching them again (fewer Yahoo requests).
+      - key: DEMO_CACHE_HOURS
+        value: "6"
+      # Set to "synthetic" to show made-up sample numbers instead of live Yahoo Finance data.
+      - key: DEMO_DATA
+        value: live

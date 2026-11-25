@@ -296,6 +296,13 @@ Extras:
   DLLs may be blocked).
 - This is for information only, not investment advice.
 
+## Live demo on a website
+
+`python server.py --public-demo` runs a read-only demo with a fuller sample portfolio (in `demo/`),
+for hosting on a free service like Render so people can try the dashboard in their browser. It never
+reads your holdings file, hides editing, import and Stop, and caches prices for hours. See
+[DEPLOY.md](DEPLOY.md) for the steps.
+
 ## License
 
 MIT. See [LICENSE](LICENSE). The license covers this code only; market data comes from Yahoo Finance under Yahoo's own terms.
