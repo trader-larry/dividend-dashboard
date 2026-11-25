@@ -36,6 +36,28 @@ Runtime **Python 3**, Build command `pip install -r requirements.txt`, Start com
 Every push to the main branch redeploys it automatically. To change the sample portfolio, edit
 the two files in `demo/` and push.
 
+## Fund details snapshot
+
+Yahoo often refuses fund details (expense ratio, category, top holdings, sectors, company
+description) to hosting services like Render, while still sending prices and dividends. Then every
+holding shows "Some fund details missing" and the overlap panels are empty.
+
+The fix is to save those details once on your own computer, where Yahoo answers, and ship them with
+the demo. Fund details change slowly, so doing this every few months is plenty.
+
+1. On your computer, in the dashboard folder (with this version of the code), run:
+
+   ```
+   python server.py --save-demo-snapshot
+   ```
+
+   It looks up the demo portfolio plus SPY and QQQ and writes `demo/fund-snapshot.json`.
+   It doesn't touch your holdings.
+2. Commit and push that file (or send it to whoever maintains the repo). Render redeploys by itself.
+
+The demo still uses live prices and dividends. It only falls back to the snapshot when Yahoo holds
+back the fund details. Symbols visitors look up that aren't in the snapshot keep the warning.
+
 ## Settings
 
 Environment variables you can change on the service's **Environment** page:
