@@ -1,0 +1,1399 @@
+{
+ "saved_at": "2026-11-25T02:07:10+00:00",
+ "symbols": {
+  "SCHD": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "Schwab U.S. Dividend Equity ETF",
+    "category": "Large Value",
+    "fundFamily": "Schwab ETFs",
+    "annualReportExpenseRatio": 0.00059999997,
+    "totalAssets": 121091694592,
+    "beta3Year": 0.49,
+    "threeYearAverageReturn": 0.1718504,
+    "fiveYearAverageReturn": 0.093353204,
+    "longBusinessSummary": "To pursue its goal, the fund generally invests in stocks that are included in the index. The index is designed to measure the performance of high dividend yielding stocks issued by U.S. companies that have a record of consistently paying dividends, selected for fundamental strength relative to their peers, based on financial ratios. The fund will invest at least 90% of its net assets in these stocks."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "TXN",
+      "name": "Texas Instruments Inc",
+      "weight": 0.0457825
+     },
+     {
+      "symbol": "COP",
+      "name": "ConocoPhillips",
+      "weight": 0.0434774
+     },
+     {
+      "symbol": "CVX",
+      "name": "Chevron Corp",
+      "weight": 0.043122303
+     },
+     {
+      "symbol": "PG",
+      "name": "Procter & Gamble Co",
+      "weight": 0.0424353
+     },
+     {
+      "symbol": "KO",
+      "name": "Coca-Cola Co",
+      "weight": 0.041342802
+     },
+     {
+      "symbol": "AMGN",
+      "name": "Amgen Inc",
+      "weight": 0.040803
+     },
+     {
+      "symbol": "HD",
+      "name": "The Home Depot Inc",
+      "weight": 0.0400759
+     },
+     {
+      "symbol": "UNH",
+      "name": "UnitedHealth Group Inc",
+      "weight": 0.039484
+     },
+     {
+      "symbol": "MRK",
+      "name": "Merck & Co Inc",
+      "weight": 0.0382339
+     },
+     {
+      "symbol": "PEP",
+      "name": "PepsiCo Inc",
+      "weight": 0.0378983
+     }
+    ],
+    "sectors": {
+     "consumer_cyclical": 0.0682,
+     "consumer_defensive": 0.198,
+     "technology": 0.1618,
+     "communication_services": 0.0552,
+     "financial_services": 0.0883,
+     "utilities": 0.00090000004,
+     "industrials": 0.0769,
+     "energy": 0.16409999,
+     "healthcare": 0.1865
+    },
+    "asset_classes": {
+     "stockPosition": 0.9989,
+     "cashPosition": 0.001
+    },
+    "category": "Large Value",
+    "family": "Schwab ETFs",
+    "legal_type": "Exchange Traded Fund",
+    "description": "To pursue its goal, the fund generally invests in stocks that are included in the index. The index is designed to measure the performance of high dividend yielding stocks issued by U.S. companies that have a record of consistently paying dividends, selected for fundamental strength relative to their peers, based on financial ratios. The fund will invest at least 90% of its net assets in these stocks."
+   }
+  },
+  "VYM": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "Vanguard High Dividend Yield Index Fund ETF Shares",
+    "category": "Large Value",
+    "fundFamily": "Vanguard",
+    "annualReportExpenseRatio": 0.0004,
+    "totalAssets": 100987871232,
+    "beta3Year": 0.64,
+    "threeYearAverageReturn": 0.1722481,
+    "fiveYearAverageReturn": 0.103474304,
+    "longBusinessSummary": "The fund employs an indexing investment approach designed to track the performance of the the Target Index, which consists of common stocks of companies that pay dividends that generally are higher than average (excluding real estate investment trusts (\u201cREITs\u201d)). Under normal circumstances, it invests at least 80% of its net assets, plus the amount of any borrowings for investment purposes, in the stocks that make up the Target Index."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "AVGO",
+      "name": "Broadcom Inc",
+      "weight": 0.0610954
+     },
+     {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co",
+      "weight": 0.036295198
+     },
+     {
+      "symbol": "XOM",
+      "name": "ExxonMobil Holdings Corp",
+      "weight": 0.0310488
+     },
+     {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "weight": 0.026512899
+     },
+     {
+      "symbol": "ABBV",
+      "name": "AbbVie Inc",
+      "weight": 0.0210276
+     },
+     {
+      "symbol": "CVX",
+      "name": "Chevron Corp",
+      "weight": 0.017598601
+     },
+     {
+      "symbol": "CSCO",
+      "name": "Cisco Systems Inc",
+      "weight": 0.0166301
+     },
+     {
+      "symbol": "PG",
+      "name": "Procter & Gamble Co",
+      "weight": 0.0151738
+     },
+     {
+      "symbol": "MRK",
+      "name": "Merck & Co Inc",
+      "weight": 0.014897999
+     },
+     {
+      "symbol": "UNH",
+      "name": "UnitedHealth Group Inc",
+      "weight": 0.0148005
+     }
+    ],
+    "sectors": {
+     "realestate": 0.0001,
+     "consumer_cyclical": 0.0633,
+     "basic_materials": 0.0325,
+     "consumer_defensive": 0.0856,
+     "technology": 0.16379999,
+     "communication_services": 0.0306,
+     "financial_services": 0.2045,
+     "utilities": 0.0531,
+     "industrials": 0.1129,
+     "energy": 0.1102,
+     "healthcare": 0.1436
+    },
+    "asset_classes": {
+     "stockPosition": 0.9972,
+     "cashPosition": 0.0011999999,
+     "otherPosition": 0.0017
+    },
+    "category": "Large Value",
+    "family": "Vanguard",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The fund employs an indexing investment approach designed to track the performance of the the Target Index, which consists of common stocks of companies that pay dividends that generally are higher than average (excluding real estate investment trusts (\u201cREITs\u201d)). Under normal circumstances, it invests at least 80% of its net assets, plus the amount of any borrowings for investment purposes, in the stocks that make up the Target Index."
+   }
+  },
+  "DGRO": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "iShares Core Dividend Growth ETF",
+    "category": "Large Value",
+    "fundFamily": "iShares",
+    "annualReportExpenseRatio": 0.0008,
+    "totalAssets": 45256122368,
+    "beta3Year": 0.61,
+    "threeYearAverageReturn": 0.17899719,
+    "fiveYearAverageReturn": 0.1015001,
+    "longBusinessSummary": "The fund seeks to track the investment results of the Morningstar\u00ae U.S. Dividend Growth IndexSM (the \u201cunderlying index\u201d), which is a dividend dollar-weighted index that seeks to measure the performance of U.S. companies selected based on a consistent history of growing dividends. The underlying index may include large-, mid- and small-capitalization companies."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "XOM",
+      "name": "ExxonMobil Holdings Corp",
+      "weight": 0.0332806
+     },
+     {
+      "symbol": "ABBV",
+      "name": "AbbVie Inc",
+      "weight": 0.0304831
+     },
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.030432
+     },
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.030428
+     },
+     {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "weight": 0.0278214
+     },
+     {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co",
+      "weight": 0.026562901
+     },
+     {
+      "symbol": "PG",
+      "name": "Procter & Gamble Co",
+      "weight": 0.0242247
+     },
+     {
+      "symbol": "AVGO",
+      "name": "Broadcom Inc",
+      "weight": 0.0239901
+     },
+     {
+      "symbol": "PM",
+      "name": "Philip Morris International Inc",
+      "weight": 0.0226947
+     },
+     {
+      "symbol": "HD",
+      "name": "The Home Depot Inc",
+      "weight": 0.0206561
+     }
+    ],
+    "sectors": {
+     "consumer_cyclical": 0.061100002,
+     "basic_materials": 0.0232,
+     "consumer_defensive": 0.1269,
+     "technology": 0.183,
+     "communication_services": 0.0014,
+     "financial_services": 0.1928,
+     "utilities": 0.071,
+     "industrials": 0.1026,
+     "energy": 0.059899997,
+     "healthcare": 0.17799999
+    },
+    "asset_classes": {
+     "stockPosition": 0.9974,
+     "cashPosition": 0.0026
+    },
+    "category": "Large Value",
+    "family": "iShares",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The fund seeks to track the investment results of the Morningstar\u00ae U.S. Dividend Growth IndexSM (the \u201cunderlying index\u201d), which is a dividend dollar-weighted index that seeks to measure the performance of U.S. companies selected based on a consistent history of growing dividends. The underlying index may include large-, mid- and small-capitalization companies."
+   }
+  },
+  "VIG": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "Vanguard Dividend Appreciation Index Fund ETF Shares",
+    "category": "Large Blend",
+    "fundFamily": "Vanguard",
+    "annualReportExpenseRatio": 0.0004,
+    "totalAssets": 135700684800,
+    "beta3Year": 0.7,
+    "threeYearAverageReturn": 0.1575244,
+    "fiveYearAverageReturn": 0.0950051,
+    "longBusinessSummary": "The adviser employs an indexing investment approach designed to track the performance of the index, which consists of common stocks of companies that have a record of increasing dividends over time. The adviser attempts to replicate the target index by investing all, or substantially all, of its assets in the stocks that make up the index, holding each stock in approximately the same proportion as its weighting in the index."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.047556803
+     },
+     {
+      "symbol": "LLY",
+      "name": "Eli Lilly and Co",
+      "weight": 0.0472483
+     },
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.0469429
+     },
+     {
+      "symbol": "AVGO",
+      "name": "Broadcom Inc",
+      "weight": 0.0375516
+     },
+     {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co",
+      "weight": 0.037319
+     },
+     {
+      "symbol": "XOM",
+      "name": "ExxonMobil Holdings Corp",
+      "weight": 0.032074
+     },
+     {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "weight": 0.0274261
+     },
+     {
+      "symbol": "V",
+      "name": "Visa Inc Class A",
+      "weight": 0.0274015
+     },
+     {
+      "symbol": "WMT",
+      "name": "Walmart Inc",
+      "weight": 0.0229287
+     },
+     {
+      "symbol": "ABBV",
+      "name": "AbbVie Inc",
+      "weight": 0.021707699
+     }
+    ],
+    "sectors": {
+     "consumer_cyclical": 0.040999997,
+     "basic_materials": 0.0325,
+     "consumer_defensive": 0.0956,
+     "technology": 0.2559,
+     "financial_services": 0.2094,
+     "utilities": 0.0277,
+     "industrials": 0.1035,
+     "energy": 0.0387,
+     "healthcare": 0.19559999
+    },
+    "asset_classes": {
+     "stockPosition": 0.9932,
+     "cashPosition": 0.0034,
+     "otherPosition": 0.0033000002
+    },
+    "category": "Large Blend",
+    "family": "Vanguard",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The adviser employs an indexing investment approach designed to track the performance of the index, which consists of common stocks of companies that have a record of increasing dividends over time. The adviser attempts to replicate the target index by investing all, or substantially all, of its assets in the stocks that make up the index, holding each stock in approximately the same proportion as its weighting in the index."
+   }
+  },
+  "JEPI": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "JPMorgan Equity Premium Income ETF",
+    "category": "Derivative Income",
+    "fundFamily": "JPMorgan",
+    "annualReportExpenseRatio": 0.0034999999,
+    "totalAssets": 46156169216,
+    "beta3Year": 0.4,
+    "threeYearAverageReturn": 0.0908389,
+    "fiveYearAverageReturn": 0.0684016,
+    "longBusinessSummary": "The fund seeks to achieve this objective by (1) creating an actively managed portfolio of equity securities and (2) through equity-linked notes (ELNs), by selling call options with exposure to the S&P 500 Index. The resulting fund is designed to provide investors with total return through capital appreciation and income, while exposing investors to lower volatility than the broad U.S. large cap market and also providing incremental income."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "MA",
+      "name": "Mastercard Inc Class A",
+      "weight": 0.0196338
+     },
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.0193871
+     },
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.0193632
+     },
+     {
+      "symbol": "V",
+      "name": "Visa Inc Class A",
+      "weight": 0.0185526
+     },
+     {
+      "symbol": "NEE",
+      "name": "NextEra Energy Inc",
+      "weight": 0.0180274
+     },
+     {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "weight": 0.0179685
+     },
+     {
+      "symbol": "EOG",
+      "name": "EOG Resources Inc",
+      "weight": 0.0178167
+     },
+     {
+      "symbol": "MMM",
+      "name": "3M Co",
+      "weight": 0.0177521
+     },
+     {
+      "symbol": "JIMXX",
+      "name": "JPMorgan Prime Money Market IM",
+      "weight": 0.017596
+     },
+     {
+      "symbol": "ABBV",
+      "name": "AbbVie Inc",
+      "weight": 0.0175655
+     }
+    ],
+    "sectors": {
+     "realestate": 0.0228,
+     "consumer_cyclical": 0.1062,
+     "basic_materials": 0.0164,
+     "consumer_defensive": 0.103199996,
+     "technology": 0.18,
+     "communication_services": 0.0731,
+     "financial_services": 0.1179,
+     "utilities": 0.0577,
+     "industrials": 0.1418,
+     "energy": 0.0387,
+     "healthcare": 0.14220001
+    },
+    "asset_classes": {
+     "stockPosition": 0.84480006,
+     "cashPosition": 0.0176,
+     "convertiblePosition": 0.1376
+    },
+    "category": "Derivative Income",
+    "family": "JPMorgan",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The fund seeks to achieve this objective by (1) creating an actively managed portfolio of equity securities and (2) through equity-linked notes (ELNs), by selling call options with exposure to the S&P 500 Index. The resulting fund is designed to provide investors with total return through capital appreciation and income, while exposing investors to lower volatility than the broad U.S. large cap market and also providing incremental income."
+   }
+  },
+  "JEPQ": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "JPMorgan Nasdaq Equity Premium Income ETF",
+    "category": "Derivative Income",
+    "fundFamily": "JPMorgan",
+    "annualReportExpenseRatio": 0.0034999999,
+    "totalAssets": 42491858944,
+    "beta3Year": 0.8,
+    "threeYearAverageReturn": 0.1501421,
+    "longBusinessSummary": "The fund seeks to achieve this objective by (1) creating an actively managed portfolio of equity securities comprised significantly of those included in the fund\u2019s primary benchmark, the Nasdaq-100 Index\u00ae (the Benchmark), and (2) through equity-linked notes (ELNs), by selling call options with exposure to the index. It is non-diversified."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.0699223
+     },
+     {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corp",
+      "weight": 0.069917
+     },
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.0560223
+     },
+     {
+      "symbol": "MU",
+      "name": "Micron Technology Inc",
+      "weight": 0.043221597
+     },
+     {
+      "symbol": "GOOG",
+      "name": "Alphabet Inc Class C",
+      "weight": 0.0408379
+     },
+     {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc",
+      "weight": 0.0380502
+     },
+     {
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices Inc",
+      "weight": 0.0344624
+     },
+     {
+      "symbol": "META",
+      "name": "Meta Platforms Inc Class A",
+      "weight": 0.026664501
+     },
+     {
+      "symbol": "TSLA",
+      "name": "Tesla Inc",
+      "weight": 0.023954501
+     },
+     {
+      "symbol": "WMT",
+      "name": "Walmart Inc",
+      "weight": 0.019970799
+     }
+    ],
+    "sectors": {
+     "realestate": 0.0019,
+     "consumer_cyclical": 0.11399999,
+     "basic_materials": 0.0091,
+     "consumer_defensive": 0.0636,
+     "technology": 0.583,
+     "communication_services": 0.1145,
+     "financial_services": 0.0047,
+     "utilities": 0.0107,
+     "industrials": 0.0437,
+     "energy": 0.0043,
+     "healthcare": 0.0504
+    },
+    "asset_classes": {
+     "stockPosition": 0.82,
+     "cashPosition": 0.0091,
+     "convertiblePosition": 0.1709
+    },
+    "category": "Derivative Income",
+    "family": "JPMorgan",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The fund seeks to achieve this objective by (1) creating an actively managed portfolio of equity securities comprised significantly of those included in the fund\u2019s primary benchmark, the Nasdaq-100 Index\u00ae (the Benchmark), and (2) through equity-linked notes (ELNs), by selling call options with exposure to the index. It is non-diversified."
+   }
+  },
+  "DIVO": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "Amplify CWP Enhanced Dividend Income ETF",
+    "category": "Derivative Income",
+    "fundFamily": "Amplify ETFs",
+    "annualReportExpenseRatio": 0.0056,
+    "totalAssets": 8008647168,
+    "beta3Year": 0.53,
+    "threeYearAverageReturn": 0.145868,
+    "fiveYearAverageReturn": 0.0929296,
+    "longBusinessSummary": "Under normal circumstances, the fund invests at least 80% of its net assets in dividend-paying U.S. exchange-traded equity securities (\"Equity Securities\") and will opportunistically utilize an \"option strategy\" consisting of writing (selling) U.S. exchange-traded covered call options on such Equity Securities. The fund is non-diversified."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.058590397
+     },
+     {
+      "symbol": "AMGN",
+      "name": "Amgen Inc",
+      "weight": 0.057400197
+     },
+     {
+      "symbol": "V",
+      "name": "Visa Inc Class A",
+      "weight": 0.0542444
+     },
+     {
+      "symbol": "AGPXX",
+      "name": "Invesco Shrt-Trm Inv Gov&Agcy Instl",
+      "weight": 0.0533629
+     },
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.0507518
+     },
+     {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co",
+      "weight": 0.049361
+     },
+     {
+      "symbol": "GS",
+      "name": "The Goldman Sachs Group Inc",
+      "weight": 0.048808098
+     },
+     {
+      "symbol": "CAT",
+      "name": "Caterpillar Inc",
+      "weight": 0.0450806
+     },
+     {
+      "symbol": "SOFR",
+      "name": "Amplify Samsung SOFR ETF",
+      "weight": 0.0416356
+     },
+     {
+      "symbol": "AXP",
+      "name": "American Express Co",
+      "weight": 0.0411592
+     }
+    ],
+    "sectors": {
+     "consumer_cyclical": 0.0537,
+     "basic_materials": 0.0542,
+     "consumer_defensive": 0.0452,
+     "technology": 0.1699,
+     "communication_services": 0.0421,
+     "financial_services": 0.2612,
+     "utilities": 0.0242,
+     "industrials": 0.1261,
+     "energy": 0.067600004,
+     "healthcare": 0.1557
+    },
+    "asset_classes": {
+     "stockPosition": 0.90089995,
+     "cashPosition": 0.096099995,
+     "otherPosition": 0.003
+    },
+    "category": "Derivative Income",
+    "family": "Amplify ETFs",
+    "legal_type": "Exchange Traded Fund",
+    "description": "Under normal circumstances, the fund invests at least 80% of its net assets in dividend-paying U.S. exchange-traded equity securities (\"Equity Securities\") and will opportunistically utilize an \"option strategy\" consisting of writing (selling) U.S. exchange-traded covered call options on such Equity Securities. The fund is non-diversified."
+   }
+  },
+  "SPYI": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "Neos S&P 500(R) High Income ETF",
+    "category": "Derivative Income",
+    "fundFamily": "Neos Funds",
+    "annualReportExpenseRatio": 0.0068,
+    "totalAssets": 12465787904,
+    "beta3Year": 0.67,
+    "threeYearAverageReturn": 0.14822839,
+    "longBusinessSummary": "The fund is an actively-managed ETF that seeks to achieve its investment objective by investing in a portfolio of stocks that make up the S&P 500\u00ae Index and a call options strategy, which consists of a mix of written (sold) call options and long (bought) call options on the S&P 500\u00ae Index. Under certain circumstances, the call options strategy may include transactions with covered call options."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.0767119
+     },
+     {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corp",
+      "weight": 0.0757984
+     },
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.059079
+     },
+     {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc",
+      "weight": 0.0359874
+     },
+     {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc Class A",
+      "weight": 0.0248603
+     },
+     {
+      "symbol": "AVGO",
+      "name": "Broadcom Inc",
+      "weight": 0.023602
+     },
+     {
+      "symbol": "META",
+      "name": "Meta Platforms Inc Class A",
+      "weight": 0.020427302
+     },
+     {
+      "symbol": "GOOG",
+      "name": "Alphabet Inc Class C",
+      "weight": 0.020126099
+     },
+     {
+      "symbol": "LLY",
+      "name": "Eli Lilly and Co",
+      "weight": 0.0172543
+     },
+     {
+      "symbol": "TSLA",
+      "name": "Tesla Inc",
+      "weight": 0.0171967
+     }
+    ],
+    "sectors": {
+     "realestate": 0.0175,
+     "consumer_cyclical": 0.0922,
+     "basic_materials": 0.015700001,
+     "consumer_defensive": 0.048600003,
+     "technology": 0.3843,
+     "communication_services": 0.0845,
+     "financial_services": 0.12,
+     "utilities": 0.020499999,
+     "industrials": 0.0753,
+     "energy": 0.039,
+     "healthcare": 0.102299996
+    },
+    "asset_classes": {
+     "stockPosition": 0.97800004,
+     "cashPosition": 0.0238,
+     "otherPosition": -0.0017
+    },
+    "category": "Derivative Income",
+    "family": "Neos Funds",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The fund is an actively-managed ETF that seeks to achieve its investment objective by investing in a portfolio of stocks that make up the S&P 500\u00ae Index and a call options strategy, which consists of a mix of written (sold) call options and long (bought) call options on the S&P 500\u00ae Index. Under certain circumstances, the call options strategy may include transactions with covered call options."
+   }
+  },
+  "QQQI": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "NEOS NASDAQ-100(R) High Income ETF",
+    "category": "Derivative Income",
+    "fundFamily": "Neos Funds",
+    "annualReportExpenseRatio": 0.0068,
+    "totalAssets": 14763298816,
+    "beta3Year": 0.0,
+    "longBusinessSummary": "The fund is an actively-managed exchange-traded fund (\u201cETF\u201d) that seeks to achieve its investment objective by investing in a portfolio of stocks that make up the Nasdaq-100\u00ae Index and a call options strategy, that consists of written (sold) call options on the Nasdaq-100\u00ae Index. Under normal circumstances, at least 80% of the fund\u2019s net assets, plus borrowings for investment purposes, will be invested in securities, or derivative instruments linked to securities, of companies that are included in the reference index."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.0813195
+     },
+     {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corp",
+      "weight": 0.0795556
+     },
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.062795
+     },
+     {
+      "symbol": "MU",
+      "name": "Micron Technology Inc",
+      "weight": 0.0445987
+     },
+     {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc",
+      "weight": 0.0419574
+     },
+     {
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices Inc",
+      "weight": 0.0368997
+     },
+     {
+      "symbol": "TSLA",
+      "name": "Tesla Inc",
+      "weight": 0.034135498
+     },
+     {
+      "symbol": "META",
+      "name": "Meta Platforms Inc Class A",
+      "weight": 0.029568
+     },
+     {
+      "symbol": "WMT",
+      "name": "Walmart Inc",
+      "weight": 0.026959
+     },
+     {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc Class A",
+      "weight": 0.026431
+     }
+    ],
+    "sectors": {
+     "consumer_cyclical": 0.112399995,
+     "basic_materials": 0.0108,
+     "consumer_defensive": 0.0689,
+     "technology": 0.5876,
+     "communication_services": 0.111999996,
+     "financial_services": 0.0023,
+     "utilities": 0.0121,
+     "industrials": 0.0405,
+     "energy": 0.0052,
+     "healthcare": 0.048299998
+    },
+    "asset_classes": {
+     "stockPosition": 0.97260004,
+     "cashPosition": 0.028299998,
+     "otherPosition": -0.00090000004
+    },
+    "category": "Derivative Income",
+    "family": "Neos Funds",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The fund is an actively-managed exchange-traded fund (\u201cETF\u201d) that seeks to achieve its investment objective by investing in a portfolio of stocks that make up the Nasdaq-100\u00ae Index and a call options strategy, that consists of written (sold) call options on the Nasdaq-100\u00ae Index. Under normal circumstances, at least 80% of the fund\u2019s net assets, plus borrowings for investment purposes, will be invested in securities, or derivative instruments linked to securities, of companies that are included in the reference index."
+   }
+  },
+  "O": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Realty Income Corporation",
+    "marketCap": 56791576576,
+    "beta": 0.649,
+    "sector": "Real Estate",
+    "industry": "REIT - Retail",
+    "longBusinessSummary": "Realty Income Corporation, an S&P 500 company, is real estate partner to the world's leading companies. Founded in 1969, they serve their clients as a full-service real estate capital provider. As of June 30, 2026, they have a portfolio of over 15,500 properties in all 50 U.S. states, the U.K., and eight other countries in Europe. They are known as (The Monthly Dividend Company) and have a mission to invest in people and places to deliver dependable monthly dividends that increase over time. Since their founding, they have declared 676 consecutive monthly dividends and are a member of the S&P 500 Dividend Aristocrats index for having increased dividend for over 31 consecutive years. Realty Income Corporation was founded in 1969 and was incorporated in Maryland."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Realty Income Corporation, an S&P 500 company, is real estate partner to the world's leading companies. Founded in 1969, they serve their clients as a full-service real estate capital provider. As of June 30, 2026, they have a portfolio of over 15,500 properties in all 50 U.S. states, the U.K., and eight other countries in Europe. They are known as (The Monthly Dividend Company) and have a mission to invest in people and places to deliver dependable monthly dividends that increase over time. Since their founding, they have declared 676 consecutive monthly dividends and are a member of the S&P 500 Dividend Aristocrats index for having increased dividend for over 31 consecutive years. Realty Income Corporation was founded in 1969 and was incorporated in Maryland."
+   }
+  },
+  "MAIN": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Main Street Capital Corporation",
+    "marketCap": 5331425280,
+    "beta": 0.743,
+    "sector": "Financial Services",
+    "industry": "Asset Management",
+    "longBusinessSummary": "Main Street Capital Corporation is a business development company and a small business investment company specializing in direct and indirect investments. In direct investments, the firm specializes in private equity capital to lower middle market companies. The firm specializes in recapitalizations, loan, growth capital, mezzanine debt, corporate carveouts, family estate planning, management buyouts, refinancing, private loan, private credit solutions, senior secured term debt, unintranche term debt, subordinated debt, preferred equity, common equity, minimal or no fixed amortization, split lien term debt, industry consolidation, mature, later stage and emerging growth. The firm makes both control and non-control equity investments. The firm also provides debt capital to middle market companies for strategic acquisitions, management buyouts, growth financings, majority and minority recapitalizations, and refinancing. The firm also makes equity co-investments. The firm provides debt financing solutions for acquisitions, recapitalizations, and refinancing to middle market companies. The firm provides private debt and private equity capital to lower middle market companies and debt capital to middle market companies. The firm seeks to partner with entrepreneurs, business owners and management teams and generally provides \"one stop\" financing alternatives within its lower middle market portfolio. It prefers to invest in air freight and logistics, auto components, building products, chemicals, commercial services, computers, construction and engineering, consumer finance, consumer services, electronic equipment, energy equipment and services, financial services, health care equipment, health care providers, hotels, restaurants, and leisure, internet software and services, IT Services, machinery, oil, gas and consumable fuels, paper and forest products, professional and industrial services, manufacturing, road and rail, software, specialty retail, telecommunication, consumer discretionary, energy, materials, concrete, plumbing pipes, electrical component, heavy electrical equipment, media, utilities, technology, and transportation. The firm invests in Southwest of the United States of America. The firm typically invests in business services, commercial and professional services, communication services, consumer discretionary, consumer staples, lower middle market companies ranging between $5 million and $125 million in equity investment with annual revenues between $10 million and $150 million and EBITDA in ranging between $3 million and $20 million. The firm typically prefers to invest in the range of $5 million and $150 million per transaction in debt investment value but holds the ability to lead debt financings up to $250 million. For credit solutions, the firm invests between $10 million and $150 million with an EBITDA in the range of $7.5 million and $50 million. The firm loan portfolio companies generally have annual revenues between $25 million and $500 million. The firm's middle market debt investments are made in businesses that are generally larger in size than its lower middle market portfolio companies. It takes 5 percent minority and up to 50 percent majority equity investments. Main Street Capital Corporation was founded in 2007 and is based in Houston, Texas with an additional offices in Chicago, United States and Chojn\u00f3w, Poland."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Main Street Capital Corporation is a business development company and a small business investment company specializing in direct and indirect investments. In direct investments, the firm specializes in private equity capital to lower middle market companies. The firm specializes in recapitalizations, loan, growth capital, mezzanine debt, corporate carveouts, family estate planning, management buyouts, refinancing, private loan, private credit solutions, senior secured term debt, unintranche term debt, subordinated debt, preferred equity, common equity, minimal or no fixed amortization, split lien term debt, industry consolidation, mature, later stage and emerging growth. The firm makes both control and non-control equity investments. The firm also provides debt capital to middle market companies for strategic acquisitions, management buyouts, growth financings, majority and minority recapitalizations, and refinancing. The firm also makes equity co-investments. The firm provides debt financing solutions for acquisitions, recapitalizations, and refinancing to middle market companies. The firm provides private debt and private equity capital to lower middle market companies and debt capital to middle market companies. The firm seeks to partner with entrepreneurs, business owners and management teams and generally provides \"one stop\" financing alternatives within its lower middle market portfolio. It prefers to invest in air freight and logistics, auto components, building products, chemicals, commercial services, computers, construction and engineering, consumer finance, consumer services, electronic equipment, energy equipment and services, financial services, health care equipment, health care providers, hotels, restaurants, and leisure, internet software and services, IT Services, machinery, oil, gas and consumable fuels, paper and forest products, professional and industrial services, manufacturing, road and rail, software, specialty retail, telecommunication, consumer discretionary, energy, materials, concrete, plumbing pipes, electrical component, heavy electrical equipment, media, utilities, technology, and transportation. The firm invests in Southwest of the United States of America. The firm typically invests in business services, commercial and professional services, communication services, consumer discretionary, consumer staples, lower middle market companies ranging between $5 million and $125 million in equity investment with annual revenues between $10 million and $150 million and EBITDA in ranging between $3 million and $20 million. The firm typically prefers to invest in the range of $5 million and $150 million per transaction in debt investment value but holds the ability to lead debt financings up to $250 million. For credit solutions, the firm invests between $10 million and $150 million with an EBITDA in the range of $7.5 million and $50 million. The firm loan portfolio companies generally have annual revenues between $25 million and $500 million. The firm's middle market debt investments are made in businesses that are generally larger in size than its lower middle market portfolio companies. It takes 5 percent minority and up to 50 percent majority equity investments. Main Street Capital Corporation was founded in 2007 and is based in Houston, Texas with an additional offices in Chicago, United States and Chojn\u00f3w, Poland."
+   }
+  },
+  "ARCC": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Ares Capital Corporation",
+    "marketCap": 13613374464,
+    "beta": 0.643,
+    "sector": "Financial Services",
+    "industry": "Asset Management",
+    "longBusinessSummary": "Ares Capital Corporation is a business development company specializing in growth capital, acquisition, recapitalization, mezzanine debt, restructurings, rescue financing, and leveraged buyout transactions of middle market companies. It also makes growth capital and general refinancing. It prefers to make investments in companies engaged in sports, media & entertainment, industrials & business services, infrastructure & power, financial institution groups, software & technology, specialty healthcare, consumer, retail & services, energy and the basic and growth manufacturing, consumer products, health care products, and information technology service sectors. The fund will also consider investments in industries such as restaurants, retail, oil and gas, and technology sectors. It invests in the United States based companies. It focuses on investments in Northeast, Mid-Atlantic, Southeast and Southwest regions from its New York office, the Midwest region, from the Chicago office, and the Western region from the Los Angeles office. The fund typically invests between $30 million and $500 million, in companies with an EBITDA between $10 million and $250 million. It makes debt investments between $10 million and $100 million The fund invests through revolvers, first lien loans, warrants, unitranche structures, second lien loans, mezzanine debt, private high yield, junior capital, subordinated debt, and non-control preferred and common equity. The fund also selectively considers third-party-led senior and subordinated debt financings and opportunistically considers the purchase of stressed and discounted debt positions. The fund prefers to be an agent and/or lead the transactions in which it invests. The fund also seeks board representation in its portfolio companies."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Ares Capital Corporation is a business development company specializing in growth capital, acquisition, recapitalization, mezzanine debt, restructurings, rescue financing, and leveraged buyout transactions of middle market companies. It also makes growth capital and general refinancing. It prefers to make investments in companies engaged in sports, media & entertainment, industrials & business services, infrastructure & power, financial institution groups, software & technology, specialty healthcare, consumer, retail & services, energy and the basic and growth manufacturing, consumer products, health care products, and information technology service sectors. The fund will also consider investments in industries such as restaurants, retail, oil and gas, and technology sectors. It invests in the United States based companies. It focuses on investments in Northeast, Mid-Atlantic, Southeast and Southwest regions from its New York office, the Midwest region, from the Chicago office, and the Western region from the Los Angeles office. The fund typically invests between $30 million and $500 million, in companies with an EBITDA between $10 million and $250 million. It makes debt investments between $10 million and $100 million The fund invests through revolvers, first lien loans, warrants, unitranche structures, second lien loans, mezzanine debt, private high yield, junior capital, subordinated debt, and non-control preferred and common equity. The fund also selectively considers third-party-led senior and subordinated debt financings and opportunistically considers the purchase of stressed and discounted debt positions. The fund prefers to be an agent and/or lead the transactions in which it invests. The fund also seeks board representation in its portfolio companies."
+   }
+  },
+  "JNJ": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Johnson & Johnson",
+    "marketCap": 665525026816,
+    "beta": 0.2,
+    "sector": "Healthcare",
+    "industry": "Drug Manufacturers - General",
+    "longBusinessSummary": "Johnson & Johnson, together with its subsidiaries, engages in the research and development, manufacture, and sale of a range of products in the healthcare field worldwide. It operates in two segments, Innovative Medicine and MedTech. The Innovative Medicine segment offers products for various therapeutic areas, such as oncology, immunology, neuroscience, pulmonary hypertension, infectious diseases, and cardiovascular and metabolism distributed through retailers, wholesalers, distributors, hospitals, and healthcare professionals for prescription use. The MedTech segment provides a portfolio of products used in the surgery, orthopedic, cardiovascular, and vision fields distributed through wholesalers, hospitals and retailers, and used in the professional fields by physicians, nurses, hospitals, eye care professionals and clinics. This segment also offers products and enabling technologies that support joint reconstruction, trauma, spine, sports related injuries, and others, as well as open, laparoscopic, and robotic surgical procedures; instrumentation, energy devices, stapling systems, wound closure, biosurgery products, and digital and robotic technologies; breast aesthetics and reconstruction; contact lenses under the ACUVUE brand; intraocular lenses for cataract surgery, and other products used in cataract and refractive procedures under the TECNIS brand. The company was founded in 1886 and is based in New Brunswick, New Jersey."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Johnson & Johnson, together with its subsidiaries, engages in the research and development, manufacture, and sale of a range of products in the healthcare field worldwide. It operates in two segments, Innovative Medicine and MedTech. The Innovative Medicine segment offers products for various therapeutic areas, such as oncology, immunology, neuroscience, pulmonary hypertension, infectious diseases, and cardiovascular and metabolism distributed through retailers, wholesalers, distributors, hospitals, and healthcare professionals for prescription use. The MedTech segment provides a portfolio of products used in the surgery, orthopedic, cardiovascular, and vision fields distributed through wholesalers, hospitals and retailers, and used in the professional fields by physicians, nurses, hospitals, eye care professionals and clinics. This segment also offers products and enabling technologies that support joint reconstruction, trauma, spine, sports related injuries, and others, as well as open, laparoscopic, and robotic surgical procedures; instrumentation, energy devices, stapling systems, wound closure, biosurgery products, and digital and robotic technologies; breast aesthetics and reconstruction; contact lenses under the ACUVUE brand; intraocular lenses for cataract surgery, and other products used in cataract and refractive procedures under the TECNIS brand. The company was founded in 1886 and is based in New Brunswick, New Jersey."
+   }
+  },
+  "ABBV": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "AbbVie Inc.",
+    "marketCap": 530779799552,
+    "beta": 0.192,
+    "sector": "Healthcare",
+    "industry": "Drug Manufacturers - General",
+    "longBusinessSummary": "AbbVie Inc., a research-based biopharmaceutical company, engages in the research and development, manufacturing, commercializing, and sale of medicines and therapies worldwide. The company offers Skyrizi to treat autoimmune diseases; Rinvoq to treat inflammatory diseases; Imbruvica for the treatment of adult patients with blood cancers; Venclexta to treat blood cancers; Elahere to treat various cancer; and Epkinly to treat lymphoma; and Emrelis for the treatment of lung cancer. It also provides facial injectables, plastics and regenerative medicine, body contouring, and skincare products; botox Cosmetic for the treatment of glabellar lines, crow's feet, forehead lines, and platysma bands; Juvederm Collection to treat volume loss in the temples, undereye, cheeks, chin, lips and lower face; Vraylar to treat schizophrenia, bipolar disorder, and depressive disorder; Duodopa to treat Parkinson's disease; Ubrelvy to treat migraine; Qulipta for episodic and chronic migraine; and Vyalev for the treatment of motor fluctuations, as well as Botox Therapeutic to treat chronic migraine, overactive bladder, spasticity, cervical dystonia, and other conditions. In addition, the company offers Ozurdex for visual impairment; Lumigan/Ganfort and Alphagan/Combigan for the reduction of elevated intraocular pressure in patients with open angle glaucoma or ocular hypertension; and other eye care products, including Refresh/Optive, Xen, Durysta, and Restasis. Further, it provides Mavyret to treat chronic hepatitis C virus genotype 1-6 infection; Creon, a pancreatic enzyme therapy; and Linzess/Constella to treat irritable bowel syndrome with constipation and chronic idiopathic constipation. The company was incorporated in 2012 and is headquartered in North Chicago, Illinois."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "AbbVie Inc., a research-based biopharmaceutical company, engages in the research and development, manufacturing, commercializing, and sale of medicines and therapies worldwide. The company offers Skyrizi to treat autoimmune diseases; Rinvoq to treat inflammatory diseases; Imbruvica for the treatment of adult patients with blood cancers; Venclexta to treat blood cancers; Elahere to treat various cancer; and Epkinly to treat lymphoma; and Emrelis for the treatment of lung cancer. It also provides facial injectables, plastics and regenerative medicine, body contouring, and skincare products; botox Cosmetic for the treatment of glabellar lines, crow's feet, forehead lines, and platysma bands; Juvederm Collection to treat volume loss in the temples, undereye, cheeks, chin, lips and lower face; Vraylar to treat schizophrenia, bipolar disorder, and depressive disorder; Duodopa to treat Parkinson's disease; Ubrelvy to treat migraine; Qulipta for episodic and chronic migraine; and Vyalev for the treatment of motor fluctuations, as well as Botox Therapeutic to treat chronic migraine, overactive bladder, spasticity, cervical dystonia, and other conditions. In addition, the company offers Ozurdex for visual impairment; Lumigan/Ganfort and Alphagan/Combigan for the reduction of elevated intraocular pressure in patients with open angle glaucoma or ocular hypertension; and other eye care products, including Refresh/Optive, Xen, Durysta, and Restasis. Further, it provides Mavyret to treat chronic hepatitis C virus genotype 1-6 infection; Creon, a pancreatic enzyme therapy; and Linzess/Constella to treat irritable bowel syndrome with constipation and chronic idiopathic constipation. The company was incorporated in 2012 and is headquartered in North Chicago, Illinois."
+   }
+  },
+  "PG": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "The Procter & Gamble Company",
+    "marketCap": 399748038656,
+    "beta": 0.361,
+    "sector": "Consumer Defensive",
+    "industry": "Household & Personal Products",
+    "longBusinessSummary": "The Procter & Gamble Company provides branded consumer packaged goods worldwide. It operates through five segments: Beauty; Grooming; Health Care; Fabric & Home Care; and Baby, Feminine & Family Care. The company offers conditioners, shampoos, styling aids, and treatments under the Head & Shoulders, Herbal Essences, Pantene, and Rejoice brands; antiperspirants, deodorants, and personal cleansing products under the Native, Old Spice, Safeguard, and Secret brands; and facial moisturizers, cleaners, and treatments under the Olay and SK-II brands. It also provides blades, razors, shave products, appliances, and other grooming products under the Braun, Gillette, and Venus brands. In addition, the company offers toothbrushes, toothpastes, and other oral care products under the Crest and Oral-B brands; and gastrointestinal, pain relief, rapid diagnostics, respiratory, vitamins/minerals/supplements, and other personal health care products under the Metamucil, Neurobion, Pepto-Bismol, and Vicks brands. Further, it provides fabric enhancers, and laundry additives and detergents under the Ariel, Downy, Gain, and Tide brands; and air and dish care, P&G professional, and surface care under the Cascade, Dawn, Fairy, Febreze, Mr. Clean, and Swiffer brands. Additionally, the company offers baby wipes, taped diapers, and pants under the Luvs and Pampers brands; adult incontinence and menstrual care products under the Always, Always Discreet, and Tampax brands; and paper towels, tissues, and toilet papers under the Bounty, Charmin, and Puffs brands. It sells its products through mass merchandisers, social ecommerce channels, grocery and specialty beauty stores, membership club stores, drug and department stores, distributors, wholesalers, airport duty-free and high-frequency stores, pharmacies, electronics stores, and professional channels, as well as directly to consumers. The company was founded in 1837 and is headquartered in Cincinnati, Ohio."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "The Procter & Gamble Company provides branded consumer packaged goods worldwide. It operates through five segments: Beauty; Grooming; Health Care; Fabric & Home Care; and Baby, Feminine & Family Care. The company offers conditioners, shampoos, styling aids, and treatments under the Head & Shoulders, Herbal Essences, Pantene, and Rejoice brands; antiperspirants, deodorants, and personal cleansing products under the Native, Old Spice, Safeguard, and Secret brands; and facial moisturizers, cleaners, and treatments under the Olay and SK-II brands. It also provides blades, razors, shave products, appliances, and other grooming products under the Braun, Gillette, and Venus brands. In addition, the company offers toothbrushes, toothpastes, and other oral care products under the Crest and Oral-B brands; and gastrointestinal, pain relief, rapid diagnostics, respiratory, vitamins/minerals/supplements, and other personal health care products under the Metamucil, Neurobion, Pepto-Bismol, and Vicks brands. Further, it provides fabric enhancers, and laundry additives and detergents under the Ariel, Downy, Gain, and Tide brands; and air and dish care, P&G professional, and surface care under the Cascade, Dawn, Fairy, Febreze, Mr. Clean, and Swiffer brands. Additionally, the company offers baby wipes, taped diapers, and pants under the Luvs and Pampers brands; adult incontinence and menstrual care products under the Always, Always Discreet, and Tampax brands; and paper towels, tissues, and toilet papers under the Bounty, Charmin, and Puffs brands. It sells its products through mass merchandisers, social ecommerce channels, grocery and specialty beauty stores, membership club stores, drug and department stores, distributors, wholesalers, airport duty-free and high-frequency stores, pharmacies, electronics stores, and professional channels, as well as directly to consumers. The company was founded in 1837 and is headquartered in Cincinnati, Ohio."
+   }
+  },
+  "KO": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "The Coca-Cola Company",
+    "marketCap": 419951706112,
+    "beta": 0.269,
+    "sector": "Consumer Defensive",
+    "industry": "Beverages - Non-Alcoholic",
+    "longBusinessSummary": "The Coca-Cola Company, a beverage company, manufactures and sells various nonalcoholic beverages in the United States and internationally. The company provides Trademark Coca-Cola, sparkling soft drinks and flavors; water, sports, coffee, and tea; juice, value-added dairy, and plant-based beverages; and emerging beverages. It also offers beverage concentrates and syrups, as well as fountain syrups to fountain retailers comprising restaurants and convenience stores. The company sells its products under the Coca-Cola, Diet Coke/Coca-Cola Light, Coca-Cola Zero Sugar, caffeine free Diet Coke, Cherry Coke, Fanta, Sprite, Simply, Fanta Orange, Fanta Zero Orange, Fanta Zero Sugar, Fanta Apple, Sprite Zero Sugar, Simply Orange, Simply Apple, Simply Grapefruit, Fresca, Schweppes, Thums Up, Aquarius, Ayataka, BODYARMOR, Ciel, Costa, Crystal, Dasani, Fuze Tea, Georgia, glac\u00e9au smartwater, glac\u00e9au vitaminwater, Gold Peak, I LOHAS, Powerade, Topo Chico, Core Power, Del Valle, fairlife, innocent, Maaza, Minute Maid, Minute Maid Pulpy, Santa Clara, and dogadan brands. It operates through a network of independent bottling partners, distributors, wholesalers, and retailers, as well as through bottling and distribution operators. The Coca-Cola Company was founded in 1886 and is headquartered in Atlanta, Georgia."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "The Coca-Cola Company, a beverage company, manufactures and sells various nonalcoholic beverages in the United States and internationally. The company provides Trademark Coca-Cola, sparkling soft drinks and flavors; water, sports, coffee, and tea; juice, value-added dairy, and plant-based beverages; and emerging beverages. It also offers beverage concentrates and syrups, as well as fountain syrups to fountain retailers comprising restaurants and convenience stores. The company sells its products under the Coca-Cola, Diet Coke/Coca-Cola Light, Coca-Cola Zero Sugar, caffeine free Diet Coke, Cherry Coke, Fanta, Sprite, Simply, Fanta Orange, Fanta Zero Orange, Fanta Zero Sugar, Fanta Apple, Sprite Zero Sugar, Simply Orange, Simply Apple, Simply Grapefruit, Fresca, Schweppes, Thums Up, Aquarius, Ayataka, BODYARMOR, Ciel, Costa, Crystal, Dasani, Fuze Tea, Georgia, glac\u00e9au smartwater, glac\u00e9au vitaminwater, Gold Peak, I LOHAS, Powerade, Topo Chico, Core Power, Del Valle, fairlife, innocent, Maaza, Minute Maid, Minute Maid Pulpy, Santa Clara, and dogadan brands. It operates through a network of independent bottling partners, distributors, wholesalers, and retailers, as well as through bottling and distribution operators. The Coca-Cola Company was founded in 1886 and is headquartered in Atlanta, Georgia."
+   }
+  },
+  "PEP": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "PepsiCo, Inc.",
+    "marketCap": 194435891200,
+    "beta": 0.321,
+    "sector": "Consumer Defensive",
+    "industry": "Beverages - Non-Alcoholic",
+    "longBusinessSummary": "PepsiCo, Inc. engages in the manufacture, marketing, distribution, and sale of various beverages and convenient foods worldwide. The company operates through six segments: PepsiCo Foods North America; PepsiCo Beverages North America; International Beverages Franchise; Europe, Middle East and Africa; Latin America Foods; and Asia Pacific Foods. It offers cereals, chips, dips, granola bars, oatmeal, pasta, rice, and syrups and mixes; refrigerated dips and spreads; beverage concentrates, fountain syrups, and finished goods; and ready-to-drink tea and coffee products. The company also provides SodaStream sparkling water makers and related products, as well as various dairy products under the Agusha, Chudo, and Domik v Derevne brands. It serves wholesale and other distributors, foodservice customers, grocery stores, drug stores, convenience stores, discount/dollar stores, mass merchandisers, membership stores, hard discounters, e-commerce retailers and authorized independent bottlers, and others through a network of direct-store-delivery, customer warehouse, and distributor networks, as well as directly to consumers through e-commerce platforms and retailers. PepsiCo, Inc. was founded in 1898 and is based in Purchase, New York."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "PepsiCo, Inc. engages in the manufacture, marketing, distribution, and sale of various beverages and convenient foods worldwide. The company operates through six segments: PepsiCo Foods North America; PepsiCo Beverages North America; International Beverages Franchise; Europe, Middle East and Africa; Latin America Foods; and Asia Pacific Foods. It offers cereals, chips, dips, granola bars, oatmeal, pasta, rice, and syrups and mixes; refrigerated dips and spreads; beverage concentrates, fountain syrups, and finished goods; and ready-to-drink tea and coffee products. The company also provides SodaStream sparkling water makers and related products, as well as various dairy products under the Agusha, Chudo, and Domik v Derevne brands. It serves wholesale and other distributors, foodservice customers, grocery stores, drug stores, convenience stores, discount/dollar stores, mass merchandisers, membership stores, hard discounters, e-commerce retailers and authorized independent bottlers, and others through a network of direct-store-delivery, customer warehouse, and distributor networks, as well as directly to consumers through e-commerce platforms and retailers. PepsiCo, Inc. was founded in 1898 and is based in Purchase, New York."
+   }
+  },
+  "XOM": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "ExxonMobil Holdings Corporation",
+    "marketCap": 645455347712,
+    "beta": 0.141,
+    "sector": "Energy",
+    "industry": "Oil & Gas Integrated",
+    "longBusinessSummary": "ExxonMobil Holdings Corporation engages in the exploration and production of crude oil and natural gas in the United States, Canada, and internationally. The company operates through Upstream, Energy Products, Chemical Products, and Specialty Products segments. Its Upstream segment explores for and produces crude oil and natural gas. The Energy Products segment offers fuels, aromatics, and catalysts, as well as licensing services. Its Chemical Products segment manufactures and sells olefins, polyolefins, and intermediates. The Specialty Products segment offers finished lubricants, basestocks, waxes, synthetics, elastomers, and resins. It is also involved in the manufacture, trade, transport, and sale of crude oil, natural gas, petroleum products, petrochemicals, and other specialty products; and pursuit of lower-emission and business opportunities, including carbon capture and storage, hydrogen, lower-emission fuels, Proxxima resin systems, carbon materials, low-carbon data center, and lithium. In addition, the company offers aviation fuel. It sells its products under the Exxon, Esso, and Mobil brands. The company was formerly known as Exxon Mobil Corporation and changed its name to ExxonMobil Holdings Corporation in July 2026. ExxonMobil Holdings Corporation was founded in 1870 and is headquartered in Spring, Texas."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "ExxonMobil Holdings Corporation engages in the exploration and production of crude oil and natural gas in the United States, Canada, and internationally. The company operates through Upstream, Energy Products, Chemical Products, and Specialty Products segments. Its Upstream segment explores for and produces crude oil and natural gas. The Energy Products segment offers fuels, aromatics, and catalysts, as well as licensing services. Its Chemical Products segment manufactures and sells olefins, polyolefins, and intermediates. The Specialty Products segment offers finished lubricants, basestocks, waxes, synthetics, elastomers, and resins. It is also involved in the manufacture, trade, transport, and sale of crude oil, natural gas, petroleum products, petrochemicals, and other specialty products; and pursuit of lower-emission and business opportunities, including carbon capture and storage, hydrogen, lower-emission fuels, Proxxima resin systems, carbon materials, low-carbon data center, and lithium. In addition, the company offers aviation fuel. It sells its products under the Exxon, Esso, and Mobil brands. The company was formerly known as Exxon Mobil Corporation and changed its name to ExxonMobil Holdings Corporation in July 2026. ExxonMobil Holdings Corporation was founded in 1870 and is headquartered in Spring, Texas."
+   }
+  },
+  "ENB": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Enbridge Inc.",
+    "marketCap": 103063789568,
+    "beta": 0.786,
+    "sector": "Energy",
+    "industry": "Oil & Gas Midstream",
+    "longBusinessSummary": "Enbridge Inc., together with its subsidiaries, operates as an energy infrastructure company. The company operates through four segments: Liquids Pipelines, Gas Transmission, Gas Distribution and Storage, and Renewable Power Generation. The Liquids Pipelines segment operates pipelines and related terminals to transport, store, and export various grades of crude oil and other liquid hydrocarbons in Canada and the United States. This segment also provides physical commodity marketing and logistical services, and crude oil marketing services. The Gas Transmission segment invests in natural gas pipelines and gathering and processing facilities in Canada and the United States. The Gas Distribution and Storage segment is involved in natural gas utility operations serving residential, commercial, and industrial customers in Ontario, as well as natural gas distribution activities in Quebec. The Renewable Power Generation segment operates wind, solar, geothermal, waste heat recovery, and transmission assets in North America. The company was formerly known as IPL Energy Inc. and changed its name to Enbridge Inc. in October 1998. Enbridge Inc. was founded in 1949 and is headquartered in Calgary, Canada."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Enbridge Inc., together with its subsidiaries, operates as an energy infrastructure company. The company operates through four segments: Liquids Pipelines, Gas Transmission, Gas Distribution and Storage, and Renewable Power Generation. The Liquids Pipelines segment operates pipelines and related terminals to transport, store, and export various grades of crude oil and other liquid hydrocarbons in Canada and the United States. This segment also provides physical commodity marketing and logistical services, and crude oil marketing services. The Gas Transmission segment invests in natural gas pipelines and gathering and processing facilities in Canada and the United States. The Gas Distribution and Storage segment is involved in natural gas utility operations serving residential, commercial, and industrial customers in Ontario, as well as natural gas distribution activities in Quebec. The Renewable Power Generation segment operates wind, solar, geothermal, waste heat recovery, and transmission assets in North America. The company was formerly known as IPL Energy Inc. and changed its name to Enbridge Inc. in October 1998. Enbridge Inc. was founded in 1949 and is headquartered in Calgary, Canada."
+   }
+  },
+  "VZ": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Verizon Communications Inc.",
+    "marketCap": 195459252224,
+    "beta": 0.26,
+    "sector": "Communication Services",
+    "industry": "Telecom Services",
+    "longBusinessSummary": "Verizon Communications Inc., through its subsidiaries, engages in the provision of communications, technology, information, and streaming products and services to consumers, businesses, and governmental entities worldwide. It operates in two segments, Verizon Consumer Group (Consumer) and Verizon Business Group (Business). The Consumer segment provides wireless services across the wireless networks in the United States under the Verizon and TracFone brands and through wholesale and other arrangements; and fixed wireless access (FWA) broadband through its wireless networks, as well as related equipment and devices, such as smartphones, tablets, smartwatches, and other wireless-enabled connected devices. The segment also offers wireline services in the Mid-Atlantic and Northeastern United States, as well as Washington D.C. through its fiber-optic network, Verizon Fios product portfolio, and a copper-based network. The Business segment provides wireless and wireline communications services and products, including FWA and wireline broadband, advanced communication services, corporate networking, security and managed network, local and long-distance voice, and network access services to deliver various IoT services and products to businesses, government customers, and wireless and wireline carriers in the United States and internationally. The company distributes its products and services through direct channels, company-operated stores, digital and omnichannel platforms, indirect agents, business solution resellers, and national retailers. The company was formerly known as Bell Atlantic Corporation and changed its name to Verizon Communications Inc. in June 2000. Verizon Communications Inc. was incorporated in 1983 and is headquartered in New York, New York."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Verizon Communications Inc., through its subsidiaries, engages in the provision of communications, technology, information, and streaming products and services to consumers, businesses, and governmental entities worldwide. It operates in two segments, Verizon Consumer Group (Consumer) and Verizon Business Group (Business). The Consumer segment provides wireless services across the wireless networks in the United States under the Verizon and TracFone brands and through wholesale and other arrangements; and fixed wireless access (FWA) broadband through its wireless networks, as well as related equipment and devices, such as smartphones, tablets, smartwatches, and other wireless-enabled connected devices. The segment also offers wireline services in the Mid-Atlantic and Northeastern United States, as well as Washington D.C. through its fiber-optic network, Verizon Fios product portfolio, and a copper-based network. The Business segment provides wireless and wireline communications services and products, including FWA and wireline broadband, advanced communication services, corporate networking, security and managed network, local and long-distance voice, and network access services to deliver various IoT services and products to businesses, government customers, and wireless and wireline carriers in the United States and internationally. The company distributes its products and services through direct channels, company-operated stores, digital and omnichannel platforms, indirect agents, business solution resellers, and national retailers. The company was formerly known as Bell Atlantic Corporation and changed its name to Verizon Communications Inc. in June 2000. Verizon Communications Inc. was incorporated in 1983 and is headquartered in New York, New York."
+   }
+  },
+  "MO": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Altria Group, Inc.",
+    "marketCap": 124458352640,
+    "beta": 0.463,
+    "sector": "Consumer Defensive",
+    "industry": "Tobacco",
+    "longBusinessSummary": "Altria Group, Inc., through its subsidiaries, manufactures and sells smokeable and oral tobacco products in the United States. It offers cigarettes primarily under the Marlboro brand; large cigars and pipe tobacco under the Black & Mild brand; moist smokeless tobacco and oral tobacco products under the Copenhagen, Skoal, Red Seal, and Husky brands; oral nicotine pouches under the on! brand; and e-vapor products under the NJOY ACE brand. The company sells its products to distributors, as well as large retail organizations, such as chain stores. Altria Group, Inc. was founded in 1822 and is headquartered in Richmond, Virginia."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Altria Group, Inc., through its subsidiaries, manufactures and sells smokeable and oral tobacco products in the United States. It offers cigarettes primarily under the Marlboro brand; large cigars and pipe tobacco under the Black & Mild brand; moist smokeless tobacco and oral tobacco products under the Copenhagen, Skoal, Red Seal, and Husky brands; oral nicotine pouches under the on! brand; and e-vapor products under the NJOY ACE brand. The company sells its products to distributors, as well as large retail organizations, such as chain stores. Altria Group, Inc. was founded in 1822 and is headquartered in Richmond, Virginia."
+   }
+  },
+  "TXN": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Texas Instruments Incorporated",
+    "marketCap": 236154798080,
+    "beta": 1.388,
+    "sector": "Technology",
+    "industry": "Semiconductors",
+    "longBusinessSummary": "Texas Instruments Incorporated designs, manufactures, and sells semiconductors to electronics designers and manufacturers in the United States, China, the rest of Asia, Europe, the Middle East, Africa, Japan, and internationally. It operates through Analog and Embedded Processing segments. The Analog segment offers power products to manage power requirements across various voltage levels, including battery-management solutions, DC/DC switching regulators, AC/DC and isolated controllers and converters, power switches, linear regulators, voltage references, multiphase controllers and power stages, and lighting products. This segment also provides signal chain products that sense, condition, and measure real-world signals and convert them into data to be transferred or converted for further processing and control, such as amplifiers, data converters, interface products, motor drives, clocks, and logic and sensing products. The Embedded Processing segment offers microcontrollers, processors, wireless connectivity, and radar products; and applications processors for specific computing activity. It also provides DLP products primarily for use in projecting high-definition images; calculators; and application-specific integrated circuits. Its products are used in various markets, such as industrial, automotive, personal electronics, communications equipment, enterprise systems, calculators, and others. The company markets and sells its semiconductor products through direct sales and distributors, as well as through its website. Texas Instruments Incorporated was founded in 1930 and is headquartered in Dallas, Texas."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Texas Instruments Incorporated designs, manufactures, and sells semiconductors to electronics designers and manufacturers in the United States, China, the rest of Asia, Europe, the Middle East, Africa, Japan, and internationally. It operates through Analog and Embedded Processing segments. The Analog segment offers power products to manage power requirements across various voltage levels, including battery-management solutions, DC/DC switching regulators, AC/DC and isolated controllers and converters, power switches, linear regulators, voltage references, multiphase controllers and power stages, and lighting products. This segment also provides signal chain products that sense, condition, and measure real-world signals and convert them into data to be transferred or converted for further processing and control, such as amplifiers, data converters, interface products, motor drives, clocks, and logic and sensing products. The Embedded Processing segment offers microcontrollers, processors, wireless connectivity, and radar products; and applications processors for specific computing activity. It also provides DLP products primarily for use in projecting high-definition images; calculators; and application-specific integrated circuits. Its products are used in various markets, such as industrial, automotive, personal electronics, communications equipment, enterprise systems, calculators, and others. The company markets and sells its semiconductor products through direct sales and distributors, as well as through its website. Texas Instruments Incorporated was founded in 1930 and is headquartered in Dallas, Texas."
+   }
+  },
+  "BND": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "Vanguard Total Bond Market Index Fund ETF Shares",
+    "category": "Intermediate Core Bond",
+    "fundFamily": "Vanguard",
+    "annualReportExpenseRatio": 0.00029999999,
+    "totalAssets": 400606691328,
+    "beta3Year": 0.98,
+    "threeYearAverageReturn": 0.0411795,
+    "fiveYearAverageReturn": 0.00024390001,
+    "longBusinessSummary": "This index measures the performance of a wide spectrum of public, investment-grade, taxable, fixed income securities in the United States-including government, corporate, and international dollar-denominated bonds, as well as mortgage-backed and asset-backed securities-all with maturities of more than 1 year. All of the fund's investments will be selected through the sampling process, and at least 80% of its assets will be invested in bonds held in the index."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {
+     "bondPosition": 0.98620003,
+     "cashPosition": 0.0137,
+     "convertiblePosition": 0.0001
+    },
+    "category": "Intermediate Core Bond",
+    "family": "Vanguard",
+    "legal_type": "Exchange Traded Fund",
+    "description": "This index measures the performance of a wide spectrum of public, investment-grade, taxable, fixed income securities in the United States-including government, corporate, and international dollar-denominated bonds, as well as mortgage-backed and asset-backed securities-all with maturities of more than 1 year. All of the fund's investments will be selected through the sampling process, and at least 80% of its assets will be invested in bonds held in the index."
+   }
+  },
+  "SGOV": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "iShares 0-3 Month Treasury Bond ETF",
+    "category": "Ultrashort Bond",
+    "fundFamily": "iShares",
+    "annualReportExpenseRatio": 0.00090000004,
+    "totalAssets": 116836941824,
+    "beta3Year": 0.0,
+    "threeYearAverageReturn": 0.044565402,
+    "fiveYearAverageReturn": 0.0389615,
+    "longBusinessSummary": "The index measures the performance of public obligations of the U.S. Treasury that have a remaining maturity of less than or equal to three months. The fund will invest at least 80% of its assets in the component securities of the underlying index, and the fund will invest at least 90% of its assets in U.S. Treasury securities that BFA believes will help the fund track the underlying index."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {
+     "cashPosition": 1.0
+    },
+    "category": "Ultrashort Bond",
+    "family": "iShares",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The index measures the performance of public obligations of the U.S. Treasury that have a remaining maturity of less than or equal to three months. The fund will invest at least 80% of its assets in the component securities of the underlying index, and the fund will invest at least 90% of its assets in U.S. Treasury securities that BFA believes will help the fund track the underlying index."
+   }
+  },
+  "NOBL": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "ProShares S&P 500 Dividend Aristocrats ETF",
+    "category": "Large Value",
+    "fundFamily": "ProShares",
+    "annualReportExpenseRatio": 0.0034999999,
+    "totalAssets": 11900102656,
+    "beta3Year": 0.52,
+    "threeYearAverageReturn": 0.1198897,
+    "fiveYearAverageReturn": 0.065642804,
+    "longBusinessSummary": "The fund invests in financial instruments that ProShare Advisors believes, in combination, should track the performance of the index. The index is designed to measure the performance of companies in the S&P 500 Index that have consistently increased dividends each year for at least 25 years. Under normal circumstances, it will invest at least 80% of its total assets in components of the index or in instruments with similar economic characteristics."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "ROP",
+      "name": "Roper Technologies Inc",
+      "weight": 0.019108
+     },
+     {
+      "symbol": "FDS",
+      "name": "FactSet Research Systems Inc",
+      "weight": 0.0185322
+     },
+     {
+      "symbol": "BDX",
+      "name": "Becton Dickinson & Co",
+      "weight": 0.0178145
+     },
+     {
+      "symbol": "IBM",
+      "name": "International Business Machines Corp",
+      "weight": 0.0172763
+     },
+     {
+      "symbol": "ERIE",
+      "name": "Erie Indemnity Co Class A",
+      "weight": 0.0170926
+     },
+     {
+      "symbol": "CVX",
+      "name": "Chevron Corp",
+      "weight": 0.0168287
+     },
+     {
+      "symbol": "XOM",
+      "name": "ExxonMobil Holdings Corp",
+      "weight": 0.0167167
+     },
+     {
+      "symbol": "ADP",
+      "name": "Automatic Data Processing Inc",
+      "weight": 0.0166655
+     },
+     {
+      "symbol": "EMR",
+      "name": "Emerson Electric Co",
+      "weight": 0.0162884
+     },
+     {
+      "symbol": "MDT",
+      "name": "Medtronic PLC",
+      "weight": 0.016255701
+     }
+    ],
+    "sectors": {
+     "realestate": 0.0367,
+     "consumer_cyclical": 0.056700002,
+     "basic_materials": 0.0995,
+     "consumer_defensive": 0.22620001,
+     "technology": 0.0531,
+     "financial_services": 0.1337,
+     "utilities": 0.0533,
+     "industrials": 0.19610001,
+     "energy": 0.0336,
+     "healthcare": 0.111099996
+    },
+    "asset_classes": {
+     "stockPosition": 0.9988,
+     "cashPosition": 0.0011999999
+    },
+    "category": "Large Value",
+    "family": "ProShares",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The fund invests in financial instruments that ProShare Advisors believes, in combination, should track the performance of the index. The index is designed to measure the performance of companies in the S&P 500 Index that have consistently increased dividends each year for at least 25 years. Under normal circumstances, it will invest at least 80% of its total assets in components of the index or in instruments with similar economic characteristics."
+   }
+  },
+  "CVX": {
+   "info": {
+    "quoteType": "EQUITY",
+    "longName": "Chevron Corporation",
+    "marketCap": 407285170176,
+    "beta": 0.453,
+    "sector": "Energy",
+    "industry": "Oil & Gas Integrated",
+    "longBusinessSummary": "Chevron Corporation, through its subsidiaries, engages in the integrated energy and chemicals operations. It operates through Upstream and Downstream segments. The Upstream segment engages in the exploration for, development, production, and transportation of crude oil and natural gas; processing, liquefaction, transportation, and regasification of liquefied natural gas; transportation of crude oil through pipelines; transportation, storage, and marketing of natural gas; carbon capture and storage; and operation of a gas-to-liquids plant. The Downstream segment refines crude oil into petroleum products; markets crude oil, refined products, and lubricants; manufactures and markets renewable fuels; transports crude oil and refined products through pipeline, marine vessel, motor equipment, and rail car; and manufactures and markets commodity petrochemicals, plastics for industrial uses, and fuel and lubricant additives. The company operates in North America, South America, Europe, Africa, Asia, and Australia. The company was formerly known as ChevronTexaco Corporation and changed its name to Chevron Corporation in May 2005. Chevron Corporation was founded in 1879 and is headquartered in Houston, Texas."
+   },
+   "fund": {
+    "top_holdings": [],
+    "sectors": {},
+    "asset_classes": {},
+    "category": null,
+    "family": null,
+    "legal_type": null,
+    "description": "Chevron Corporation, through its subsidiaries, engages in the integrated energy and chemicals operations. It operates through Upstream and Downstream segments. The Upstream segment engages in the exploration for, development, production, and transportation of crude oil and natural gas; processing, liquefaction, transportation, and regasification of liquefied natural gas; transportation of crude oil through pipelines; transportation, storage, and marketing of natural gas; carbon capture and storage; and operation of a gas-to-liquids plant. The Downstream segment refines crude oil into petroleum products; markets crude oil, refined products, and lubricants; manufactures and markets renewable fuels; transports crude oil and refined products through pipeline, marine vessel, motor equipment, and rail car; and manufactures and markets commodity petrochemicals, plastics for industrial uses, and fuel and lubricant additives. The company operates in North America, South America, Europe, Africa, Asia, and Australia. The company was formerly known as ChevronTexaco Corporation and changed its name to Chevron Corporation in May 2005. Chevron Corporation was founded in 1879 and is headquartered in Houston, Texas."
+   }
+  },
+  "SPY": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "State Street SPDR S&P 500 ETF Trust",
+    "category": "Large Blend",
+    "fundFamily": "State Street Investment Management",
+    "annualReportExpenseRatio": 0.000945,
+    "totalAssets": 796865200128,
+    "beta3Year": 0.97,
+    "threeYearAverageReturn": 0.1806926,
+    "fiveYearAverageReturn": 0.1053039,
+    "longBusinessSummary": "The trust seeks to achieve its investment objective by holding a portfolio of the common stocks that are included in the index (the \u201cPortfolio\u201d), with the weight of each stock in the Portfolio substantially corresponding to the weight of such stock in the index."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.0770069
+     },
+     {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corp",
+      "weight": 0.0758232
+     },
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.0593322
+     },
+     {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc",
+      "weight": 0.0361188
+     },
+     {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc Class A",
+      "weight": 0.0251408
+     },
+     {
+      "symbol": "AVGO",
+      "name": "Broadcom Inc",
+      "weight": 0.0237518
+     },
+     {
+      "symbol": "META",
+      "name": "Meta Platforms Inc Class A",
+      "weight": 0.020762898
+     },
+     {
+      "symbol": "GOOG",
+      "name": "Alphabet Inc Class C",
+      "weight": 0.020247199
+     },
+     {
+      "symbol": "LLY",
+      "name": "Eli Lilly and Co",
+      "weight": 0.0173671
+     },
+     {
+      "symbol": "TSLA",
+      "name": "Tesla Inc",
+      "weight": 0.017252099
+     }
+    ],
+    "sectors": {
+     "realestate": 0.018,
+     "consumer_cyclical": 0.0919,
+     "basic_materials": 0.015800001,
+     "consumer_defensive": 0.048800003,
+     "technology": 0.3823,
+     "communication_services": 0.0842,
+     "financial_services": 0.120299995,
+     "utilities": 0.0209,
+     "industrials": 0.0761,
+     "energy": 0.039100002,
+     "healthcare": 0.1025
+    },
+    "asset_classes": {
+     "stockPosition": 0.9994,
+     "cashPosition": 0.00059999997
+    },
+    "category": "Large Blend",
+    "family": "State Street Investment Management",
+    "legal_type": "Exchange Traded Fund",
+    "description": "The trust seeks to achieve its investment objective by holding a portfolio of the common stocks that are included in the index (the \u201cPortfolio\u201d), with the weight of each stock in the Portfolio substantially corresponding to the weight of such stock in the index."
+   }
+  },
+  "QQQ": {
+   "info": {
+    "quoteType": "ETF",
+    "longName": "Invesco QQQ Trust",
+    "category": "Large Growth",
+    "fundFamily": "Invesco",
+    "annualReportExpenseRatio": 0.0018000001,
+    "totalAssets": 463833595904,
+    "beta3Year": 1.25,
+    "threeYearAverageReturn": 0.1928657,
+    "fiveYearAverageReturn": 0.1103108,
+    "longBusinessSummary": "To maintain the correspondence between the composition and weights of the securities in the trust (the \"securities\") and the stocks in the NASDAQ-100 Index\u00ae, the adviser adjusts the securities from time to time to conform to periodic changes in the identity and/or relative weights of index securities. The composition and weighting of the securities portion of a portfolio deposit are also adjusted to conform to changes in the index."
+   },
+   "fund": {
+    "top_holdings": [
+     {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "weight": 0.0815917
+     },
+     {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corp",
+      "weight": 0.080005705
+     },
+     {
+      "symbol": "MSFT",
+      "name": "Microsoft Corp",
+      "weight": 0.062867396
+     },
+     {
+      "symbol": "MU",
+      "name": "Micron Technology Inc",
+      "weight": 0.0447466
+     },
+     {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc",
+      "weight": 0.0420532
+     },
+     {
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices Inc",
+      "weight": 0.0369033
+     },
+     {
+      "symbol": "TSLA",
+      "name": "Tesla Inc",
+      "weight": 0.0340695
+     },
+     {
+      "symbol": "META",
+      "name": "Meta Platforms Inc Class A",
+      "weight": 0.029663898
+     },
+     {
+      "symbol": "WMT",
+      "name": "Walmart Inc",
+      "weight": 0.026898898
+     },
+     {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc Class A",
+      "weight": 0.026636802
+     }
+    ],
+    "sectors": {
+     "consumer_cyclical": 0.1104,
+     "basic_materials": 0.0107,
+     "consumer_defensive": 0.0679,
+     "technology": 0.5801,
+     "communication_services": 0.1109,
+     "financial_services": 0.0022,
+     "utilities": 0.0117999995,
+     "industrials": 0.052600004,
+     "energy": 0.0050999997,
+     "healthcare": 0.0482
+    },
+    "asset_classes": {
+     "stockPosition": 0.9984,
+     "cashPosition": 0.0016
+    },
+    "category": "Large Growth",
+    "family": "Invesco",
+    "legal_type": "Exchange Traded Fund",
+    "description": "To maintain the correspondence between the composition and weights of the securities in the trust (the \"securities\") and the stocks in the NASDAQ-100 Index\u00ae, the adviser adjusts the securities from time to time to conform to periodic changes in the identity and/or relative weights of index securities. The composition and weighting of the securities portion of a portfolio deposit are also adjusted to conform to changes in the index."
+   }
+  }
+ }
+}
