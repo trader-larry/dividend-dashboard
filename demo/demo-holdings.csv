@@ -1,0 +1,27 @@
+symbol,shares,cost_basis,frequency,core_focus,distribution_type,strategy,exposure,flagged,notes
+SCHD,450,24.80,,Dividend growth,,,,,Core holding. Adding every month.
+VYM,60,112.50,,High dividend,,,,,
+DGRO,120,54.20,,Dividend growth,,,,,
+VIG,40,178.00,,Dividend growth,,,,,
+JEPI,180,54.60,,Covered-call income,,,,,Monthly income from S&P 500 options
+JEPQ,150,50.10,,Covered-call income,,,,,
+DIVO,110,38.90,,Covered-call income,,,,,
+SPYI,120,48.70,,Covered-call income,,,,,
+QQQI,90,50.40,,Covered-call income,,,,yes,High yield. Watching NAV before adding more.
+O,150,54.80,,Monthly REIT income,,,,,The monthly dividend company
+MAIN,80,44.50,,BDC income,,,,,
+ARCC,220,20.10,,BDC income,,,,,
+JNJ,30,152.00,,Healthcare,,,,,
+ABBV,25,158.00,,Healthcare,,,,,
+PG,25,150.00,,Consumer staples,,,,,Dividend king
+KO,70,59.50,,Consumer staples,,,,,Dividend king
+PEP,25,162.00,,Consumer staples,,,,yes,Not adding while growth is slow
+XOM,40,104.00,,Energy,,,,,
+ENB,90,37.50,,Energy,,,,,Pipeline. Canadian withholding tax.
+VZ,120,39.80,,Telecom,,,,yes,High yield. Watching debt load.
+MO,80,44.00,,Consumer staples,,,,,
+TXN,15,172.00,,Technology,,,,,
+BND,50,72.30,,Bonds,,,,,
+SGOV,150,100.40,,Cash / T-bills,,,,,Cash reserve
+NOBL,,,,,,,,,Watchlist: dividend aristocrats ETF
+CVX,,,,,,,,,Watchlist

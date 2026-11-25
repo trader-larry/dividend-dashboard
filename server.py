@@ -4,6 +4,7 @@ Dividend Holdings Dashboard - local server.
 
 Run:   python server.py            (live data from Yahoo Finance, built-in client, no packages needed)
        python server.py --demo     (synthetic sample data, works offline)
+       python server.py --public-demo   (read-only sample portfolio for a public website, see DEPLOY.md)
 Then open http://127.0.0.1:8765 in your browser.
 
 Your holdings live in holdings.csv next to this file. To keep them in a
@@ -39,6 +40,36 @@ CSV_FIELDS = ["symbol", "shares", "cost_basis", "frequency", "core_focus", "dist
 
 DEMO = False
 _lock = threading.Lock()
+
+# Public read-only demo (python server.py --public-demo, or PUBLIC_DEMO=1), for hosting on a website.
+# Uses the sample portfolio in demo/, never your holdings.csv, and turns off every way to change
+# data or stop the server. Market data is cached for hours so visitors don't trigger rate limits.
+PUBLIC_DEMO = False
+DEMO_DIR = HERE / "demo"
+DEMO_HOLDINGS = DEMO_DIR / "demo-holdings.csv"
+DEMO_PLANS = DEMO_DIR / "demo-scenarios.json"
+PUBLIC_CACHE_HOURS = 6          # how long live prices are reused in the public demo
+PUBLIC_NEW_LOOKUPS = 40         # new symbols visitors may look up per window...
+PUBLIC_LOOKUP_WINDOW = 10 * 60  # ...of this many seconds, so a busy page can't hammer Yahoo
+_lookups: list[float] = []
+_lookups_lock = threading.Lock()
+_yahoo_slots = threading.Semaphore(3)  # at most 3 symbols fetched from Yahoo at once (public demo)
+_failed: dict[str, float] = {}         # public demo: symbol -> when Yahoo last failed for it
+PUBLIC_RETRY_AFTER = 15 * 60           # don't ask Yahoo again for a failed symbol sooner than this
+
+
+def _public_lookup_ok() -> bool:
+    """Count one uncached lookup against the public demo's budget. False when it is used up."""
+    now = time.time()
+    with _lookups_lock:
+        _lookups[:] = [t for t in _lookups if now - t < PUBLIC_LOOKUP_WINDOW]
+        if len(_lookups) >= PUBLIC_NEW_LOOKUPS:
+            return False
+        _lookups.append(now)
+        return True
+
+
+BUSY_MSG = "The live demo has looked up a lot of new symbols in the last few minutes. Try again shortly."
 
 
 # --------------------------------------------------------------------------
@@ -985,6 +1016,33 @@ DEMO_SPECS = {
     "SPYI": ("Demo S&P 500 High Income ETF", "Derivative Income", 51.0, 0.68, 12, 0.50, 0.0, "ETF", None),
     "DIVO": ("Demo Enhanced Dividend Income ETF", "Large Value", 42.0, 0.56, 12, 0.18, 0.03, "ETF", None),
     "SGOV": ("Demo 0-3 Month Treasury Bond ETF", "Ultrashort Bond", 100.5, 0.09, 12, 0.36, 0.0, "ETF", None),
+    # The public demo's sample portfolio (demo/demo-holdings.csv), for DEMO_DATA=synthetic
+    # and as a stand-in when live data can't be reached.
+    "DGRO": ("Demo Dividend Growth ETF", "Large Value", 64.0, 0.08, 4, 0.38, 0.08, "ETF", None),
+    "VIG": ("Demo Dividend Appreciation ETF", "Large Blend", 205.0, 0.05, 4, 0.85, 0.08, "ETF", None),
+    "NOBL": ("Demo Dividend Aristocrats ETF", "Large Value", 102.0, 0.35, 4, 0.55, 0.04, "ETF", None),
+    "MAIN": ("Demo Main Street Capital", "", 60.0, None, 12, 0.25, 0.04, "EQUITY", None),
+    "ARCC": ("Demo Ares Capital", "", 21.0, None, 4, 0.48, 0.02, "EQUITY", None),
+    "JNJ": ("Demo Johnson & Johnson", "", 160.0, None, 4, 1.30, 0.05, "EQUITY", None),
+    "ABBV": ("Demo AbbVie", "", 185.0, None, 4, 1.64, 0.06, "EQUITY", None),
+    "PG": ("Demo Procter & Gamble", "", 160.0, None, 4, 1.06, 0.05, "EQUITY", None),
+    "KO": ("Demo Coca-Cola", "", 68.0, None, 4, 0.51, 0.05, "EQUITY", None),
+    "PEP": ("Demo PepsiCo", "", 145.0, None, 4, 1.42, 0.06, "EQUITY", None),
+    "XOM": ("Demo Exxon Mobil", "", 115.0, None, 4, 1.03, 0.04, "EQUITY", None),
+    "CVX": ("Demo Chevron", "", 155.0, None, 4, 1.71, 0.05, "EQUITY", None),
+    "ENB": ("Demo Enbridge", "", 45.0, None, 4, 0.68, 0.03, "EQUITY", None),
+    "VZ": ("Demo Verizon", "", 42.0, None, 4, 0.69, 0.02, "EQUITY", None),
+    "MO": ("Demo Altria", "", 58.0, None, 4, 1.06, 0.04, "EQUITY", None),
+    "TXN": ("Demo Texas Instruments", "", 185.0, None, 4, 1.42, 0.05, "EQUITY", None),
+}
+DEMO_SECTORS = {  # sector, industry for the synthetic stocks (default: a retail REIT, like O)
+    "MAIN": ("Financial Services", "Asset Management"), "ARCC": ("Financial Services", "Asset Management"),
+    "JNJ": ("Healthcare", "Drug Manufacturers - General"), "ABBV": ("Healthcare", "Drug Manufacturers - General"),
+    "PG": ("Consumer Defensive", "Household & Personal Products"), "KO": ("Consumer Defensive", "Beverages - Non-Alcoholic"),
+    "PEP": ("Consumer Defensive", "Beverages - Non-Alcoholic"), "MO": ("Consumer Defensive", "Tobacco"),
+    "XOM": ("Energy", "Oil & Gas Integrated"), "CVX": ("Energy", "Oil & Gas Integrated"),
+    "ENB": ("Energy", "Oil & Gas Midstream"), "VZ": ("Communication Services", "Telecom Services"),
+    "TXN": ("Technology", "Semiconductors"),
 }
 DEMO_DESC = {
     "JEPI": "Seeks income by holding a defensive portfolio of S&P 500 stocks and selling out-of-the-money S&P 500 index call options through equity-linked notes (ELNs). Actively managed.",
@@ -1036,7 +1094,8 @@ def demo_raw(symbol: str) -> dict:
         info["dividendDate"] = info["exDividendDate"] + lag * 86400
     fund = {}
     if qt == "EQUITY":
-        info.update({"sector": "Real Estate", "industry": "REIT - Retail",
+        sector, industry = DEMO_SECTORS.get(symbol, ("Real Estate", "REIT - Retail"))
+        info.update({"sector": sector, "industry": industry,
                      "longBusinessSummary": "Sample demo company used to preview the dashboard."})
     else:
         names = ["Alpha Corp", "Beta Industries", "Gamma Holdings", "Delta Energy", "Epsilon Foods",
@@ -1072,7 +1131,8 @@ def _save_cache(c: dict) -> None:
         pass
 
 
-def get_raw(symbol: str, cache: dict, force: bool) -> tuple[dict | None, str | None, float | None]:
+def get_raw(symbol: str, cache: dict, force: bool, budget: bool = False) -> tuple[dict | None, str | None, float | None]:
+    """budget=True (public demo, visitor lookups): an uncached symbol counts against the lookup budget."""
     if DEMO:
         return demo_raw(symbol), None, time.time()
     ent = cache.get(symbol)
@@ -1080,15 +1140,34 @@ def get_raw(symbol: str, cache: dict, force: bool) -> tuple[dict | None, str | N
     fresh = ent and "monthly" in ent["raw"] and time.time() - ent["ts"] < CACHE_TTL_SECONDS
     if fresh and not force:
         return ent["raw"], None, ent["ts"]
+    if PUBLIC_DEMO and not force and time.time() - _failed.get(symbol, 0) < PUBLIC_RETRY_AFTER:
+        # Yahoo failed for this symbol a moment ago: answer right away instead of waiting on it again.
+        if ent:
+            return ent["raw"], "Using cached data", ent["ts"]
+        if not budget:
+            return demo_raw(symbol), "Live data unavailable right now, showing sample numbers", time.time()
+        return None, "Live data unavailable right now. Try again later.", None
+    if PUBLIC_DEMO and budget and not ent and not _public_lookup_ok():
+        return None, BUSY_MSG, None
     try:
-        raw = fetch_raw(symbol)
+        if PUBLIC_DEMO:
+            with _yahoo_slots:
+                raw = fetch_raw(symbol)
+        else:
+            raw = fetch_raw(symbol)
         if not raw["history"] and not raw["info"].get("regularMarketPrice"):
             raise ValueError("no data returned - check the symbol")
         cache[symbol] = {"ts": time.time(), "raw": raw}
+        _failed.pop(symbol, None)
         return raw, None, cache[symbol]["ts"]
     except Exception as e:
+        if PUBLIC_DEMO:
+            _failed[symbol] = time.time()
         if ent:  # fall back to stale data rather than nothing
             return ent["raw"], f"Using cached data: {e}", ent["ts"]
+        if PUBLIC_DEMO and not budget:
+            # Public demo portfolio: show sample numbers rather than an empty page if Yahoo is unreachable.
+            return demo_raw(symbol), "Live data unavailable right now, showing sample numbers", time.time()
         return None, str(e), None
 
 
@@ -1146,6 +1225,7 @@ def build_dashboard(force: bool = False) -> dict:
         er_w = sum((r["expense_ratio"] or 0) * (r["market_value"] or 0) for r in out)
         return {
             "demo": DEMO,
+            "public_demo": PUBLIC_DEMO,
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "holdings": out,
             "errors": errors,
@@ -1291,8 +1371,15 @@ def _get_series(symbol: str, rng: str, interval: str, force: bool) -> dict:
         ent = _cmp_cache.get(key)
     if ent and not force and time.time() - ent["ts"] < CACHE_TTL_SECONDS:
         return ent["data"]
+    if PUBLIC_DEMO and not ent and not _public_lookup_ok():
+        raise ValueError(BUSY_MSG)
     try:
-        data = (_fetch_series_yf if USE_YFINANCE else _fetch_series_stdlib)(symbol, rng, interval)
+        fetch = _fetch_series_yf if USE_YFINANCE else _fetch_series_stdlib
+        if PUBLIC_DEMO:
+            with _yahoo_slots:
+                data = fetch(symbol, rng, interval)
+        else:
+            data = fetch(symbol, rng, interval)
         if not data["bars"]:
             raise ValueError("no price history - check the symbol")
     except Exception:
@@ -1301,6 +1388,9 @@ def _get_series(symbol: str, rng: str, interval: str, force: bool) -> dict:
         raise
     with _cmp_lock:
         _cmp_cache[key] = {"ts": time.time(), "data": data}
+        if PUBLIC_DEMO and len(_cmp_cache) > 400:  # keep memory bounded on a small server
+            for k in sorted(_cmp_cache, key=lambda k: _cmp_cache[k]["ts"])[:100]:
+                del _cmp_cache[k]
     return data
 
 
@@ -1405,7 +1495,7 @@ def build_research(symbol: str, force: bool = False) -> dict:
         cache = _load_cache()
     position = held or {"symbol": sym, "shares": None, "cost_basis": None}
     # Fetch outside the lock so the main dashboard isn't held up by a slow lookup.
-    raw, err, ts = get_raw(sym, cache, force)
+    raw, err, ts = get_raw(sym, cache, force, budget=not held)
     if raw is None:
         raise ValueError(err or "no data returned - check the symbol")
     if not DEMO and sym in cache:
@@ -1446,7 +1536,7 @@ def build_plan_quotes(symbols: list[str], force: bool = False) -> dict:
         cache = _load_cache()
 
     def work(sym):
-        raw, err, ts = get_raw(sym, cache, force)
+        raw, err, ts = get_raw(sym, cache, force, budget=sym not in held)
         if raw is None:
             return {"symbol": sym, "error": err or "no data returned - check the symbol"}
         try:
@@ -1475,6 +1565,8 @@ def build_plan_quotes(symbols: list[str], force: bool = False) -> dict:
 
 def plans_path() -> Path:
     """Saved scenarios live next to the holdings file, so they sync with it (OneDrive, Dropbox...)."""
+    if PUBLIC_DEMO:
+        return DEMO_PLANS
     return HOLDINGS_CSV.with_name(HOLDINGS_CSV.stem + "-plans.json")
 
 
@@ -1520,14 +1612,20 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?")[0]
         if path in ("/", "/index.html"):
-            return self._send(200, INDEX_HTML.read_bytes(), "text/html; charset=utf-8")
+            page = INDEX_HTML.read_bytes()
+            if PUBLIC_DEMO:  # the page hides editing, import and Stop when the body has this class
+                page = page.replace(b"<body>", b'<body class="public-demo">', 1)
+            return self._send(200, page, "text/html; charset=utf-8")
+        if path == "/healthz":
+            return self._send(200, '{"ok":true}')
         if path == "/api/data":
-            force = "refresh=1" in self.path
+            # The public demo ignores Refresh: prices come from the cache, refreshed in the background.
+            force = "refresh=1" in self.path and not PUBLIC_DEMO
             return self._send(200, json.dumps(build_dashboard(force), default=str))
         if path == "/api/research":
             q = urllib.parse.parse_qs(self.path.partition("?")[2])
             try:
-                res = build_research((q.get("symbol") or [""])[0], force=(q.get("refresh") or [""])[0] == "1")
+                res = build_research((q.get("symbol") or [""])[0], force=(q.get("refresh") or [""])[0] == "1" and not PUBLIC_DEMO)
                 return self._send(200, json.dumps(res, default=str))
             except Exception as e:
                 return self._send(400, json.dumps({"error": str(e)}))
@@ -1535,7 +1633,7 @@ class Handler(BaseHTTPRequestHandler):
             q = urllib.parse.parse_qs(self.path.partition("?")[2])
             try:
                 res = build_compare((q.get("symbols") or [""])[0].split(","), (q.get("period") or ["1Y"])[0],
-                                    force=(q.get("refresh") or [""])[0] == "1")
+                                    force=(q.get("refresh") or [""])[0] == "1" and not PUBLIC_DEMO)
                 return self._send(200, json.dumps(res, default=str))
             except Exception as e:
                 return self._send(400, json.dumps({"error": str(e)}))
@@ -1543,16 +1641,19 @@ class Handler(BaseHTTPRequestHandler):
             q = urllib.parse.parse_qs(self.path.partition("?")[2])
             try:
                 res = build_plan_quotes((q.get("symbols") or [""])[0].split(","),
-                                        force=(q.get("refresh") or [""])[0] == "1")
+                                        force=(q.get("refresh") or [""])[0] == "1" and not PUBLIC_DEMO)
                 return self._send(200, json.dumps(res, default=str))
             except Exception as e:
                 return self._send(400, json.dumps({"error": str(e)}))
         if path == "/api/plans":
             with _lock:
-                return self._send(200, json.dumps({"plans": read_plans(), "path": str(plans_path())}))
+                return self._send(200, json.dumps({"plans": read_plans(),
+                                                   "path": "" if PUBLIC_DEMO else str(plans_path())}))
         if path == "/api/holdings":
             return self._send(200, json.dumps(read_holdings()))
         if path == "/api/holdings/info":
+            if PUBLIC_DEMO:
+                return self._send(200, json.dumps({"path": "the demo's sample portfolio (read-only)", "default": False}))
             return self._send(200, json.dumps({"path": str(HOLDINGS_CSV),
                                                "default": HOLDINGS_CSV == HERE / "holdings.csv"}))
         if path == "/api/holdings/file":
@@ -1575,6 +1676,9 @@ class Handler(BaseHTTPRequestHandler):
         self._send(404, '{"error":"not found"}')
 
     def do_POST(self):
+        if PUBLIC_DEMO:
+            # Read-only: no saving holdings or scenarios, no importing, no stopping the server.
+            return self._send(403, '{"error":"The live demo is read-only."}')
         if self.path.split("?")[0] == "/api/shutdown":
             # Stop button / stop_windows.bat. Only from this computer, and only with the custom
             # header, so another website open in the browser can't stop the dashboard.
@@ -1626,11 +1730,31 @@ class Handler(BaseHTTPRequestHandler):
             self._send(400, json.dumps({"error": str(e)}))
 
 
+def _env_on(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _keep_warm():
+    """Public demo: load the sample portfolio now and again before the cache runs out,
+    so visitors get cached prices instead of waiting on Yahoo."""
+    while True:
+        try:
+            d = build_dashboard(force=True)
+            stand_in = sum(1 for h in d["holdings"] if "sample numbers" in (h.get("warning") or ""))
+            print(f"{datetime.now():%Y-%m-%d %H:%M} Demo portfolio prices refreshed"
+                  + (f" ({stand_in} symbols using sample numbers: Yahoo unreachable)" if stand_in else "."), flush=True)
+        except Exception as e:
+            print(f"Demo refresh failed: {e}", flush=True)
+        time.sleep(max(600, CACHE_TTL_SECONDS - 15 * 60))
+
+
 def main():
-    global DEMO, USE_YFINANCE
+    global DEMO, USE_YFINANCE, PUBLIC_DEMO, CACHE_TTL_SECONDS
     ap = argparse.ArgumentParser(description="Local dividend holdings dashboard")
-    ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--port", type=int, default=None, help="default 8765, or $PORT with --public-demo")
     ap.add_argument("--demo", action="store_true", help="use synthetic data (no internet needed)")
+    ap.add_argument("--public-demo", action="store_true",
+                    help="read-only sample portfolio for hosting publicly (also PUBLIC_DEMO=1); see DEPLOY.md")
     ap.add_argument("--no-browser", action="store_true")
     ap.add_argument("--yfinance", action="store_true",
                     help="fetch with the yfinance library instead of the built-in client")
@@ -1638,8 +1762,20 @@ def main():
                     help="holdings file (or folder) to use, e.g. in OneDrive/Dropbox/iCloud Drive")
     a = ap.parse_args()
     global HOLDINGS_CSV
-    HOLDINGS_CSV = resolve_holdings_path(a.holdings)
+    PUBLIC_DEMO = a.public_demo or _env_on("PUBLIC_DEMO")
     DEMO = a.demo
+    if PUBLIC_DEMO:
+        # Never touch a real holdings file: the sample portfolio ships in demo/.
+        HOLDINGS_CSV = DEMO_HOLDINGS
+        DEMO = DEMO or os.environ.get("DEMO_DATA", "").strip().lower() == "synthetic"
+        try:
+            hours = float(os.environ.get("DEMO_CACHE_HOURS") or PUBLIC_CACHE_HOURS)
+        except ValueError:
+            hours = PUBLIC_CACHE_HOURS
+        CACHE_TTL_SECONDS = int(max(0.5, hours) * 3600)
+        a.no_browser = True
+    else:
+        HOLDINGS_CSV = resolve_holdings_path(a.holdings)
     USE_YFINANCE = a.yfinance
     if USE_YFINANCE and not DEMO:
         try:
@@ -1650,6 +1786,23 @@ def main():
             print(f"\nCould not load yfinance with {sys.executable} (Python {sys.version.split()[0]}): {e!r}")
             print("Run without --yfinance to use the built-in client (no extra packages needed).")
             sys.exit(1)
+    if PUBLIC_DEMO:
+        # A hosting service (Render etc.) says which port to listen on, and traffic arrives from outside.
+        port = a.port or int(os.environ.get("PORT") or 8765)
+        srv = ThreadingHTTPServer(("0.0.0.0", port), Handler)
+        srv.daemon_threads = True
+        print(f"Public read-only demo listening on port {port} "
+              f"({'synthetic data' if DEMO else f'live Yahoo Finance data, cached {CACHE_TTL_SECONDS / 3600:g} h'})",
+              flush=True)
+        if not DEMO:
+            threading.Thread(target=_keep_warm, daemon=True).start()
+        try:
+            srv.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        srv.server_close()
+        return
+    a.port = a.port or 8765
     srv = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
     url = f"http://127.0.0.1:{a.port}"
     print(f"Dividend dashboard running at {url}  ({'DEMO data' if DEMO else 'live Yahoo Finance data'})")

@@ -360,6 +360,9 @@ td.stick.fw{box-shadow:inset 4px 0 0 var(--watch),1px 0 0 var(--line)}
 .sum-export .dist-leg{grid-auto-flow:column}
 .sum-export .tiles{grid-template-columns:repeat(7,minmax(0,1fr))}
 .sum-export .tablewrap{overflow:visible}
+/* Public read-only demo (server.py --public-demo): nothing that saves, imports or stops the server */
+body.public-demo #btnHold, body.public-demo #btnImport, body.public-demo #btnStop,
+body.public-demo #plSave, body.public-demo #plSaveNew, body.public-demo #plDel{display:none}
 </style>
 </head>
 <body>
@@ -432,6 +435,8 @@ let DATA = null, sortKey = 'market_value', sortDir = -1;
 
 // MASK: the Summary tab's "Hide $" switch. Turned on only while the Summary tab draws itself.
 let MASK = false;
+const PUBLIC_DEMO = document.body.classList.contains('public-demo');
+if(PUBLIC_DEMO) document.getElementById('btnRefresh').title = 'In the live demo, prices update automatically every few hours';
 const fmt = {
   money:(v,d=2)=>v==null?'—':MASK?'$•••':(v<0?'-':'')+'$'+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}),
   big:v=>v==null?'—':v>=1e9?'$'+(v/1e9).toFixed(1)+'B':v>=1e6?'$'+(v/1e6).toFixed(1)+'M':fmt.money(v,0),
@@ -968,7 +973,8 @@ async function load(refresh=false){
     const r = await fetch('/api/data'+(refresh?'?refresh=1':''));
     DATA = await r.json();
     const b=FLASH?[FLASH]:[]; FLASH='';
-    if(DATA.demo) b.push('<div class="banner"><strong>Demo mode:</strong> these are synthetic numbers for previewing the layout. Run <code>python server.py</code> without <code>--demo</code> for live data.</div>');
+    if(PUBLIC_DEMO) b.push('<div class="banner"><strong>Live demo:</strong> a sample dividend portfolio'+(DATA.demo?' with synthetic numbers':' with real market data from Yahoo Finance, refreshed every few hours')+'. Editing is turned off here. To track your own holdings, run it on your computer: <a href="https://github.com/trader-larry/dividend-dashboard" target="_blank" rel="noopener">get the code on GitHub</a>.</div>');
+    else if(DATA.demo) b.push('<div class="banner"><strong>Demo mode:</strong> these are synthetic numbers for previewing the layout. Run <code>python server.py</code> without <code>--demo</code> for live data.</div>');
     if(DATA.errors.length) b.push(`<div class="banner err">Could not load: ${DATA.errors.map(e=>`<strong>${esc(e.symbol)}</strong> (${esc(e.error)})`).join(', ')}</div>`);
     $('banner').innerHTML=b.join('');
     const ts = Math.min(...DATA.holdings.map(h=>h.fetched_at||Date.now()/1000));
@@ -1628,8 +1634,11 @@ async function planFetchSaved(){
   plansState = 'loading';
   try{ const j = await (await fetch('/api/plans')).json(); PLANS = j.plans||[]; plansPath = j.path||''; plansState = 'ok'; }
   catch(e){ plansState = 'error'; }
+  // Live demo: a first-time visitor opens on the first sample scenario instead of an empty plan.
+  const openFirst = PUBLIC_DEMO && PLANS.length && !PLAN.id && !planAllSyms(PLAN).length;
+  if(openFirst) PLAN = JSON.parse(JSON.stringify({id:PLANS[0].id, name:PLANS[0].name, basis:PLANS[0].basis||'fwd', accounts:PLANS[0].accounts}));
   planLoadQuotes(PLANS.flatMap(planAllSyms));
-  planRender();
+  planRender(!!openFirst);
 }
 async function planPutSaved(list, msg){
   try{
@@ -1836,7 +1845,7 @@ function planRender(full=false){
   $('plSel').innerHTML = `<option value="">${saved?'— switch to —':(PLAN.name||'Unsaved plan')+' (not saved)'}</option>` + PLANS.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}"${p.id===PLAN.id?' selected':''}>${esc(p.name)}</option>`).join('');
   $('plDel').disabled = !saved; $('plDel').style.cursor = saved?'':'default';
   $('plSave').textContent = saved ? (dirty?'Save changes':'Saved') : 'Save';
-  $('plMsg').innerHTML = planMsg ? esc(planMsg) : saved ? (dirty?'<span class="warnc">Unsaved changes.</span>':`Saved ${new Date(saved.saved_at).toLocaleString()}.`) : 'Not saved yet. Your work is kept in this browser until you save it.';
+  $('plMsg').innerHTML = planMsg ? esc(planMsg) : PUBLIC_DEMO ? 'Saving is turned off in the live demo. Change anything you like: your changes stay in this browser.' : saved ? (dirty?'<span class="warnc">Unsaved changes.</span>':`Saved ${new Date(saved.saved_at).toLocaleString()}.`) : 'Not saved yet. Your work is kept in this browser until you save it.';
   // Tiles
   const now = P.annual_income||0, d = c.income-now;
   const tile = (k,v,sub='') => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div>${sub?`<div class="muted" style="font-size:12px">${sub}</div>`:''}</div>`;
@@ -1882,7 +1891,7 @@ function planRender(full=false){
   $('plSaved').innerHTML = `<tr class="base"><td><strong>Your portfolio now</strong><div class="muted" style="font-size:12px">from your holdings</div></td><td class="num">${fmt.money(P.market_value||0,0)}</td><td class="num"><strong>${fmt.money(now,0)}</strong></td><td class="num">${fmt.money(now/12,0)}</td><td class="num">${fmt.pct(P.yield)}</td><td class="num">—</td><td></td></tr>`
     + (rowsS.join('') || `<tr><td colspan="7" class="muted" style="padding:12px 8px">${plansState==='loading'?'Loading…':plansState==='error'?'Could not read saved scenarios.':'No saved scenarios yet. Name this plan and click Save.'}</td></tr>`);
   $('plSaved').querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>{ if(tr.dataset.id!==PLAN.id) planOpen(tr.dataset.id); });
-  $('plPath').textContent = plansPath ? `Saved scenarios are kept in ${plansPath}, next to your holdings file. Click a row to open it.` : '';
+  $('plPath').textContent = PUBLIC_DEMO ? 'Sample scenarios that come with the demo. Click a row to open it.' : plansPath ? `Saved scenarios are kept in ${plansPath}, next to your holdings file. Click a row to open it.` : '';
 }
 function planBars(items, h=180){
   const W = Math.max(360, items.length*52), pad = 30, max = Math.max(...items.map(i=>Math.max(i.v,i.v2)), 1e-9), bw = (W-pad)/items.length;
