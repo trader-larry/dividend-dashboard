@@ -48,6 +48,14 @@ PUBLIC_DEMO = False
 DEMO_DIR = HERE / "demo"
 DEMO_HOLDINGS = DEMO_DIR / "demo-holdings.csv"
 DEMO_PLANS = DEMO_DIR / "demo-scenarios.json"
+# Fund details (expense ratio, category, top holdings, sectors...) saved on a computer Yahoo answers,
+# with python server.py --save-demo-snapshot. Yahoo often refuses these to hosting services.
+DEMO_SNAPSHOT = DEMO_DIR / "fund-snapshot.json"
+SNAPSHOT_INFO_KEYS = ("quoteType", "longName", "category", "fundFamily", "annualReportExpenseRatio", "netExpenseRatio",
+                      "totalAssets", "marketCap", "beta3Year", "beta", "threeYearAverageReturn",
+                      "fiveYearAverageReturn", "sector", "industry", "longBusinessSummary")
+SNAPSHOT_EXTRA = ["SPY", "QQQ"]  # benchmarks people often add in Symbol comparison / Research
+_snapshot: dict | None = None
 PUBLIC_CACHE_HOURS = 6          # how long live prices are reused in the public demo
 PUBLIC_NEW_LOOKUPS = 40         # new symbols visitors may look up per window...
 PUBLIC_LOOKUP_WINDOW = 10 * 60  # ...of this many seconds, so a busy page can't hammer Yahoo
@@ -70,6 +78,64 @@ def _public_lookup_ok() -> bool:
 
 
 BUSY_MSG = "The live demo has looked up a lot of new symbols in the last few minutes. Try again shortly."
+
+
+def _load_snapshot() -> dict:
+    global _snapshot
+    if _snapshot is None:
+        try:
+            _snapshot = json.loads(DEMO_SNAPSHOT.read_text(encoding="utf-8")).get("symbols", {})
+        except Exception:
+            _snapshot = {}
+    return _snapshot
+
+
+def _fill_from_snapshot(symbol: str, raw: dict) -> None:
+    """Public demo: when Yahoo held back the fund details, use the saved snapshot for this symbol."""
+    if not (raw.get("fund") or {}).get("error"):
+        return
+    snap = _load_snapshot().get(symbol)
+    if not snap:
+        return
+    info = raw["info"]
+    for k, v in (snap.get("info") or {}).items():
+        if info.get(k) in (None, ""):
+            info[k] = v
+    raw["fund"] = dict(snap.get("fund") or {})
+    hist = raw.get("history") or []
+    if not info.get("regularMarketPreviousClose") and len(hist) >= 2:
+        info["regularMarketPreviousClose"] = hist[-2]["close"]  # for the day change
+
+
+def save_demo_snapshot() -> None:
+    """Fetch fund details for the demo portfolio and save them to demo/fund-snapshot.json."""
+    syms = []
+    with DEMO_HOLDINGS.open(newline="", encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            sym = (r.get("symbol") or "").strip().upper()
+            if sym and not sym.startswith("#") and sym not in syms:
+                syms.append(sym)
+    syms += [s for s in SNAPSHOT_EXTRA if s not in syms]
+    out, failed = {}, []
+    for sym in syms:
+        try:
+            raw = fetch_raw(sym)
+            fund = {k: v for k, v in (raw.get("fund") or {}).items() if k != "error"}
+            if (raw.get("fund") or {}).get("error"):
+                raise RuntimeError(raw["fund"]["error"])
+            out[sym] = {"info": {k: raw["info"][k] for k in SNAPSHOT_INFO_KEYS if raw["info"].get(k) not in (None, "")},
+                        "fund": fund}
+            print(f"  {sym:6} ok")
+        except Exception as e:
+            failed.append(sym)
+            print(f"  {sym:6} failed: {e}")
+    if not out:
+        print("Nothing saved: Yahoo didn't return fund details. Check your internet connection and try again.")
+        sys.exit(1)
+    DEMO_SNAPSHOT.write_text(json.dumps({"saved_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                                         "symbols": out}, indent=1), encoding="utf-8")
+    print(f"\nSaved fund details for {len(out)} symbols to {DEMO_SNAPSHOT}"
+          + (f" ({len(failed)} failed: {', '.join(failed)})" if failed else ""))
 
 
 # --------------------------------------------------------------------------
@@ -1157,6 +1223,8 @@ def get_raw(symbol: str, cache: dict, force: bool, budget: bool = False) -> tupl
             raw = fetch_raw(symbol)
         if not raw["history"] and not raw["info"].get("regularMarketPrice"):
             raise ValueError("no data returned - check the symbol")
+        if PUBLIC_DEMO:
+            _fill_from_snapshot(symbol, raw)
         cache[symbol] = {"ts": time.time(), "raw": raw}
         _failed.pop(symbol, None)
         return raw, None, cache[symbol]["ts"]
@@ -1753,6 +1821,8 @@ def main():
     ap = argparse.ArgumentParser(description="Local dividend holdings dashboard")
     ap.add_argument("--port", type=int, default=None, help="default 8765, or $PORT with --public-demo")
     ap.add_argument("--demo", action="store_true", help="use synthetic data (no internet needed)")
+    ap.add_argument("--save-demo-snapshot", action="store_true",
+                    help="save fund details for the demo portfolio to demo/fund-snapshot.json, then exit")
     ap.add_argument("--public-demo", action="store_true",
                     help="read-only sample portfolio for hosting publicly (also PUBLIC_DEMO=1); see DEPLOY.md")
     ap.add_argument("--no-browser", action="store_true")
@@ -1762,6 +1832,11 @@ def main():
                     help="holdings file (or folder) to use, e.g. in OneDrive/Dropbox/iCloud Drive")
     a = ap.parse_args()
     global HOLDINGS_CSV
+    if a.save_demo_snapshot:
+        USE_YFINANCE = a.yfinance
+        print("Saving fund details for the demo portfolio from Yahoo Finance...")
+        save_demo_snapshot()
+        return
     PUBLIC_DEMO = a.public_demo or _env_on("PUBLIC_DEMO")
     DEMO = a.demo
     if PUBLIC_DEMO:
