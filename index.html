@@ -996,7 +996,7 @@ async function checkUpdate(){
     try{ if(localStorage.getItem('divdash.updateSeen')===v.latest) return; }catch(e){}
     const el = $('updateBanner');
     el.innerHTML = `<div class="banner update"><span><strong>A new version is available:</strong> ${esc(v.latest)} (you have ${esc(v.current)}).
-      <a href="${esc(v.url)}" target="_blank" rel="noopener">See what's new and download it</a>, then unzip it over this folder. Your holdings are kept.</span>
+      <a href="${esc(v.url)}" target="_blank" rel="noopener">Download it and see how to update</a>. Stop the dashboard, unzip the download, and copy its files over this folder. Your holdings are kept.</span>
       <button id="updateClose" title="Hide until the next version">Dismiss</button></div>`;
     $('updateClose').onclick = () => { try{ localStorage.setItem('divdash.updateSeen', v.latest); }catch(e){} el.innerHTML=''; };
   }catch(e){}
@@ -1097,13 +1097,13 @@ function exportCsv(rows=DATA.holdings, suffix=''){
 }
 
 $('btnStop').onclick=async()=>{
-  if(!confirm('Stop the dashboard?\n\nThis shuts down the server and closes its command window. Run run_windows.bat again to start it.')) return;
+  if(!confirm('Stop the dashboard?\n\nThis shuts down the server and closes its command window. Double-click server.py (or run_windows.bat) again to start it.')) return;
   $('btnStop').disabled=true;
   try{
     const r=await fetch('/api/shutdown',{method:'POST',headers:{'X-Dashboard-Stop':'1'}});
     if(!r.ok) throw new Error('HTTP '+r.status);
   }catch(e){ $('btnStop').disabled=false; alert('Could not stop the dashboard ('+e.message+'). Close its command window or run stop_windows.bat.'); return; }
-  document.body.innerHTML='<div class="stopped"><h1>Dashboard stopped</h1><p class="sub">The server has shut down and its window has closed. You can close this tab.</p><p class="sub">To start it again, double-click run_windows.bat (or run ./run_mac_linux.sh).</p></div>';
+  document.body.innerHTML='<div class="stopped"><h1>Dashboard stopped</h1><p class="sub">The server has shut down and its window has closed. You can close this tab.</p><p class="sub">To start it again, double-click server.py or run_windows.bat (or run ./run_mac_linux.sh).</p></div>';
   document.title='Dashboard stopped';
   setTimeout(()=>{ try{ window.open('','_self'); window.close(); }catch(e){} },800); // closes the tab where the browser allows it
 };
