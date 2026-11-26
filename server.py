@@ -1881,7 +1881,34 @@ def _keep_warm():
         time.sleep(max(600, CACHE_TTL_SECONDS - 15 * 60))
 
 
+def _keep_window_open():
+    """On Windows, a double-clicked server.py gets its own console that vanishes when the server
+    stops, taking any error message with it. Wait for Enter so the message can be read.
+    (A command prompt sets PROMPT; a console Explorer opened for a double-click doesn't.)"""
+    if os.name == "nt" and "PROMPT" not in os.environ:
+        try:
+            input("\nPress Enter to close this window.")
+        except (EOFError, KeyboardInterrupt):
+            pass
+
+
 def main():
+    try:
+        _main()
+    except SystemExit as e:
+        if e.code not in (None, 0):  # not a plain exit, so there's a message to read
+            print(e.code if isinstance(e.code, str) else "", flush=True)
+            _keep_window_open()
+            raise SystemExit(1)
+        raise
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        _keep_window_open()
+        raise SystemExit(1)
+
+
+def _main():
     global DEMO, USE_YFINANCE, PUBLIC_DEMO, CACHE_TTL_SECONDS, UPDATE_CHECK
     ap = argparse.ArgumentParser(description="Local dividend holdings dashboard")
     ap.add_argument("--port", type=int, default=None, help="default 8765, or $PORT with --public-demo")

@@ -16,8 +16,11 @@ You need **Python 3.9 or newer** first. That's the only thing to install.
 1. Install Python from [python.org/downloads](https://www.python.org/downloads/). On the first
    installer screen, tick **"Add python.exe to PATH"**, then click Install Now.
 2. Download the zip above, right-click it and choose **Extract All**.
-3. Open the `dividend-dashboard` folder and double-click `run_windows.bat`.
-   If Windows says "Windows protected your PC", click **More info → Run anyway**.
+3. Open the `dividend-dashboard` folder and double-click `server.py`.
+   If it opens in a text editor instead of running, right-click it, choose **Open with**, and
+   pick **Python**. You can also double-click `run_windows.bat`. On PCs with Smart App Control
+   turned on, `run_windows.bat` is blocked unless you right-click the zip, choose **Properties**,
+   and tick **Unblock** before extracting. `server.py` runs either way.
 4. Your browser opens the dashboard. Leave the small command window open while you use it.
 
 **Mac**
@@ -34,9 +37,17 @@ You need **Python 3.9 or newer** first. That's the only thing to install.
 4. Your browser opens the dashboard at http://127.0.0.1:8765.
 
 New here? [GETTING_STARTED.md](GETTING_STARTED.md) walks through your first five minutes.
-When a new version is out, the dashboard shows a notice at the top with a download link.
-To update, download the newest zip and unzip it over your folder. Your `holdings.csv`
-is never in the zip, so your holdings are kept.
+When a new version is out, the dashboard shows a notice at the top with a link to the release.
+The release page starts with these update steps:
+
+1. Download `dividend-dashboard-vX.Y.Z.zip` from the **Assets** list.
+2. Stop the dashboard if it's running.
+3. Unzip the download. Inside is a `dividend-dashboard` folder.
+4. Copy everything in it into your existing `dividend-dashboard` folder, replacing the files.
+5. Start it again.
+
+Your holdings are kept: `holdings.csv`, `holdings_path.txt`, saved Planning scenarios and
+`backups/` are never in the zip, so replacing files doesn't touch them.
 
 ![Dividend Holdings Dashboard in dark theme, showing summary cards, projected income by month and upcoming ex-dividend dates](screenshots/overview.png)
 
@@ -98,7 +109,7 @@ dollar amounts are synthetic. Click a tab name to see it.
 
 After downloading (see [Download](#download) above):
 
-- **Windows:** double-click `run_windows.bat`
+- **Windows:** double-click `server.py` (or `run_windows.bat`, see the Smart App Control note above)
 - **Mac / Linux:** run `./run_mac_linux.sh` in a terminal
 
 Your browser opens at http://127.0.0.1:8765.
@@ -349,6 +360,7 @@ git push origin v1.2.0
 
 The [Release workflow](.github/workflows/release.yml) zips the tagged files into
 `dividend-dashboard-v1.2.0.zip` and publishes it as a GitHub Release with
+the update steps from [`.github/release-notes.md`](.github/release-notes.md) followed by
 auto-generated notes, and adds a `VERSION` file that powers the update notice. Only committed files go in, so `holdings.csv`, `__pycache__`
 and other ignored files can't leak. Repo-only files (screenshots, deploy config) are
 left out by `export-ignore` lines in [.gitattributes](.gitattributes).

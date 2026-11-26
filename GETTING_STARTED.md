@@ -35,7 +35,9 @@ double-click it. Move the unzipped `dividend-dashboard` folder anywhere you like
 
 **Start it** from inside that folder:
 
-- **Windows:** double-click `run_windows.bat`.
+- **Windows:** double-click `server.py`. If it opens in a text editor instead, right-click it,
+  choose **Open with** and pick **Python**. (`run_windows.bat` works too, unless Smart App
+  Control blocks it: see the README.)
 - **Mac / Linux:** open Terminal in the folder and run `./run_mac_linux.sh`.
   If it says "permission denied", run `chmod +x run_mac_linux.sh stop_mac_linux.sh` once first.
 
@@ -92,8 +94,11 @@ Click **Stop** at the top right of the page, or double-click `stop_windows.bat`
 
 ## Updating to a newer version
 
-Download the new version the same way (the newest zip from the [latest release](https://github.com/trader-larry/dividend-dashboard/releases/latest)) and copy its files over your existing folder. Your `holdings.csv` isn't in the
-download, so your holdings are kept.
+When a new version is out, the dashboard shows a notice at the top. Its link opens the
+release page, which starts with the update steps: download the zip from **Assets**, stop
+the dashboard, unzip, copy everything into your existing folder (replacing the files), and
+start it again. Your `holdings.csv`, saved scenarios and backups aren't in the download,
+so they're kept.
 
 ---
 
