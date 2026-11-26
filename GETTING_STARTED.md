@@ -24,14 +24,14 @@ To check, open a command prompt (Windows) or Terminal (Mac) and type
 
 ## 2. Start the dashboard
 
-**Get the files.** If someone sent you a zip file, skip to unzipping. If you have
-a GitHub link, open it, click the green **Code** button near the top right, then
-click **Download ZIP**. The zip lands in your Downloads folder.
+**Get the files.** If someone sent you a zip file, skip to unzipping. Otherwise go to the
+[latest release](https://github.com/trader-larry/dividend-dashboard/releases/latest)
+and click the `dividend-dashboard-vX.Y.Z.zip` file under **Assets**. The zip lands in
+your Downloads folder.
 
 **Unzip it.** On Windows, right-click the zip and choose **Extract All**. On a Mac,
-double-click it. Move the unzipped folder anywhere you like (for example, your
-Documents folder). From GitHub the folder is called `dividend-dashboard-main`;
-you can rename it.
+double-click it. Move the unzipped `dividend-dashboard` folder anywhere you like
+(for example, your Documents folder).
 
 **Start it** from inside that folder:
 
@@ -92,7 +92,7 @@ Click **Stop** at the top right of the page, or double-click `stop_windows.bat`
 
 ## Updating to a newer version
 
-Download the new version the same way (from GitHub: **Code → Download ZIP**) and copy its files over your existing folder. Your `holdings.csv` isn't in the
+Download the new version the same way (the newest zip from the [latest release](https://github.com/trader-larry/dividend-dashboard/releases/latest)) and copy its files over your existing folder. Your `holdings.csv` isn't in the
 download, so your holdings are kept.
 
 ---

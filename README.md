@@ -5,7 +5,37 @@ own computer, uses free Yahoo Finance data, and needs no API key, account, or
 extra Python packages (only the standard library, so Windows Smart App Control
 has no third-party DLLs to block).
 
-New here? Start with [GETTING_STARTED.md](GETTING_STARTED.md), a short step-by-step guide.
+## Download
+
+**[Download the latest version](https://github.com/trader-larry/dividend-dashboard/releases/latest)**,
+then pick the `dividend-dashboard-vX.Y.Z.zip` file under **Assets**. You don't need git or a GitHub account.
+
+You need **Python 3.9 or newer** first. That's the only thing to install.
+
+**Windows**
+1. Install Python from [python.org/downloads](https://www.python.org/downloads/). On the first
+   installer screen, tick **"Add python.exe to PATH"**, then click Install Now.
+2. Download the zip above, right-click it and choose **Extract All**.
+3. Open the `dividend-dashboard` folder and double-click `run_windows.bat`.
+   If Windows says "Windows protected your PC", click **More info → Run anyway**.
+4. Your browser opens the dashboard. Leave the small command window open while you use it.
+
+**Mac**
+1. Install Python from [python.org/downloads](https://www.python.org/downloads/) and run the installer.
+2. Download the zip above and double-click it to unzip.
+3. Open Terminal, type `cd ` (with a space), drag the `dividend-dashboard` folder into the
+   Terminal window, press Return, then run `./run_mac_linux.sh`.
+4. Your browser opens the dashboard. Leave Terminal open while you use it.
+
+**Linux**
+1. Python 3 is usually already installed (check with `python3 --version`).
+2. Download and unzip the zip above.
+3. In a terminal, `cd` into the `dividend-dashboard` folder and run `./run_mac_linux.sh`.
+4. Your browser opens the dashboard at http://127.0.0.1:8765.
+
+New here? [GETTING_STARTED.md](GETTING_STARTED.md) walks through your first five minutes.
+To update later, download the newest zip and unzip it over your folder. Your `holdings.csv`
+is never in the zip, so your holdings are kept.
 
 ![Dividend Holdings Dashboard in dark theme, showing summary cards, projected income by month and upcoming ex-dividend dates](screenshots/overview.png)
 
@@ -65,16 +95,10 @@ dollar amounts are synthetic. Click a tab name to see it.
 
 ## Start it
 
-You need Python 3.9 or newer (python.org).
+After downloading (see [Download](#download) above):
 
 - **Windows:** double-click `run_windows.bat`
 - **Mac / Linux:** run `./run_mac_linux.sh` in a terminal
-
-Or by hand, from a command prompt in this folder:
-
-```
-python server.py
-```
 
 Your browser opens at http://127.0.0.1:8765.
 
@@ -302,6 +326,31 @@ Extras:
 for hosting on a free service like Render so people can try the dashboard in their browser. It never
 reads your holdings file, hides editing, import and Stop, and caches prices for hours. See
 [DEPLOY.md](DEPLOY.md) for the steps.
+
+## For developers
+
+To work on the code, clone the repository instead of downloading a release:
+
+```
+git clone https://github.com/trader-larry/dividend-dashboard.git
+cd dividend-dashboard
+python server.py
+```
+
+It uses only the Python standard library, so there is nothing to `pip install`.
+
+**Cutting a release.** Push a version tag and GitHub builds the download for you:
+
+```
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+The [Release workflow](.github/workflows/release.yml) zips the tagged files into
+`dividend-dashboard-v1.2.0.zip` and publishes it as a GitHub Release with
+auto-generated notes. Only committed files go in, so `holdings.csv`, `__pycache__`
+and other ignored files can't leak. Repo-only files (screenshots, deploy config) are
+left out by `export-ignore` lines in [.gitattributes](.gitattributes).
 
 ## License
 
