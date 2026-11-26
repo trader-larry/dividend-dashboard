@@ -1662,6 +1662,69 @@ def write_plans(plans: list) -> None:
 
 
 # --------------------------------------------------------------------------
+# Update notice
+# --------------------------------------------------------------------------
+# A release zip contains a VERSION file (written by .github/workflows/release.yml).
+# On startup the page asks /api/version, which compares it with the newest GitHub
+# release and shows a "new version available" banner. It only reads the public
+# release number; nothing about you or your holdings is sent. A git clone has no
+# VERSION file and skips the check (use git pull there). Turn it off with
+# --no-update-check or DIVIDEND_NO_UPDATE_CHECK=1.
+UPDATE_REPO = "trader-larry/dividend-dashboard"
+VERSION_FILE = HERE / "VERSION"
+UPDATE_CHECK = True
+UPDATE_CHECK_HOURS = 12
+_update = {"at": 0.0, "latest": None, "url": None}
+_update_lock = threading.Lock()
+
+
+def current_version() -> str | None:
+    try:
+        v = VERSION_FILE.read_text(encoding="utf-8").strip()
+        return v or None
+    except OSError:
+        return None
+
+
+def _version_key(v: str) -> tuple:
+    """'v1.10.2' -> (1, 10, 2). Anything that isn't a plain number counts as 0."""
+    parts = []
+    for p in v.strip().lstrip("vV").split("-")[0].split("."):
+        parts.append(int(p) if p.isdigit() else 0)
+    return tuple(parts + [0] * (3 - len(parts)))
+
+
+def _latest_release() -> tuple[str | None, str | None]:
+    """Newest published release on GitHub, asked at most every UPDATE_CHECK_HOURS."""
+    with _update_lock:
+        if time.time() - _update["at"] < UPDATE_CHECK_HOURS * 3600:
+            return _update["latest"], _update["url"]
+        _update["at"] = time.time()  # also after a failure, so an offline computer isn't retried every load
+        try:
+            req = urllib.request.Request(f"https://api.github.com/repos/{UPDATE_REPO}/releases/latest",
+                                         headers={"Accept": "application/vnd.github+json",
+                                                  "User-Agent": "dividend-dashboard-update-check"})
+            with urllib.request.urlopen(req, timeout=8) as r:
+                rel = json.loads(r.read().decode("utf-8"))
+            _update["latest"] = (rel.get("tag_name") or "").strip() or None
+            _update["url"] = rel.get("html_url") or f"https://github.com/{UPDATE_REPO}/releases/latest"
+        except Exception:
+            pass  # offline, rate-limited or no release yet: just show nothing
+        return _update["latest"], _update["url"]
+
+
+def version_info() -> dict:
+    cur = current_version()
+    out = {"current": cur, "latest": None, "url": None, "update": False}
+    if not cur or not UPDATE_CHECK or DEMO or PUBLIC_DEMO:
+        return out
+    latest, url = _latest_release()
+    out.update(latest=latest, url=url,
+               update=bool(latest) and _version_key(latest) > _version_key(cur))
+    return out
+
+
+# --------------------------------------------------------------------------
 # HTTP server
 # --------------------------------------------------------------------------
 class Handler(BaseHTTPRequestHandler):
@@ -1686,6 +1749,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, page, "text/html; charset=utf-8")
         if path == "/healthz":
             return self._send(200, '{"ok":true}')
+        if path == "/api/version":
+            return self._send(200, json.dumps(version_info()))
         if path == "/api/data":
             # The public demo ignores Refresh: prices come from the cache, refreshed in the background.
             force = "refresh=1" in self.path and not PUBLIC_DEMO
@@ -1817,7 +1882,7 @@ def _keep_warm():
 
 
 def main():
-    global DEMO, USE_YFINANCE, PUBLIC_DEMO, CACHE_TTL_SECONDS
+    global DEMO, USE_YFINANCE, PUBLIC_DEMO, CACHE_TTL_SECONDS, UPDATE_CHECK
     ap = argparse.ArgumentParser(description="Local dividend holdings dashboard")
     ap.add_argument("--port", type=int, default=None, help="default 8765, or $PORT with --public-demo")
     ap.add_argument("--demo", action="store_true", help="use synthetic data (no internet needed)")
@@ -1830,8 +1895,11 @@ def main():
                     help="fetch with the yfinance library instead of the built-in client")
     ap.add_argument("--holdings", metavar="PATH",
                     help="holdings file (or folder) to use, e.g. in OneDrive/Dropbox/iCloud Drive")
+    ap.add_argument("--no-update-check", action="store_true",
+                    help="don't check GitHub for a newer version (also DIVIDEND_NO_UPDATE_CHECK=1)")
     a = ap.parse_args()
     global HOLDINGS_CSV
+    UPDATE_CHECK = not (a.no_update_check or _env_on("DIVIDEND_NO_UPDATE_CHECK"))
     if a.save_demo_snapshot:
         USE_YFINANCE = a.yfinance
         print("Saving fund details for the demo portfolio from Yahoo Finance...")
@@ -1880,7 +1948,8 @@ def main():
     a.port = a.port or 8765
     srv = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
     url = f"http://127.0.0.1:{a.port}"
-    print(f"Dividend dashboard running at {url}  ({'DEMO data' if DEMO else 'live Yahoo Finance data'})")
+    ver = current_version()
+    print(f"Dividend dashboard {ver + ' ' if ver else ''}running at {url}  ({'DEMO data' if DEMO else 'live Yahoo Finance data'})")
     print(f"Holdings file: {HOLDINGS_CSV}")
     print("Edit it or use the Edit holdings button in the page.")
     print("To stop: click Stop in the dashboard, run stop_windows.bat / stop_mac_linux.sh, or press Ctrl+C.")

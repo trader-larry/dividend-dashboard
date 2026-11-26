@@ -33,7 +33,10 @@ jobs:
           # git archive only includes committed files, so personal or
           # gitignored files (holdings.csv, __pycache__, backups/) can never
           # end up in the download. Executable bits on .sh files are kept.
-          git archive --format=zip --prefix="${APP_NAME}/" -o "$ZIP" "$GITHUB_REF_NAME"
+          # VERSION lets the app tell users when a newer release is out.
+          git archive --format=zip --prefix="${APP_NAME}/" \
+            --add-virtual-file="${APP_NAME}/VERSION:${GITHUB_REF_NAME}" \
+            -o "$ZIP" "$GITHUB_REF_NAME"
           unzip -l "$ZIP"
           echo "ZIP=$ZIP" >> "$GITHUB_ENV"
 

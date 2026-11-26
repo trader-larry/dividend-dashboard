@@ -34,6 +34,8 @@ button.stop{color:var(--neg);border-color:var(--neg);background:transparent}
 button:disabled{opacity:.6;cursor:wait}
 main{padding:16px 20px;max-width:1700px;margin:0 auto}
 .banner{background:#fff4d6;color:#6b4a00;border:1px solid #f0d58a;padding:8px 12px;border-radius:6px;margin-bottom:12px}
+.banner.update{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.banner.update a{color:inherit;font-weight:600}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .banner{background:#3a2e10;color:#f3d78e;border-color:#6b5520}}
 :root[data-theme="dark"] .banner{background:#3a2e10;color:#f3d78e;border-color:#6b5520}
 .err{color:var(--neg)}
@@ -387,6 +389,7 @@ body.public-demo #plSave, body.public-demo #plSaveNew, body.public-demo #plDel{d
   </div>
 </header>
 <main>
+  <div id="updateBanner"></div>
   <div id="banner"></div>
   <div class="tiles" id="tiles"></div>
   <div class="row2">
@@ -983,6 +986,20 @@ async function load(refresh=false){
     computeOverlap(); renderSummary(); render();
   }catch(e){ $('updated').textContent='Failed to load: '+e; }
   $('btnRefresh').disabled=false;
+}
+
+// Update notice: shown once per new version, until the person closes it
+async function checkUpdate(){
+  try{
+    const v = await (await fetch('/api/version')).json();
+    if(!v.update) return;
+    try{ if(localStorage.getItem('divdash.updateSeen')===v.latest) return; }catch(e){}
+    const el = $('updateBanner');
+    el.innerHTML = `<div class="banner update"><span><strong>A new version is available:</strong> ${esc(v.latest)} (you have ${esc(v.current)}).
+      <a href="${esc(v.url)}" target="_blank" rel="noopener">See what's new and download it</a>, then unzip it over this folder. Your holdings are kept.</span>
+      <button id="updateClose" title="Hide until the next version">Dismiss</button></div>`;
+    $('updateClose').onclick = () => { try{ localStorage.setItem('divdash.updateSeen', v.latest); }catch(e){} el.innerHTML=''; };
+  }catch(e){}
 }
 
 // Holdings editor
@@ -2061,6 +2078,7 @@ async function sumPdfBlob({cv, Ht, breaks, k}){
   return new Blob(parts, {type:'application/pdf'});
 }
 load(false);
+checkUpdate();
 </script>
 </body>
 </html>

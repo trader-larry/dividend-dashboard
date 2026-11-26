@@ -34,7 +34,8 @@ You need **Python 3.9 or newer** first. That's the only thing to install.
 4. Your browser opens the dashboard at http://127.0.0.1:8765.
 
 New here? [GETTING_STARTED.md](GETTING_STARTED.md) walks through your first five minutes.
-To update later, download the newest zip and unzip it over your folder. Your `holdings.csv`
+When a new version is out, the dashboard shows a notice at the top with a download link.
+To update, download the newest zip and unzip it over your folder. Your `holdings.csv`
 is never in the zip, so your holdings are kept.
 
 ![Dividend Holdings Dashboard in dark theme, showing summary cards, projected income by month and upcoming ex-dividend dates](screenshots/overview.png)
@@ -348,9 +349,18 @@ git push origin v1.2.0
 
 The [Release workflow](.github/workflows/release.yml) zips the tagged files into
 `dividend-dashboard-v1.2.0.zip` and publishes it as a GitHub Release with
-auto-generated notes. Only committed files go in, so `holdings.csv`, `__pycache__`
+auto-generated notes, and adds a `VERSION` file that powers the update notice. Only committed files go in, so `holdings.csv`, `__pycache__`
 and other ignored files can't leak. Repo-only files (screenshots, deploy config) are
 left out by `export-ignore` lines in [.gitattributes](.gitattributes).
+
+## Update notice
+
+A downloaded copy checks GitHub once every 12 hours for a newer release and, if
+there is one, shows a banner with a link to it. **Dismiss** hides it until the next
+version. The check only reads the public release number from GitHub; nothing about
+you or your holdings is sent. It never downloads or installs anything by itself.
+Turn it off with `python server.py --no-update-check` (or set
+`DIVIDEND_NO_UPDATE_CHECK=1`). Copies made with git clone don't check: use `git pull`.
 
 ## License
 

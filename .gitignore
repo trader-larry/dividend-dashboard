@@ -21,3 +21,6 @@ desktop.ini
 # Saved Planning scenarios (next to your holdings file)
 *-plans.json
 *-plans.json.tmp
+
+# Written into release zips only (see .github/workflows/release.yml)
+VERSION
